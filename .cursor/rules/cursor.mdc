@@ -34,10 +34,45 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Use `computed()` for derived state
 - Set `changeDetection: ChangeDetectionStrategy.OnPush` in `@Component` decorator
 - Prefer inline templates for small components
-- Prefer Reactive forms instead of Template-driven ones
+- Prefer **Signal Forms** (`@angular/forms/signals`) for new forms; use **Reactive** `FormGroup`/`FormControl` (or **`compatForm`**) when bridging to existing reactive code—avoid template-driven forms
 - Do NOT use `ngClass`, use `class` bindings instead
 - Do NOT use `ngStyle`, use `style` bindings instead
 - When using external templates/styles, use paths relative to the component TS file.
+
+## Signal Form
+
+Use Angular **Signal Forms** (`@experimental` in v21) for new forms: they keep a single **writable `signal` model** as the source of truth and expose a **`FieldTree`** for bindings and validation—no parallel `FormGroup` unless you intentionally bridge with `compatForm`.
+
+### Imports and structure
+
+- Import **`form`** and schema helpers from **`@angular/forms/signals`**. For mixing signal models with existing **`FormControl`** instances, use **`compatForm`** from **`@angular/forms/signals/compat`** (see Angular docs for interop).
+- Define the model as **`signal<MyModel>({ ... })`** (same shape as your form data).
+- Create the tree: **`const myForm = form(myModel)`** or pass a **schema function** as the second argument: **`form(myModel, (root) => { ... })`**. Optionally pass **`FormOptions`** (e.g. `name`, `injector`, `submission`) as the second or third argument when not using a schema in that position.
+- **`form` does not copy data**: updates through field state write back to the original model signal.
+
+### Validation and field logic
+
+- In the schema callback, attach rules to **schema paths** (e.g. `root.email`, nested objects, array items).
+- Use built-in validators where they fit: **`required`**, **`email`**, **`pattern`**, **`min`**, **`max`**, **`minLength`**, **`maxLength`**, and related APIs from the same entry point.
+- For custom rules use **`validate(path, validator)`** (and **`validateAsync`**, **`validateHttp`** when asynchronous).
+- Reuse logic with **`schema(...)`**, **`apply`**, **`applyEach`**, **`applyWhen`**, **`applyWhenValue`**, **`debounce`**, etc., as documented for Signal Forms.
+- Conditional UI behavior: **`disabled`**, **`readonly`**, **`hidden`** on paths; prefer **`@if`** in the template when a field may be hidden.
+
+### Template wiring
+
+- On **`<form>`**, bind the root field tree with **`[formRoot]`** (class **`FormRoot`** from `@angular/forms/signals`).
+- On controls (native **`<input>`** / **`<textarea>`** or compatible components), use **`[formField]="myForm.someField"`** (directive **`FormField`**) so value, touched/dirty, disabled/required, and validation state stay in sync. Prefer native or signal-form–aware controls; **ControlValueAccessor** is supported mainly for interoperability.
+
+### Submission and config
+
+- Use **`submit`** from `@angular/forms/signals` with **`FormSubmitOptions`** when you need structured submit handling (see API docs).
+- Optional app-wide styling hooks: **`provideSignalFormsConfig`** (e.g. status classes via **`SignalFormsConfig`**).
+
+### Conventions for this codebase
+
+- Prefer **Signal Forms** for **new** forms so state stays signal-centric and aligned with **`OnPush`**.
+- Keep **accessibility**: labels, **`for`/`id`**, error text tied to **`state.errors()`** / field errors, and focus management consistent with Material + CDK patterns above.
+- Official reference: [Angular Signal Forms](https://angular.dev/guide/forms/signals) (structure, validation, and templates).
 
 ## State Management
 
