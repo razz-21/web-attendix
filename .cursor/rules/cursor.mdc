@@ -59,3 +59,19 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Design services around a single responsibility
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
+
+## UI Material (Material Design 3)
+
+- Use **Angular Material** (`@angular/material`) and **CDK** (`@angular/cdk`) for UI primitives; prefer Material components over ad-hoc markup when they fit the need.
+- Follow **Material Design 3**: use M3 APIs and tokens. Theme the app with Sass `mat.theme()` (or the project’s established theme setup); do not introduce legacy Material 2–only theming patterns unless required for migration.
+- For custom surfaces and typography, align with **system CSS variables** (e.g. `--mat-sys-surface`, `--mat-sys-on-surface`, `--mat-sys-body-*`) so custom UI stays consistent with the theme.
+- Respect **density** and **typography** scale from the theme; avoid one-off font sizes or spacing that fight Material rhythm unless there is a clear design reason.
+- Use **CDK** for behaviors (overlay, a11y, scrolling, drag-drop) and compose with Material where appropriate; do not duplicate focus-trap or overlay logic by hand when CDK covers it.
+- Keep **accessibility** in scope: Material components must remain keyboard-usable and screen-reader friendly; do not strip ARIA or focus management to “fix” styling.
+- Prefer **theming and component APIs** documented for the installed Angular Material major version over outdated blog posts or pre-M3 examples.
+
+## SCSS
+
+- Use **SCSS** for component **styling and layout**. Implement these in each component’s `*.component.scss` file (matching `styleUrl` / `styleUrls` on `@Component`).
+- Prefer SCSS features (variables, nesting, mixins) when they reduce duplication; keep selectors readable and aligned with the component template.
+- Reserve **global** styles (`styles.scss` and shared partials) for app-wide theming, resets, and tokens—not for feature-specific layout that belongs next to the component.
