@@ -1,4 +1,4 @@
-import { AUTH_REQUEST_ACCOUNT_PATH } from '@/app/constants/route.constant';
+import { AUTH_REQUEST_ACCOUNT_PATH, MAIN_BASE_PATH, MAIN_DASHBOARD_PATH } from '@/app/constants/route.constant';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -44,5 +44,9 @@ export class LoginFormComponent {
 
   public navigateToRequestAccount(): void {
     this.router.navigate([AUTH_REQUEST_ACCOUNT_PATH]);
+  }
+
+  public navigateToDashboard(): void {
+    this.router.navigate([MAIN_BASE_PATH]);
   }
 }

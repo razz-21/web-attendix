@@ -1,0 +1,19 @@
+.main-container {
+  min-height: 100dvh;
+  max-height: 100dvh;
+} 
+
+.main-drawer {
+  max-width: 320px;
+  width: 100%;
+  border-radius: 0;
+}
+
+.main-content {
+  height: 100%;
+  width: 100%;
+  min-height: 100dvh;
+  border-top-left-radius: 2rem;
+  border-bottom-left-radius: 2rem;
+  background-color: var(--mat-sys-surface-container-lowest);
+}

@@ -1,0 +1,42 @@
+.main-sidebar {
+  padding: 1rem;
+  min-height: 100dvh;
+  max-height: 100dvh;
+}
+
+.main-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.main-sidebar-brand span {
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.main-sidebar-item {
+  border-radius: 0.5rem;
+  width: 100%;
+  text-align: start;
+
+  &--active {
+    background-color: var(--mat-sys-primary-container);
+
+    span {
+      font-weight: 700;
+    }
+  }
+}
+
+.main-sidebar-item span {
+  font-size: 0.875rem;
+}
+
+.main-sidebar-item mat-icon {
+  width: 22px;
+  height: 22px;
+  font-size: 22px;
+  line-height: 22px;
+}

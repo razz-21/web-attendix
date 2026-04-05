@@ -1,0 +1,14 @@
+<nav class="main-sidebar">
+  <div class="main-sidebar-brand">
+    <img src="/assets/logo/attendix-logo.svg" alt="Attendix" width="42" height="42" class="main-sidebar-logo" />
+    <span class="mat-title-medium">WebAttendix</span>
+  </div>
+  <mat-nav-list>
+    @for (route of routes; track route.path) {
+      <a mat-list-item class="main-sidebar-item" [routerLink]="route.path" [routerLinkActive]="'main-sidebar-item--active'">
+        <mat-icon matListItemIcon size="small">{{ route.icon }}</mat-icon>
+        <span matListItemTitle>{{ route.label }}</span>
+      </a>
+    }
+  </mat-nav-list>
+</nav>
