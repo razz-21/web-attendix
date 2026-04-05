@@ -4,6 +4,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { DEPARTMENTS } from '@/app/constants/departments.constant';
 import { PostUserSchema } from '@/app/types/users/users.schema';
 import type { PostUser } from '@/app/types/users/users.type';
 
@@ -29,12 +31,13 @@ const emptyModel = (): UserFormModel => ({
 
 @Component({
   selector: 'app-user-form',
-  imports: [FormRoot, FormField, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule],
+  imports: [FormRoot, FormField, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule],
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserFormComponent {
+  public readonly departments = DEPARTMENTS;
   public readonly model = signal<UserFormModel>(emptyModel());
   public readonly passwordHidden = signal(true);
   public readonly confirmPasswordHidden = signal(true);
@@ -46,6 +49,7 @@ export class UserFormComponent {
     required(root.rfid);
     required(root.firstname);
     required(root.lastname);
+    required(root.department);
     required(root.username);
     required(root.password);
     required(root.confirmPassword);

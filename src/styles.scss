@@ -60,3 +60,78 @@ body {
   font: var(--mat-sys-body-medium);
   color: var(--mat-sys-on-surface-variant);
 }
+
+// ---------------------------------------------------------------------------
+// Material data tables — shared look (native `table[mat-table]` and flex
+// `mat-table`). Uses `--mat-sys-*` tokens from the active theme.
+// ---------------------------------------------------------------------------
+
+table.mat-mdc-table {
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  background-color: var(--mat-sys-surface);
+}
+
+mat-table.mat-mdc-table {
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: var(--mat-sys-surface);
+}
+
+thead .mat-mdc-header-row,
+mat-header-row.mat-mdc-header-row {
+  background-color: var(--mat-sys-surface-container-high);
+}
+
+tbody .mat-mdc-row {
+  background-color: var(--mat-sys-surface);
+}
+
+.mat-mdc-table .mat-mdc-header-cell {
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+  background-color: var(--mat-sys-surface-container-high);
+  border-bottom-color: var(--mat-sys-outline-variant);
+}
+
+.mat-mdc-table .mat-mdc-cell {
+  color: var(--mat-sys-on-surface-variant);
+  border-bottom-color: var(--mat-sys-outline-variant);
+}
+
+.mat-mdc-table .mat-mdc-cell,
+.mat-mdc-table .mat-mdc-header-cell {
+  padding: 14px 16px;
+}
+
+// Status values as bordered pills (add class to the cell contents)
+.app-table-status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.875rem;
+  border-radius: 999px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  background-color: var(--mat-sys-surface-container-lowest);
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  text-transform: capitalize;
+}
+
+// Optional: center the actions column when these classes are used on header/body cells
+th.mat-mdc-header-cell.app-table-actions-header,
+td.mat-mdc-cell.app-table-actions-cell {
+  text-align: center;
+  vertical-align: middle;
+}
+
+mat-header-cell.mat-mdc-header-cell.app-table-actions-header,
+mat-cell.mat-mdc-cell.app-table-actions-cell {
+  justify-content: center;
+}

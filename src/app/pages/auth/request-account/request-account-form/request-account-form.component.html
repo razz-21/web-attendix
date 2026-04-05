@@ -65,7 +65,23 @@
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Department</mat-label>
-      <input matInput [formField]="requestForm.department" autocomplete="off" />
+      <mat-select [formField]="requestForm.department">
+        @for (dept of departments; track dept.name) {
+          <mat-option [value]="dept.name">{{ dept.name }}</mat-option>
+        }
+      </mat-select>
+      @if (requestForm.department().touched() && requestForm.department().invalid()) {
+        <mat-error>
+          @switch (requestForm.department().errors()[0]?.kind) {
+            @case ('required') {
+              Department is required
+            }
+            @default {
+              {{ requestForm.department().errors()[0]?.message ?? 'Invalid value' }}
+            }
+          }
+        </mat-error>
+      }
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">

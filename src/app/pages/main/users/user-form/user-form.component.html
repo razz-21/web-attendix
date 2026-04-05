@@ -56,7 +56,23 @@
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Department</mat-label>
-      <input matInput [formField]="userForm.department" autocomplete="organization" />
+      <mat-select [formField]="userForm.department">
+        @for (dept of departments; track dept.name) {
+          <mat-option [value]="dept.name">{{ dept.name }}</mat-option>
+        }
+      </mat-select>
+      @if (userForm.department().touched() && userForm.department().invalid()) {
+        <mat-error>
+          @switch (userForm.department().errors()[0]?.kind) {
+            @case ('required') {
+              Department is required
+            }
+            @default {
+              {{ userForm.department().errors()[0]?.message ?? 'Invalid value' }}
+            }
+          }
+        </mat-error>
+      }
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
@@ -145,7 +161,7 @@
   </div>
 
   <div class="user-form__actions">
-    <button type="button" matButton="text" color="primary" class="full-width" (click)="cancel()">Cancel</button>
+    <button type="button" matButton="tonal" color="primary" class="full-width" (click)="cancel()">Cancel</button>
     <button type="submit" matButton="filled" color="primary" class="full-width">Create user</button>
   </div>
 </form>

@@ -1,0 +1,20 @@
+.user-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.user-table {
+  width: 100%;
+}
+
+.user-table__action-btn {
+  --mat-icon-button-state-layer-size: 30px;
+  --mat-icon-button-icon-size: 18px;
+
+  mat-icon {
+    font-size: 18px;
+    line-height: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}

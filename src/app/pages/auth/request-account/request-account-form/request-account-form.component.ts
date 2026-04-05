@@ -3,7 +3,9 @@ import { FormField, FormRoot, form, required, validate } from '@angular/forms/si
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
+import { DEPARTMENTS } from '@/app/constants/departments.constant';
 import { AUTH_LOGIN_PATH } from '@/app/constants/route.constant';
 import { Router } from '@angular/router';
 
@@ -29,7 +31,7 @@ const emptyModel = (): RequestAccountModel => ({
 
 @Component({
   selector: 'app-request-account-form',
-  imports: [FormRoot, FormField, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule],
+  imports: [FormRoot, FormField, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule],
   templateUrl: './request-account-form.component.html',
   styleUrl: './request-account-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,9 +39,9 @@ const emptyModel = (): RequestAccountModel => ({
 export class RequestAccountFormComponent {
   private readonly router = inject(Router);
 
+  public readonly departments = DEPARTMENTS;
   public readonly model = signal<RequestAccountModel>(emptyModel());
 
-  /** When `true`, the field shows dots (`type="password"`). */
   public readonly passwordHidden = signal(true);
   public readonly confirmPasswordHidden = signal(true);
 
@@ -47,6 +49,7 @@ export class RequestAccountFormComponent {
     required(root.id);
     required(root.firstName);
     required(root.lastName);
+    required(root.department);
     required(root.username);
     required(root.password);
     required(root.confirmPassword);
