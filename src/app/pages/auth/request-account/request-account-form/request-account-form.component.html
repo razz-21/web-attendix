@@ -1,0 +1,157 @@
+<button type="button" matButton="text" color="primary" (click)="navigateToLogin()">
+  <mat-icon>arrow_back</mat-icon>
+  <span class="mat-body-medium">Go back to login</span>
+</button>
+
+<h1 class="mat-title-large">Request an account</h1>
+<p>Please fill out the form below to request an account.</p>
+<p>You will receive an email with your account details once your request is approved.</p>
+
+<form class="request-account-form" [formRoot]="requestForm">
+  <div class="request-account-form__fields">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>ID</mat-label>
+      <input matInput [formField]="requestForm.id" autocomplete="off" />
+      <mat-hint>Enter your RFID number to for verification purposes.</mat-hint>
+      @if (requestForm.id().touched() && requestForm.id().invalid()) {
+        <mat-error>
+          @switch (requestForm.id().errors()[0]?.kind) {
+            @case ('required') {
+              ID is required
+            }
+            @default {
+              {{ requestForm.id().errors()[0]?.message ?? 'Invalid value' }}
+            }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <div class="request-account-form__name-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>First name</mat-label>
+        <input matInput [formField]="requestForm.firstName" autocomplete="given-name" />
+        @if (requestForm.firstName().touched() && requestForm.firstName().invalid()) {
+          <mat-error>
+            @switch (requestForm.firstName().errors()[0]?.kind) {
+              @case ('required') {
+                First name is required
+              }
+              @default {
+                {{ requestForm.firstName().errors()[0]?.message ?? 'Invalid value' }}
+              }
+            }
+          </mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Last name</mat-label>
+        <input matInput [formField]="requestForm.lastName" autocomplete="family-name" />
+        @if (requestForm.lastName().touched() && requestForm.lastName().invalid()) {
+          <mat-error>
+            @switch (requestForm.lastName().errors()[0]?.kind) {
+              @case ('required') {
+                Last name is required
+              }
+              @default {
+                {{ requestForm.lastName().errors()[0]?.message ?? 'Invalid value' }}
+              }
+            }
+          </mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Department</mat-label>
+      <input matInput [formField]="requestForm.department" autocomplete="off" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Username</mat-label>
+      <input matInput [formField]="requestForm.username" autocomplete="username" />
+      @if (requestForm.username().touched() && requestForm.username().invalid()) {
+        <mat-error>
+          @switch (requestForm.username().errors()[0]?.kind) {
+            @case ('required') {
+              Username is required
+            }
+            @default {
+              {{ requestForm.username().errors()[0]?.message ?? 'Invalid value' }}
+            }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Password</mat-label>
+      <input
+        matInput
+        [type]="passwordHidden() ? 'password' : 'text'"
+        [formField]="requestForm.password"
+        autocomplete="new-password"
+      />
+      <button
+        matIconButton
+        matSuffix
+        type="button"
+        (click)="passwordHidden.update((h) => !h)"
+        [attr.aria-label]="passwordHidden() ? 'Show password' : 'Hide password'"
+        [attr.aria-pressed]="!passwordHidden()"
+      >
+        <mat-icon>{{ passwordHidden() ? 'visibility' : 'visibility_off' }}</mat-icon>
+      </button>
+      @if (requestForm.password().touched() && requestForm.password().invalid()) {
+        <mat-error>
+          @switch (requestForm.password().errors()[0]?.kind) {
+            @case ('required') {
+              Password is required
+            }
+            @default {
+              {{ requestForm.password().errors()[0]?.message ?? 'Invalid value' }}
+            }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Confirm password</mat-label>
+      <input
+        matInput
+        [type]="confirmPasswordHidden() ? 'password' : 'text'"
+        [formField]="requestForm.confirmPassword"
+        autocomplete="new-password"
+      />
+      <button
+        matIconButton
+        matSuffix
+        type="button"
+        (click)="confirmPasswordHidden.update((h) => !h)"
+        [attr.aria-label]="confirmPasswordHidden() ? 'Show password' : 'Hide password'"
+        [attr.aria-pressed]="!confirmPasswordHidden()"
+      >
+        <mat-icon>{{ confirmPasswordHidden() ? 'visibility' : 'visibility_off' }}</mat-icon>
+      </button>
+      @if (requestForm.confirmPassword().touched() && requestForm.confirmPassword().invalid()) {
+        <mat-error>
+          @switch (requestForm.confirmPassword().errors()[0]?.kind) {
+            @case ('required') {
+              Confirm password is required
+            }
+            @case ('passwordMismatch') {
+              Passwords must match
+            }
+            @default {
+              {{ requestForm.confirmPassword().errors()[0]?.message ?? 'Invalid value' }}
+            }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+  </div>
+
+  <button type="submit" matButton="filled" color="primary" class="full-width">Submit request</button>
+</form>

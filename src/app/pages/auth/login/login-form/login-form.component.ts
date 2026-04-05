@@ -1,14 +1,15 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { AUTH_REQUEST_ACCOUNT_PATH } from '@/app/constants/route.constant';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login-form',
-  standalone: true,
   imports: [
     ReactiveFormsModule,
     MatCardModule,
@@ -22,7 +23,9 @@ import { MatInputModule } from '@angular/material/input';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginFormComponent {
-  readonly form = new FormGroup({
+  private readonly router = inject(Router);
+
+  public readonly form = new FormGroup({
     email: new FormControl('', {
       nonNullable: true,
     }),
@@ -37,5 +40,9 @@ export class LoginFormComponent {
       return;
     }
     // Wire to auth when available
+  }
+
+  public navigateToRequestAccount(): void {
+    this.router.navigate([AUTH_REQUEST_ACCOUNT_PATH]);
   }
 }

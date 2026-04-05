@@ -37,6 +37,12 @@
   gap: 0.75rem;
 }
 
+.login-request-account {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
 .login-footer {
   margin: 1.25rem 0 0;
   text-align: center;

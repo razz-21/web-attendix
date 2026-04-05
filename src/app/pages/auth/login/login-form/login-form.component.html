@@ -24,7 +24,10 @@
 
       <div class="login-buttons">
         <button type="submit" matButton="filled" color="primary" class="full-width">Sign in</button>
-        <button type="submit" matButton="tonal" color="primary" class="full-width">Request an account</button>
+        <div class="login-request-account">
+          <p>Don't have an account? You can request one below.</p>
+          <button type="button" matButton="tonal" color="primary" class="full-width" (click)="navigateToRequestAccount()">Request an account</button>
+        </div>
       </div>
     </form>
   </mat-card-content>

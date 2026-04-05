@@ -1,0 +1,13 @@
+:host {
+  display: block;
+  min-height: 100%;
+}
+
+.request-account-page {
+  box-sizing: border-box;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
