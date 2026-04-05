@@ -1,0 +1,7 @@
+<mat-dialog-content class="user-form-modal__content">
+  <h2>Add new user</h2>
+  <p>
+    Add a new user to the system. Fill the form below to create a new user account.
+  </p>
+  <app-user-form (userCreated)="onUserCreated($event)" (userCancelled)="cancel()" />
+</mat-dialog-content>

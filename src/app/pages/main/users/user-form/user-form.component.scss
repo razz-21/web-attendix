@@ -1,0 +1,39 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.user-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.user-form__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.user-form__name-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.user-form__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+@media (max-width: 520px) {
+  .user-form__name-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.full-width {
+  width: 100%;
+}

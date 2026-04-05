@@ -45,3 +45,18 @@ body {
   margin: 0;
   height: 100%;
 }
+
+.page-header {
+  display: flex;
+  flex-direction: column;
+}
+
+.page-title {
+  font: var(--mat-sys-title-large);
+  font-weight: 700;
+}
+
+.page-description {
+  font: var(--mat-sys-body-medium);
+  color: var(--mat-sys-on-surface-variant);
+}

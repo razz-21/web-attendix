@@ -1,0 +1,151 @@
+<form class="user-form" [formRoot]="userForm">
+  <div class="user-form__fields">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>ID</mat-label>
+      <input matInput [formField]="userForm.rfid" autocomplete="off" />
+      <mat-hint>RFID identifier for this user.</mat-hint>
+      @if (userForm.rfid().touched() && userForm.rfid().invalid()) {
+        <mat-error>
+          @switch (userForm.rfid().errors()[0]?.kind) {
+            @case ('required') {
+              ID is required
+            }
+            @default {
+              {{ userForm.rfid().errors()[0]?.message ?? 'Invalid value' }}
+            }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <div class="user-form__name-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>First name</mat-label>
+        <input matInput [formField]="userForm.firstname" autocomplete="given-name" />
+        @if (userForm.firstname().touched() && userForm.firstname().invalid()) {
+          <mat-error>
+            @switch (userForm.firstname().errors()[0]?.kind) {
+              @case ('required') {
+                First name is required
+              }
+              @default {
+                {{ userForm.firstname().errors()[0]?.message ?? 'Invalid value' }}
+              }
+            }
+          </mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Last name</mat-label>
+        <input matInput [formField]="userForm.lastname" autocomplete="family-name" />
+        @if (userForm.lastname().touched() && userForm.lastname().invalid()) {
+          <mat-error>
+            @switch (userForm.lastname().errors()[0]?.kind) {
+              @case ('required') {
+                Last name is required
+              }
+              @default {
+                {{ userForm.lastname().errors()[0]?.message ?? 'Invalid value' }}
+              }
+            }
+          </mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Department</mat-label>
+      <input matInput [formField]="userForm.department" autocomplete="organization" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Username</mat-label>
+      <input matInput [formField]="userForm.username" autocomplete="username" />
+      @if (userForm.username().touched() && userForm.username().invalid()) {
+        <mat-error>
+          @switch (userForm.username().errors()[0]?.kind) {
+            @case ('required') {
+              Username is required
+            }
+            @default {
+              {{ userForm.username().errors()[0]?.message ?? 'Invalid value' }}
+            }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Password</mat-label>
+      <input
+        matInput
+        [type]="passwordHidden() ? 'password' : 'text'"
+        [formField]="userForm.password"
+        autocomplete="new-password"
+      />
+      <button
+        matIconButton
+        matSuffix
+        type="button"
+        (click)="passwordHidden.update((h) => !h)"
+        [attr.aria-label]="passwordHidden() ? 'Show password' : 'Hide password'"
+        [attr.aria-pressed]="!passwordHidden()"
+      >
+        <mat-icon>{{ passwordHidden() ? 'visibility' : 'visibility_off' }}</mat-icon>
+      </button>
+      @if (userForm.password().touched() && userForm.password().invalid()) {
+        <mat-error>
+          @switch (userForm.password().errors()[0]?.kind) {
+            @case ('required') {
+              Password is required
+            }
+            @default {
+              {{ userForm.password().errors()[0]?.message ?? 'Invalid value' }}
+            }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Confirm password</mat-label>
+      <input
+        matInput
+        [type]="confirmPasswordHidden() ? 'password' : 'text'"
+        [formField]="userForm.confirmPassword"
+        autocomplete="new-password"
+      />
+      <button
+        matIconButton
+        matSuffix
+        type="button"
+        (click)="confirmPasswordHidden.update((h) => !h)"
+        [attr.aria-label]="confirmPasswordHidden() ? 'Show password' : 'Hide password'"
+        [attr.aria-pressed]="!confirmPasswordHidden()"
+      >
+        <mat-icon>{{ confirmPasswordHidden() ? 'visibility' : 'visibility_off' }}</mat-icon>
+      </button>
+      @if (userForm.confirmPassword().touched() && userForm.confirmPassword().invalid()) {
+        <mat-error>
+          @switch (userForm.confirmPassword().errors()[0]?.kind) {
+            @case ('required') {
+              Confirm password is required
+            }
+            @case ('passwordMismatch') {
+              Passwords must match
+            }
+            @default {
+              {{ userForm.confirmPassword().errors()[0]?.message ?? 'Invalid value' }}
+            }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+  </div>
+
+  <div class="user-form__actions">
+    <button type="button" matButton="text" color="primary" class="full-width" (click)="cancel()">Cancel</button>
+    <button type="submit" matButton="filled" color="primary" class="full-width">Create user</button>
+  </div>
+</form>

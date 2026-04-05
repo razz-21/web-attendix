@@ -1,0 +1,16 @@
+.users-page {
+  padding: 1.5rem;
+}
+
+.users-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.users-page-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
