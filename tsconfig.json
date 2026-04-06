@@ -20,25 +20,28 @@
         "src/*"
       ],
       "@services/*": [
-        "src/services/*"
+        "src/app/services/*"
       ],
       "@components/*": [
-        "src/components/*"
+        "src/app/components/*"
       ],
       "@pages/*": [
-        "src/pages/*"
+        "src/app/pages/*"
       ],
       "@store/*": [
-        "src/store/*"
+        "src/app/store/*"
       ],
       "@types/*": [
-        "src/types/*"
+        "src/app/types/*"
       ],
       "@utils/*": [
-        "src/utils/*"
+        "src/app/utils/*"
       ],
       "@constants/*": [
-        "src/constants/*"
+        "src/app/constants/*"
+      ],
+      "@pipes/*": [
+        "src/app/pipes/*"
       ]
     }
   },

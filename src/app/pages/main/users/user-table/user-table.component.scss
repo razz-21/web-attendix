@@ -1,3 +1,17 @@
+.user-table-filter {
+  max-width: 620px;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.user-table-filter__search {
+  flex: 1 1 320px;
+}
+
+.user-table-filter__status {
+  flex: 0 0 220px;
+}
+
 .user-table-wrap {
   width: 100%;
   overflow-x: auto;
@@ -16,5 +30,16 @@
     line-height: 18px;
     width: 18px;
     height: 18px;
+  }
+}
+
+@media (max-width: 640px) {
+  .user-table-filter {
+    flex-direction: column;
+  }
+
+  .user-table-filter__search,
+  .user-table-filter__status {
+    flex: 1 1 auto;
   }
 }

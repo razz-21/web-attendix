@@ -73,6 +73,7 @@ export class UserFormComponent {
           firstname: m.firstname.trim(),
           lastname: m.lastname.trim(),
           department: m.department.trim(),
+          role: 'user',
           username: m.username.trim(),
           password: m.password,
           status: 'needs_verification',

@@ -1,0 +1,11 @@
+<h2 mat-dialog-title>{{ data.title }}</h2>
+<mat-dialog-content>
+  <p>{{ data.message }}</p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button matButton="filled" color="warn" type="button" (click)="onConfirm()">
+    {{ positiveButtonText() }}
+  </button>
+  <button matButton="tonal" type="button" (click)="onCancel()">{{ negativeButtonText() }}</button>
+</mat-dialog-actions>

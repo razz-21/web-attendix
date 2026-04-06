@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const UserStatusSchema = z.enum(['active', 'inactive', 'needs_verification']);
+export const UserRoleSchema = z.enum(['admin', 'user']);
 
 export const UserSchema = z.object({
   id: z.uuidv4(),
@@ -8,6 +9,7 @@ export const UserSchema = z.object({
   firstname: z.string(),
   lastname: z.string(),
   department: z.string(),
+  role: UserRoleSchema.default('user'),
   username: z.string(),
   password: z.string(),
   status: UserStatusSchema.default('needs_verification'),
