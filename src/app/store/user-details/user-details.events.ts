@@ -12,5 +12,9 @@ export const UserDetailsEvents = eventGroup({
     updateUserDetails: type<{ payload: PatchUser }>(),
     updateUserDetailsSuccess: type<{ user: GetUser }>(),
     updateUserDetailsFailure: type<string>(),
+
+    deleteUser: type<{ user: GetUser }>(),
+    deleteUserSuccess: type<boolean>(),
+    deleteUserFailure: type<string>(),
   },
 });

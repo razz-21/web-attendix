@@ -12,6 +12,7 @@ type UserDetailsState = {
   user: GetUser | null;
   loading: boolean;
   updateLoading: boolean;
+  deleteLoading: boolean;
   error: string | null;
 };
 
@@ -19,6 +20,7 @@ const initialState: UserDetailsState = {
   user: null,
   loading: false,
   updateLoading: false,
+  deleteLoading: false,
   error: null,
 };
 
@@ -42,6 +44,8 @@ export const UserDetailsStore = signalStore(
       loading: false,
       error: event.payload,
     })),
+
+    // Update user details
     on(UserDetailsEvents.updateUserDetails, (_, state) => ({
       ...state,
       updateLoading: true,
@@ -58,6 +62,23 @@ export const UserDetailsStore = signalStore(
       updateLoading: false,
       error: event.payload,
     })),
+
+    // Delete user
+    on(UserDetailsEvents.deleteUser, (_, state) => ({
+      ...state,
+      deleteLoading: true,
+      error: null,
+    })),
+    on(UserDetailsEvents.deleteUserSuccess, (_, state) => ({
+      ...state,
+      deleteLoading: false,
+      error: null,
+    })),
+    on(UserDetailsEvents.deleteUserFailure, (event, state) => ({
+      ...state,
+      deleteLoading: false,
+      error: event.payload,
+    })),
   ),
   withEventHandlers(
     (
@@ -66,6 +87,7 @@ export const UserDetailsStore = signalStore(
       userDetailsService = inject(UsersService),
       snackBar = inject(MatSnackBar),
     ) => ({
+      // Load user details
       loadUserDetails$: events.on(UserDetailsEvents.loadUserDetails).pipe(
         exhaustMap(({ payload }) => from(userDetailsService.getUserById(payload.id))
         .pipe(
@@ -81,6 +103,7 @@ export const UserDetailsStore = signalStore(
         })
       ),
       
+      // Update user details
       updateUserDetails$: events.on(UserDetailsEvents.updateUserDetails).pipe(
         exhaustMap(({ payload }) => from(userDetailsService.updateUser(store.user()?.id ?? '', payload.payload)).pipe(
           mapResponse({
@@ -95,6 +118,26 @@ export const UserDetailsStore = signalStore(
         })
       ),
       updateUserDetailsFailure$: events.on(UserDetailsEvents.updateUserDetailsFailure).pipe(
+        map(({ payload }) => {
+          snackBar.open(payload, "Close", { duration: 6000 });
+        })
+      ),
+
+      // Delete user
+      deleteUser$: events.on(UserDetailsEvents.deleteUser).pipe(
+        exhaustMap(({ payload }) => from(userDetailsService.deleteUser(payload.user.id)).pipe(
+          mapResponse({
+            next: () => UserDetailsEvents.deleteUserSuccess(true),
+            error: (error: unknown) => UserDetailsEvents.deleteUserFailure(error instanceof Error ? error.message : "Failed to delete user"),
+          })
+        ))
+      ),
+      deleteUserSuccess$: events.on(UserDetailsEvents.deleteUserSuccess).pipe(
+        tap(() => {
+          snackBar.open(`User deleted successfully`, "Close", { duration: 6000 });
+        })
+      ),
+      deleteUserFailure$: events.on(UserDetailsEvents.deleteUserFailure).pipe(
         map(({ payload }) => {
           snackBar.open(payload, "Close", { duration: 6000 });
         })

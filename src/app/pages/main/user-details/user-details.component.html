@@ -13,7 +13,13 @@
   }
   @else {
     <div class="user-details-sections">
-      <div class="title">User Details</div>
+      <div class="user-details-sections-header">
+        <div class="title">User Details</div>
+        <button matButton="outlined" type="button" (click)="openDeleteUserDialog()">
+          <mat-icon>delete</mat-icon>
+          Delete user
+        </button>
+      </div>
       <div class="user-details-section">
         <mat-list>
           <mat-list-item>

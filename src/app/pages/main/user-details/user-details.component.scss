@@ -20,11 +20,18 @@
   flex-direction: column;
   gap: 1rem;
 
-  .title {
-    font: var(--mat-sys-title-large);
-    font-weight: 700;
-    font-size: 2rem;
+  .user-details-sections-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    .title {
+      font: var(--mat-sys-title-large);
+      font-weight: 700;
+      font-size: 2rem;
+    }
   }
+
 }
 
 .user-details-section {
