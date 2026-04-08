@@ -72,6 +72,18 @@ npm start
 
 Open [http://localhost:4200/](http://localhost:4200/). The app reloads when source files change.
 
+### Environment setup
+
+Angular environment files are configured at:
+
+- `src/environments/environment.ts` (development/default)
+- `src/environments/environment.production.ts` (production build)
+
+Update `apiBaseUrl` in those files to match your backend endpoints.
+
+- Development (`npm start`) uses `environment.ts`
+- Production (`npm run build`) swaps to `environment.production.ts`
+
 ### Production build
 
 ```bash

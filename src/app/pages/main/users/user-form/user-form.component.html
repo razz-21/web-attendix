@@ -55,6 +55,26 @@
     </div>
 
     <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email</mat-label>
+      <input matInput [formField]="userForm.email" autocomplete="email" />
+      @if (userForm.email().touched() && userForm.email().invalid()) {
+        <mat-error>
+          @switch (userForm.email().errors()[0]?.kind) {
+            @case ('required') {
+              Email is required
+            }
+            @case ('email') {
+              Invalid email address
+            }
+            @default {
+              {{ userForm.email().errors()[0]?.message ?? 'Invalid value' }}
+            }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
       <mat-label>Department</mat-label>
       <mat-select [formField]="userForm.department">
         @for (dept of departments; track dept.name) {
@@ -158,10 +178,37 @@
         </mat-error>
       }
     </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Role</mat-label>
+      <mat-select [formField]="userForm.role">
+        @for (role of roles; track role) {
+          <mat-option [value]="role">{{ role | textTransformToReadable }}</mat-option>
+        }
+      </mat-select>
+      @if (userForm.role().touched() && userForm.role().invalid()) {
+        <mat-error>
+          @switch (userForm.role().errors()[0]?.kind) {
+            @case ('required') {
+              Department is required
+            }
+            @default {
+              {{ userForm.department().errors()[0]?.message ?? 'Invalid value' }}
+            }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
   </div>
 
   <div class="user-form__actions">
     <button type="button" matButton="tonal" color="primary" class="full-width" (click)="cancel()">Cancel</button>
-    <button type="submit" matButton="filled" color="primary" class="full-width">Create user</button>
+    <button type="submit" matButton="filled" color="primary" class="full-width" [disabled]="loadingForm()">
+      @if (loadingForm()) {
+        <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+        <span>Create user</span>
+      }
+    </button>
   </div>
 </form>

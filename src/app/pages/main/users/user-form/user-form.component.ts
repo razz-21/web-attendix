@@ -1,20 +1,27 @@
-import { ChangeDetectionStrategy, Component, output, signal } from '@angular/core';
-import { FormField, FormRoot, form, required, validate } from '@angular/forms/signals';
+import { ChangeDetectionStrategy, Component, computed, inject, output, signal } from '@angular/core';
+import { FormField, FormRoot, form, required, email, validate } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { DEPARTMENTS } from '@/app/constants/departments.constant';
-import { PostUserSchema } from '@/app/types/users/users.schema';
-import type { PostUser } from '@/app/types/users/users.type';
+import { PostUserSchema, UserRoleSchema } from '@/app/types/users/users.schema';
+import type { PostUser, UserRole } from '@/app/types/users/users.type';
+import { TextTransformToReadablePipe } from '@/app/pipes/text-transform-to-readable.pipe';
+import { Dispatcher } from '@ngrx/signals/events';
+import { UsersEvents } from '@/app/store/users/users.events';
+import { UsersStore } from '@/app/store/users/users.store';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 export interface UserFormModel {
   rfid: string;
   firstname: string;
   lastname: string;
+  email: string;
   department: string;
   username: string;
+  role: UserRole;
   password: string;
   confirmPassword: string;
 }
@@ -23,33 +30,54 @@ const emptyModel = (): UserFormModel => ({
   rfid: '',
   firstname: '',
   lastname: '',
+  email: '',
   department: '',
   username: '',
+  role: 'user',
   password: '',
   confirmPassword: '',
 });
 
 @Component({
   selector: 'app-user-form',
-  imports: [FormRoot, FormField, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule],
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    FormRoot,
+    FormField,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatIconModule,
+    TextTransformToReadablePipe,
+    MatProgressSpinnerModule
+  ],
 })
 export class UserFormComponent {
-  public readonly departments = DEPARTMENTS;
+  private readonly dispatcher = inject(Dispatcher);
+  private readonly usersStore = inject(UsersStore);
+
   public readonly model = signal<UserFormModel>(emptyModel());
   public readonly passwordHidden = signal(true);
   public readonly confirmPasswordHidden = signal(true);
 
-  public readonly userCreated = output<PostUser>();
   public readonly userCancelled = output<void>();
+
+  public readonly departments = DEPARTMENTS;
+  public readonly roles = UserRoleSchema.options;
+
+  public readonly loadingForm = computed(() => this.usersStore.loadingForm());
 
   public readonly userForm = form(this.model, (root) => {
     required(root.rfid);
     required(root.firstname);
     required(root.lastname);
+    required(root.email);
+    email(root.email);
     required(root.department);
+    required(root.role);
     required(root.username);
     required(root.password);
     required(root.confirmPassword);
@@ -69,19 +97,21 @@ export class UserFormComponent {
         const m = this.model();
         const now = new Date().toISOString();
         const payload: PostUser = {
+          id: crypto.randomUUID(),
           rfid: m.rfid.trim(),
           firstname: m.firstname.trim(),
           lastname: m.lastname.trim(),
+          email: m.email.trim(),
           department: m.department.trim(),
-          role: 'user',
+          role: m.role,
           username: m.username.trim(),
           password: m.password,
           status: 'needs_verification',
-          createdAt: now,
-          updatedAt: now,
+          created_at: now,
+          updated_at: now,
         };
         PostUserSchema.parse(payload);
-        this.userCreated.emit(payload);
+        this.dispatcher.dispatch(UsersEvents.createUser({ user: payload }));
         return undefined;
       },
     },

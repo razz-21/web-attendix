@@ -21,6 +21,34 @@
   width: 100%;
 }
 
+.user-table-loading {
+  min-height: 72px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.user-table-loading-cell {
+  text-align: center;
+}
+
+.user-table-empty-row {
+  .user-table-empty-cell {
+    text-align: center;
+  }
+}
+
+.user-table-empty-state {
+  min-height: 72px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
 .user-table__action-btn {
   --mat-icon-button-state-layer-size: 30px;
   --mat-icon-button-icon-size: 18px;

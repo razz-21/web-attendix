@@ -27,7 +27,7 @@
 </div>
 
 <div class="user-table-wrap">
-  <table mat-table [dataSource]="dataSource" class="user-table">
+  <table mat-table [dataSource]="loading() ? [null] : data()" class="user-table">
     <ng-container matColumnDef="rfid">
       <th mat-header-cell *matHeaderCellDef scope="col">ID</th>
       <td mat-cell *matCellDef="let row">{{ row.rfid }}</td>
@@ -58,7 +58,7 @@
     <ng-container matColumnDef="status">
       <th mat-header-cell *matHeaderCellDef scope="col">Status</th>
       <td mat-cell *matCellDef="let row">
-        <span class="app-table-status-pill">{{ formatStatus(row.status) }}</span>
+        <span class="app-table-status-pill">{{ row.status | textTransformToReadable }}</span>
       </td>
     </ng-container>
 
@@ -91,7 +91,29 @@
       </td>
     </ng-container>
 
+    <ng-container matColumnDef="loading">
+      <td mat-cell *matCellDef="let _" [attr.colspan]="displayedColumns.length" class="user-table-loading-cell">
+        <div class="user-table-loading" role="status" aria-live="polite" aria-busy="true">
+          <mat-spinner [diameter]="22" [strokeWidth]="3"></mat-spinner>
+          <span>Loading users...</span>
+        </div>
+      </td>
+    </ng-container>
+
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    @if (loading()) {
+      <tr mat-row *matRowDef="let row; columns: loadingRowColumns"></tr>
+    } @else {
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    }
+
+    <tr class="mat-mdc-row user-table-empty-row" *matNoDataRow>
+      <td class="mat-mdc-cell user-table-empty-cell" [attr.colspan]="displayedColumns.length">
+        <div class="user-table-empty-state">
+          <mat-icon aria-hidden="true">group_off</mat-icon>
+          <span>No users found</span>
+        </div>
+      </td>
+    </tr>
   </table>
 </div>
