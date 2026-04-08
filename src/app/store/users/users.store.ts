@@ -5,7 +5,7 @@ import { Events, on, withEventHandlers, withReducer } from "@ngrx/signals/events
 import { UsersEvents } from "./users.events";
 import { inject } from "@angular/core";
 import { UsersService } from "@/app/services/users.service";
-import { exhaustMap, from, map, tap } from "rxjs";
+import { debounceTime, distinctUntilChanged, exhaustMap, from, map, tap } from "rxjs";
 import { mapResponse } from "@ngrx/operators";
 import { MatSnackBar } from "@angular/material/snack-bar";
 
@@ -20,6 +20,7 @@ type UsersState = {
   filters: {
     q?: string;
     status?: string;
+    role?: string;
   }
   loading: boolean;
   loadingForm: boolean;
@@ -30,16 +31,21 @@ type UsersState = {
 
 const selectId: SelectEntityId<UserEntity> = (user) => user.id;
 
+const initialFilters: UsersState['filters'] = {
+  q: undefined,
+  status: undefined,
+  role: undefined,
+};
+const initialPagination: UsersState['pagination'] = {
+  page: 1,
+  limit: 10,
+  total: 0,
+};
 const initialState: UsersState = {
   pagination: {
-    page: 1,
-    limit: 10,
-    total: 0,
+    ...initialPagination,
   },
-  filters: {
-    q: undefined,
-    status: undefined,
-  },
+  filters: initialFilters,
   loading: false,
   loadingForm: false,
   deleteLoading: false,
@@ -71,6 +77,69 @@ export const UsersStore = signalStore(
       },
     ]),
     on(UsersEvents.loadUsersFailure, (event, state) => ({
+      ...state,
+      loading: false,
+      error: event.payload,
+    })),
+
+    // Search Users
+    on(UsersEvents.searchUsers, ({payload}, state) => ({
+      ...state,
+      filters: { ...state.filters, q: payload.q },
+      loading: true,
+      error: null,
+    })),
+    on(UsersEvents.searchUsersSuccess, ({ payload }) => [
+      setAllEntities(payload?.data ?? [], { selectId }),
+      {
+        pagination: { page: payload?.page ?? 1, limit: payload?.limit ?? 10, total: payload?.total ?? 0 },
+        loading: false,
+        error: null,
+      },
+    ]),
+    on(UsersEvents.searchUsersFailure, (event, state) => ({
+      ...state,
+      loading: false,
+      error: event.payload,
+    })),
+
+    // Filter Users
+    on(UsersEvents.filterUsers, ({payload}, state) => ({
+      ...state,
+      filters: { ...state.filters, ...payload },
+      loading: true,
+      error: null,
+    })),
+    on(UsersEvents.filterUsersSuccess, ({ payload }) => [
+      setAllEntities(payload?.data ?? [], { selectId }),
+      {
+        pagination: { page: payload?.page ?? 1, limit: payload?.limit ?? 10, total: payload?.total ?? 0 },
+        loading: false,
+        error: null,
+      },
+    ]),
+    on(UsersEvents.filterUsersFailure, (event, state) => ({
+      ...state,
+      loading: false,
+      error: event.payload,
+    })),
+
+    // Paginate Users
+    on(UsersEvents.paginateUsers, ({ payload }, state) => ({
+      ...state,
+      pagination: { ...state.pagination, page: payload.page, limit: payload.limit },
+      loading: true,
+      error: null,
+    })),
+    on(UsersEvents.paginateUsersSuccess, ({ payload }) => [
+      setAllEntities(payload?.data ?? [], { selectId }),
+      {
+        pagination: { page: payload?.page ?? 1, limit: payload?.limit ?? 10, total: payload?.total ?? 0 },
+        loading: false,
+        error: null,
+      },
+    ]),
+    on(UsersEvents.paginateUsersFailure, (event, state) => ({
       ...state,
       loading: false,
       error: event.payload,
@@ -145,11 +214,76 @@ export const UsersStore = signalStore(
       loadUsersFailure$: events.on(UsersEvents.loadUsersFailure).pipe(
         map(({ payload }) => {
           snackBar.open(payload, "Close", { duration: 6000 });
-          return {
-            ...store,
-            loading: false,
-            error: payload,
-          }
+        })
+      ),
+
+      // Search users
+      searchUsers$: events.on(UsersEvents.searchUsers).pipe(
+        distinctUntilChanged((prev, curr) => prev.payload.q === curr.payload.q),
+        debounceTime(500),
+        exhaustMap(() =>
+          from(usersService.getPaginatedUsers(
+            store.pagination().page,
+            store.pagination().limit,
+            store.filters().q,
+          )).pipe(
+            mapResponse({
+              next: (response) => UsersEvents.searchUsersSuccess(response),
+              error: (error: unknown) => UsersEvents.searchUsersFailure(error instanceof Error ? error.message : "Failed to search users"),
+            })
+          )
+        )
+      ),
+      searchUsersFailure$: events.on(UsersEvents.searchUsersFailure).pipe(
+        map(({ payload }) => {
+          snackBar.open(payload, "Close", { duration: 6000 });
+        })
+      ),
+
+      // Filter users
+      filterUsers$: events.on(UsersEvents.filterUsers).pipe(
+        distinctUntilChanged((prev, curr) => prev.payload.status === curr.payload.status && prev.payload.role === curr.payload.role),
+        exhaustMap(() =>
+          from(usersService.getPaginatedUsers(
+            store.pagination().page,
+            store.pagination().limit,
+            store.filters().q,
+            store.filters().status,
+            store.filters().role
+          )).pipe(
+            mapResponse({
+              next: (response) => UsersEvents.filterUsersSuccess(response),
+              error: (error: unknown) => UsersEvents.filterUsersFailure(error instanceof Error ? error.message : "Failed to filter users"),
+            })
+          )
+        )
+      ),
+      filterUsersFailure$: events.on(UsersEvents.filterUsersFailure).pipe(
+        map(({ payload }) => {
+          snackBar.open(payload, "Close", { duration: 6000 });
+        })
+      ),
+
+      // Paginate users
+      paginateUsers$: events.on(UsersEvents.paginateUsers).pipe(
+        exhaustMap(() =>
+          from(usersService.getPaginatedUsers(
+            store.pagination().page,
+            store.pagination().limit,
+            store.filters().q,
+            store.filters().status,
+            store.filters().role
+          )).pipe(
+            mapResponse({
+              next: (response) => UsersEvents.paginateUsersSuccess(response),
+              error: (error: unknown) => UsersEvents.paginateUsersFailure(error instanceof Error ? error.message : "Failed to paginate users"),
+            })
+          )
+        )
+      ),
+      paginateUsersFailure$: events.on(UsersEvents.paginateUsersFailure).pipe(
+        map(({ payload }) => {
+          snackBar.open(payload, "Close", { duration: 6000 });
         })
       ),
 
@@ -173,11 +307,6 @@ export const UsersStore = signalStore(
       createUserFailure$: events.on(UsersEvents.createUserFailure).pipe(
         map(({ payload }) => {
           snackBar.open(payload, "Close", { duration: 6000 });
-          return {
-            ...store,
-            loading: false,
-            error: payload,
-          }
         })
       ),
 
@@ -200,12 +329,6 @@ export const UsersStore = signalStore(
       deleteUserFailure$: events.on(UsersEvents.deleteUserFailure).pipe(
         map(({ payload }) => {
           snackBar.open(payload.error, "Close", { duration: 6000 });
-          return {
-            ...store,
-            deleteLoading: false,
-            error: payload.error,
-            currentDeleteUser: null,
-          }
         })
       ),
     })

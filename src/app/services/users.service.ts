@@ -11,9 +11,9 @@ export class UsersService {
   private readonly http = inject(HttpClient);
   private readonly usersApi = `${environment.apiBaseUrl}/api/v1/users`;
 
-  public async getPaginatedUsers(page: number, limit: number): Promise<GetPaginatedUsers> {
+  public async getPaginatedUsers(page: number, limit: number, q?: string, status?: string, role?: string): Promise<GetPaginatedUsers> {
     return lastValueFrom(
-      this.http.get<GetPaginatedUsers>(`${this.usersApi}?page=${page}&limit=${limit}`)
+      this.http.get<GetPaginatedUsers>(`${this.usersApi}?page=${page}&limit=${limit}${q ? `&q=${q}` : ''}${status ? `&status=${status}` : ''}${role ? `&role=${role}` : ''}`)
     )
   }
 

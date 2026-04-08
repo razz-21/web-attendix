@@ -9,6 +9,18 @@ export const UsersEvents = eventGroup({
     loadUsersSuccess: type<GetPaginatedUsers>(),
     loadUsersFailure: type<string>(),
 
+    searchUsers: type<{ q: string }>(),
+    searchUsersSuccess: type<GetPaginatedUsers>(),
+    searchUsersFailure: type<string>(),
+
+    filterUsers: type<{ status?: string, role?: string }>(),
+    filterUsersSuccess: type<GetPaginatedUsers>(),
+    filterUsersFailure: type<string>(),
+    
+    paginateUsers: type<{ page: number, limit: number }>(),
+    paginateUsersSuccess: type<GetPaginatedUsers>(),
+    paginateUsersFailure: type<string>(),
+
     createUser: type<{ user: PostUser }>(),
     createUserSuccess: type<GetUser>(),
     createUserFailure: type<string>(),

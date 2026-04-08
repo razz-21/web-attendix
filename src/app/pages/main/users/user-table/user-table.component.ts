@@ -1,6 +1,6 @@
 import { TextTransformToReadablePipe } from '@pipes/text-transform-to-readable.pipe';
-import { UserStatusSchema } from '@/app/types/users/users.schema';
-import { Component, computed, effect, inject } from '@angular/core';
+import { UserRoleSchema, UserStatusSchema } from '@/app/types/users/users.schema';
+import { Component, computed, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,11 +9,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { ConfirmationDialogService } from '@/app/services/confirmation-dialog.service';
 import { UsersStore } from '@/app/store/users/users.store';
 import { Dispatcher } from '@ngrx/signals/events';
 import { UsersEvents } from '@/app/store/users/users.events';
-import { GetUser, UserStatus } from '@/app/types/users/users.type';
+import { GetUser } from '@/app/types/users/users.type';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-user-table',
@@ -28,7 +30,10 @@ import { GetUser, UserStatus } from '@/app/types/users/users.type';
     MatInputModule,
     MatProgressSpinnerModule,
     MatSelectModule,
+    MatPaginatorModule,
     TextTransformToReadablePipe,
+    FormsModule,
+    ReactiveFormsModule
   ],
 })
 export class UserTableComponent {
@@ -49,10 +54,13 @@ export class UserTableComponent {
 
   public readonly loading = computed(() => this.usersStore.loading());
   public readonly pagination = computed(() => this.usersStore.pagination());
+  public readonly filters = computed(() => this.usersStore.filters());
   public readonly users = computed(() => this.usersStore.users());
   public readonly data = computed(() => [...this.users()]);
 
   public readonly userStatuses = UserStatusSchema.options;
+  public readonly userRoles = UserRoleSchema.options;
+  public readonly pageSizeOptions = [10, 25, 50];
 
   public fullName(row: GetUser): string {
     return `${row.firstname} ${row.lastname}`.trim();
@@ -73,5 +81,21 @@ export class UserTableComponent {
     if (result) {
       this.dispatcher.dispatch(UsersEvents.deleteUser({ user: row }));
     }
+  }
+
+  public searchUsers(): void {
+    this.dispatcher.dispatch(UsersEvents.searchUsers({ q: this.filters().q ?? '' }));
+  }
+
+  public filterUsersByStatus(): void {
+    this.dispatcher.dispatch(UsersEvents.filterUsers({ status: this.filters().status ?? '' }));
+  }
+
+  public filterUsersByRole(): void {
+    this.dispatcher.dispatch(UsersEvents.filterUsers({ role: this.filters().role ?? '' }));
+  }
+
+  public paginateUsers(event: PageEvent): void {
+    this.dispatcher.dispatch(UsersEvents.paginateUsers({ page: event.pageIndex + 1, limit: event.pageSize }));
   }
 }

@@ -21,6 +21,16 @@
   width: 100%;
 }
 
+.user-table-paginator-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+
+  .mat-mdc-paginator {
+    background: transparent;
+  }
+}
+
 .user-table-loading {
   min-height: 72px;
   display: inline-flex;
