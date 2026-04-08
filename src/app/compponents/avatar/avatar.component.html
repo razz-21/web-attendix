@@ -1,0 +1,17 @@
+<div
+  class="avatar-wrapper"
+  [class.avatar-wrapper--xs]="size() === 'xs'"
+  [class.avatar-wrapper--sm]="size() === 'sm'"
+  [class.avatar-wrapper--md]="size() === 'md'"
+  [class.avatar-wrapper--lg]="size() === 'lg'"
+  [class.avatar-wrapper--xl]="size() === 'xl'"
+>
+  <img
+    class="avatar"
+    [src]="avatarUrl()"
+    [alt]="alt()"
+    loading="lazy"
+    decoding="async"
+    (error)="onImageError($event)"
+  />
+</div>

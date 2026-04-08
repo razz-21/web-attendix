@@ -1,7 +1,7 @@
 import { environment } from "@/environments/environment";
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { GetPaginatedUsers, GetUser, User } from "../types/users/users.type";
+import { GetPaginatedUsers, GetUser, PatchUser, User } from "../types/users/users.type";
 import { lastValueFrom } from "rxjs";
 
 @Injectable({
@@ -29,9 +29,9 @@ export class UsersService {
     )
   }
 
-  public async updateUser(id: string, user: User): Promise<GetUser> {
+  public async updateUser(id: string, payload: PatchUser): Promise<GetUser> {
     return lastValueFrom(
-      this.http.put<GetUser>(`${this.usersApi}/${id}`, user)
+      this.http.patch<GetUser>(`${this.usersApi}/${id}`, payload)
     )
   }
 

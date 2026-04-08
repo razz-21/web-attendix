@@ -12,3 +12,4 @@ export const MAIN_SETTINGS_PATH = `${MAIN_BASE_PATH}/settings`;
 export const MAIN_ATTENDANCES_PATH = `${MAIN_BASE_PATH}/attendances`;
 export const MAIN_GROUPS_PATH = `${MAIN_BASE_PATH}/groups`;
 export const MAIN_USERS_PATH = `${MAIN_BASE_PATH}/users`;
+export const MAIN_USER_DETAILS_PATH = `${MAIN_BASE_PATH}/users/:id`;

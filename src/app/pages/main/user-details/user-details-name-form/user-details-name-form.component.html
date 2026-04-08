@@ -1,0 +1,54 @@
+<div class="user-details-name-form-container">
+  <h1 class="mat-title-large">Update name</h1>
+  <p>Fill out the form below to update the user's name.</p>
+  <form class="user-details-name-form" [formRoot]="userDetailsNameForm">
+    <div class="user-details-name-form__fields">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>First name</mat-label>
+        <input matInput [formField]="userDetailsNameForm.firstname" autocomplete="given-name" />
+        @if (userDetailsNameForm.firstname().touched() && userDetailsNameForm.firstname().invalid()) {
+          <mat-error>
+            @switch (userDetailsNameForm.firstname().errors()[0]?.kind) {
+              @case ('required') {
+                First name is required
+              }
+              @default {
+                {{ userDetailsNameForm.firstname().errors()[0]?.message ?? 'Invalid value' }}
+              }
+            }
+          </mat-error>
+        }
+      </mat-form-field>
+  
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Last name</mat-label>
+        <input matInput [formField]="userDetailsNameForm.lastname" autocomplete="family-name" />
+        @if (userDetailsNameForm.lastname().touched() && userDetailsNameForm.lastname().invalid()) {
+          <mat-error>
+            @switch (userDetailsNameForm.lastname().errors()[0]?.kind) {
+              @case ('required') {
+                Last name is required
+              }
+              @default {
+                {{ userDetailsNameForm.lastname().errors()[0]?.message ?? 'Invalid value' }}
+              }
+            }
+          </mat-error>
+        }
+      </mat-form-field>
+    </div>
+  
+    <div class="user-details-name-form__actions">
+      <button type="button" matButton="tonal" color="primary" class="full-width" (click)="cancel()">
+        Cancel
+      </button>
+      <button type="submit" matButton="filled" color="primary" class="full-width" [disabled]="isValueIsTheSameWithCurrentValue() || updateLoading()">
+        @if (updateLoading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          Save changes
+        }
+      </button>
+    </div>
+  </form>
+</div>

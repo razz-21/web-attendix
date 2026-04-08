@@ -8,10 +8,10 @@
   --mat-sys-on-secondary: rgb(22 40 51);
   --mat-sys-secondary-container: rgb(129 147 161);
   --mat-sys-on-secondary-container: rgb(0 0 0);
-  --mat-sys-tertiary: rgb(227 214 255);
-  --mat-sys-on-tertiary: rgb(41 33 64);
-  --mat-sys-tertiary-container: rgb(150 139 177);
-  --mat-sys-on-tertiary-container: rgb(0 0 0);
+  --mat-sys-tertiary: rgb(152 212 164);
+  --mat-sys-on-tertiary: rgb(0 57 25);
+  --mat-sys-tertiary-container: rgb(22 81 44);
+  --mat-sys-on-tertiary-container: rgb(22 81 44);
   --mat-sys-error: rgb(255 210 204);
   --mat-sys-on-error: rgb(84 0 3);
   --mat-sys-error-container: rgb(255 84 73);

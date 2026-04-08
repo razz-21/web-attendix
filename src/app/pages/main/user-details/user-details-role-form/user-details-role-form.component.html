@@ -1,0 +1,44 @@
+<div class="user-details-role-form-container">
+  <h1 class="mat-title-large">Update role</h1>
+  <p>Select a role below to update the user's role.</p>
+  <form class="user-details-role-form" [formRoot]="userDetailsRoleForm">
+    <div class="user-details-role-form__fields">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Role</mat-label>
+        <mat-hint>
+          <span [innerHTML]="roleDescription()"></span>
+        </mat-hint>
+        <mat-select [formField]="userDetailsRoleForm.role">
+          @for (role of roles; track role) {
+            <mat-option [value]="role">{{ role | textTransformToReadable }}</mat-option>
+          }
+        </mat-select>
+        @if (userDetailsRoleForm.role().touched() && userDetailsRoleForm.role().invalid()) {
+          <mat-error>
+            @switch (userDetailsRoleForm.role().errors()[0]?.kind) {
+              @case ('required') {
+                Role is required
+              }
+              @default {
+                {{ userDetailsRoleForm.role().errors()[0]?.message ?? 'Invalid value' }}
+              }
+            }
+          </mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="user-details-role-form__actions">
+      <button type="button" matButton="tonal" color="primary" class="full-width" (click)="cancel()">
+        Cancel
+      </button>
+      <button type="submit" matButton="filled" color="primary" class="full-width" [disabled]="isValueIsTheSameWithCurrentValue() || updateLoading()">
+        @if (updateLoading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          Save changes
+        }
+      </button>
+    </div>
+  </form>
+</div>

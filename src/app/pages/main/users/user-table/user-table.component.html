@@ -79,7 +79,7 @@
           matIconButton
           type="button"
           class="user-table__action-btn"
-          (click)="viewUser(row)"
+          (click)="$event.stopPropagation(); viewUser(row)"
           aria-label="View user"
           matTooltip="View user"
           matTooltipPosition="above"
@@ -91,7 +91,7 @@
           matIconButton
           type="button"
           class="user-table__action-btn"
-          (click)="deleteUser(row)"
+          (click)="$event.stopPropagation(); deleteUser(row)"
           aria-label="Delete user"
           matTooltip="Delete user"
           matTooltipPosition="above"
@@ -114,7 +114,7 @@
     @if (loading()) {
       <tr mat-row *matRowDef="let row; columns: loadingRowColumns"></tr>
     } @else {
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="viewUser(row)">
     }
 
     <tr class="mat-mdc-row user-table-empty-row" *matNoDataRow>

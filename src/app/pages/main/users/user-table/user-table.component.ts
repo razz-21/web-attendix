@@ -16,6 +16,8 @@ import { Dispatcher } from '@ngrx/signals/events';
 import { UsersEvents } from '@/app/store/users/users.events';
 import { GetUser } from '@/app/types/users/users.type';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MAIN_USER_DETAILS_PATH } from '@/app/constants/route.constant';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-table',
@@ -40,6 +42,7 @@ export class UserTableComponent {
   private readonly confirmationDialogService = inject(ConfirmationDialogService);
   private readonly usersStore = inject(UsersStore);
   private readonly dispatcher = inject(Dispatcher);
+  private readonly router = inject(Router);
 
   protected readonly displayedColumns: string[] = [
     'rfid',
@@ -67,7 +70,8 @@ export class UserTableComponent {
   }
 
   public viewUser(row: GetUser): void {
-    console.log(row);
+    const path = MAIN_USER_DETAILS_PATH.replace(':id', row.id);
+    this.router.navigate([path]);
   }
 
   public async deleteUser(row: GetUser): Promise<void> {

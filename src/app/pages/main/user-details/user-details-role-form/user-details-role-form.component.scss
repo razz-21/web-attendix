@@ -1,0 +1,26 @@
+.user-details-role-form-container {
+  padding: 1rem 2rem;
+}
+
+.user-details-role-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.user-details-role-form__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.user-details-role-form__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 1.5rem;
+}
+
+.full-width {
+  width: 100%;
+}

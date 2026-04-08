@@ -1,0 +1,25 @@
+.user-details-department-form-container {
+  padding: 1rem 2rem;
+}
+
+.user-details-department-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.user-details-department-form__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.user-details-department-form__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.full-width {
+  width: 100%;
+}

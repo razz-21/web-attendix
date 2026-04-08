@@ -1,0 +1,135 @@
+<div class="user-details-page">
+  <div class="user-details-page-back-button">
+    <button matButton="text" color="primary" type="button" (click)="navigateBack()">
+      <mat-icon>arrow_back</mat-icon>
+      Back
+    </button>
+  </div>
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
+      <span>Loading user details...</span>
+    </div>
+  }
+  @else {
+    <div class="user-details-sections">
+      <div class="title">User Details</div>
+      <div class="user-details-section">
+        <mat-list>
+          <mat-list-item>
+            <div class="user-avatar-content">
+              <div class="user-left-content">
+                <mat-icon>photo_camera</mat-icon>
+                <span>Profile Picture</span>
+              </div>
+              <div class="user-right-content">
+                <app-avatar size="lg" />
+              </div>
+            </div>
+          </mat-list-item>
+        </mat-list>
+      </div>
+  
+      <div class="user-details-section">
+        <div class="title">Personal Information</div>
+        <mat-list>
+          <mat-list-item matRipple (click)="openNameForm()">
+            <div class="user-info-content">
+              <div class="user-info-left-content">
+                <mat-icon>person</mat-icon>
+                <span>Fullname</span>
+              </div>
+              <div class="user-info-right-content">
+                <span>{{ user()?.firstname }} {{ user()?.lastname }}</span>
+              </div>
+            </div>
+          </mat-list-item>
+  
+          <mat-list-item>
+            <div class="user-info-content">
+              <div class="user-info-left-content">
+                <mat-icon>email</mat-icon>
+                <span>Email</span>
+              </div>
+              <div class="user-info-right-content">
+                <mat-icon [style.color]="'var(--mat-sys-tertiary)'">check_circle</mat-icon>
+                <span>{{ user()?.email ?? '-' }}</span>
+              </div>
+            </div>
+          </mat-list-item>
+  
+          <mat-list-item matRipple (click)="openDepartmentForm()">
+            <div class="user-info-content">
+              <div class="user-info-left-content">
+                <mat-icon>apartment</mat-icon>
+                <span>Department</span>
+              </div>
+              <div class="user-info-right-content">
+                <span>{{ user()?.department ?? '-' }}</span>
+              </div>
+            </div>
+          </mat-list-item>
+        </mat-list>
+      </div>
+  
+      <div class="user-details-section">
+        <div class="title">Account Information</div>
+        <mat-list>
+          <mat-list-item>
+            <div class="user-info-content">
+              <div class="user-info-left-content">
+                <mat-icon>person_shield</mat-icon>
+                <span>Username</span>
+              </div>
+              <div class="user-info-right-content">
+                <mat-icon [style.color]="'var(--mat-sys-tertiary)'">check_circle</mat-icon>
+                <span>@{{ user()?.username ?? '-' }}</span>
+              </div>
+            </div>
+          </mat-list-item>
+  
+          <mat-list-item matRipple (click)="openPasswordForm()">
+            <div class="user-info-content">
+              <div class="user-info-left-content">
+                <mat-icon>password_2</mat-icon>
+                <span>Password</span>
+              </div>
+              <div class="user-info-right-content">
+                <span>********</span>
+              </div>
+            </div>
+          </mat-list-item>
+  
+          <mat-list-item matRipple (click)="openStatusForm()">
+            <div class="user-info-content">
+              <div class="user-info-left-content">
+                <mat-icon>person_check</mat-icon>
+                <span>Status</span>
+              </div>
+              <div class="user-info-right-content">
+                <span>{{ user()?.status ?? '-' | textTransformToReadable }}</span>
+              </div>
+            </div>
+          </mat-list-item>
+        </mat-list>
+  
+        <div class="user-details-section">
+          <div class="title">Role & Permissions</div>
+          <mat-list>
+            <mat-list-item matRipple (click)="openRoleForm()">
+              <div class="user-info-content">
+                <div class="user-info-left-content">
+                  <mat-icon>contacts_product</mat-icon>
+                  <span>Role</span>
+                </div>
+                <div class="user-info-right-content">
+                  <span>{{ user()?.role ?? '-' | textTransformToReadable }}</span>
+                </div>
+              </div>
+            </mat-list-item>
+          </mat-list>
+        </div>
+      </div>
+    </div>
+  }
+</div>

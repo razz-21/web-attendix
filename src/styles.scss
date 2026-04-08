@@ -91,6 +91,14 @@ tbody .mat-mdc-row {
   background-color: var(--mat-sys-surface);
 }
 
+.mat-mdc-table .mat-mdc-row {
+  transition: background-color 150ms ease-in-out;
+
+  &:hover {
+    background-color: var(--mat-sys-surface-container-low);
+  }
+}
+
 .mat-mdc-table .mat-mdc-header-cell {
   font-weight: 700;
   color: var(--mat-sys-on-surface);

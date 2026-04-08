@@ -1,0 +1,42 @@
+<div class="user-details-status-form-container">
+  <h1 class="mat-title-large">Update status</h1>
+  <p>Select the account status for this user.</p>
+  <form class="user-details-status-form" [formRoot]="userDetailsStatusForm">
+    <div class="user-details-status-form__fields">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Status</mat-label>
+        <mat-select [formField]="userDetailsStatusForm.status">
+          @for (status of statuses; track status) {
+            <mat-option [value]="status">{{ status | textTransformToReadable }}</mat-option>
+          }
+        </mat-select>
+        <mat-hint>{{ selectedStatusHint() }}</mat-hint>
+        @if (userDetailsStatusForm.status().touched() && userDetailsStatusForm.status().invalid()) {
+          <mat-error>
+            @switch (userDetailsStatusForm.status().errors()[0]?.kind) {
+              @case ('required') {
+                Status is required
+              }
+              @default {
+                {{ userDetailsStatusForm.status().errors()[0]?.message ?? 'Invalid value' }}
+              }
+            }
+          </mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="user-details-status-form__actions">
+      <button type="button" matButton="tonal" color="primary" class="full-width" (click)="cancel()">
+        Cancel
+      </button>
+      <button type="submit" matButton="filled" color="primary" class="full-width" [disabled]="isValueIsTheSameWithCurrentValue() || updateLoading()">
+        @if (updateLoading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          Save changes
+        }
+      </button>
+    </div>
+  </form>
+</div>

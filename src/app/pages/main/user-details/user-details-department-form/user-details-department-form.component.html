@@ -1,0 +1,41 @@
+<div class="user-details-department-form-container">
+  <h1 class="mat-title-large">Update department</h1>
+  <p>Select a department below to update the user's department.</p>
+  <form class="user-details-department-form" [formRoot]="userDetailsDepartmentForm">
+    <div class="user-details-department-form__fields">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Department</mat-label>
+        <mat-select [formField]="userDetailsDepartmentForm.department">
+          @for (dept of departments; track dept.name) {
+            <mat-option [value]="dept.name">{{ dept.name }}</mat-option>
+          }
+        </mat-select>
+        @if (userDetailsDepartmentForm.department().touched() && userDetailsDepartmentForm.department().invalid()) {
+          <mat-error>
+            @switch (userDetailsDepartmentForm.department().errors()[0]?.kind) {
+              @case ('required') {
+                Department is required
+              }
+              @default {
+                {{ userDetailsDepartmentForm.department().errors()[0]?.message ?? 'Invalid value' }}
+              }
+            }
+          </mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="user-details-department-form__actions">
+      <button type="button" matButton="tonal" color="primary" class="full-width" (click)="cancel()">
+        Cancel
+      </button>
+      <button type="submit" matButton="filled" color="primary" class="full-width" [disabled]="isValueIsTheSameWithCurrentValue() || updateLoading()">
+        @if (updateLoading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          Save changes
+        }
+      </button>
+    </div>
+  </form>
+</div>
