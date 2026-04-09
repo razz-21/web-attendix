@@ -40,4 +40,10 @@ export class UsersService {
       this.http.delete<void>(`${this.usersApi}/${id}`)
     )
   }
+
+  public async existUsername(username: string): Promise<boolean> {
+    return lastValueFrom(
+      this.http.post<boolean>(`${this.usersApi}/exist-username`, { username })
+    )
+  }
 }

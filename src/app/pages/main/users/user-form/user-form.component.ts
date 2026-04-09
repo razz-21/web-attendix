@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, output, signal } from '@angular/core';
-import { FormField, FormRoot, form, required, email, validate } from '@angular/forms/signals';
+import { FormField, FormRoot, form, required, email, validate, validateHttp, debounce } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,6 +13,10 @@ import { Dispatcher } from '@ngrx/signals/events';
 import { UsersEvents } from '@/app/store/users/users.events';
 import { UsersStore } from '@/app/store/users/users.store';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { from, map } from 'rxjs';
+import { UsersService } from '@/app/services/users.service';
+import { mapResponse } from '@ngrx/operators';
+import { environment } from '@/environments/environment';
 
 export interface UserFormModel {
   rfid: string;
@@ -58,6 +62,7 @@ const emptyModel = (): UserFormModel => ({
 export class UserFormComponent {
   private readonly dispatcher = inject(Dispatcher);
   private readonly usersStore = inject(UsersStore);
+  private readonly usersService = inject(UsersService);
 
   public readonly model = signal<UserFormModel>(emptyModel());
   public readonly passwordHidden = signal(true);
@@ -79,6 +84,7 @@ export class UserFormComponent {
     required(root.department);
     required(root.role);
     required(root.username);
+    debounce(root.username, 500);
     required(root.password);
     required(root.confirmPassword);
     validate(root.confirmPassword, (ctx) => {
@@ -90,6 +96,21 @@ export class UserFormComponent {
       return confirm === pwd
         ? undefined
         : { kind: 'passwordMismatch', message: 'Passwords must match' };
+    });
+    validateHttp(root.username, {
+      request: (ctx) => {
+        return {
+          method: 'POST',
+          url: `${environment.apiBaseUrl}/api/v1/users/exist-username`,
+          body: { username: ctx.valueOf(root.username) },
+        };
+      },
+      onSuccess: (response) => {
+        return response ? { kind: 'usernameExists', message: 'Username already exists' } : undefined;
+      },
+      onError: (error) => {
+        return { kind: 'httpError', message: error instanceof Error ? error.message : 'Failed to check username exists' };
+      }
     });
   }, {
     submission: {

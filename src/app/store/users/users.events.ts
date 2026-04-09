@@ -29,6 +29,10 @@ export const UsersEvents = eventGroup({
     deleteUserSuccess: type<{ user: GetUser }>(),
     deleteUserFailure: type<{ error: string, user: GetUser }>(),
 
+    checkUsernameExists: type<{ username: string }>(),
+    checkUsernameExistsSuccess: type<boolean>(),
+    checkUsernameExistsFailure: type<string>(),
+
     resetStore: type<void>(),
   },
 });

@@ -173,7 +173,7 @@ export const UsersStore = signalStore(
       removeEntity(payload.user.id),
       { deleteLoading: false, error: null, currentDeleteUser: null },
     ]),
-    on(UsersEvents.deleteUserFailure, (event, state) => (
+    on(UsersEvents.deleteUserFailure, (event) => (
       [
         addEntity(event.payload.user, { selectId }),
         { deleteLoading: false, error: event.payload.error, currentDeleteUser: null },
