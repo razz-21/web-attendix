@@ -1,0 +1,23 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: 100%;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.roles-and-permission-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.roles-and-permission-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}

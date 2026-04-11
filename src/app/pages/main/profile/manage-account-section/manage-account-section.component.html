@@ -1,0 +1,132 @@
+<div class="title">
+  Account Status
+</div>
+<form class="status-form" [formRoot]="statusForm">
+  <mat-form-field class="full-width">
+    <mat-label>Status</mat-label>
+    <mat-select [formField]="statusForm.status">
+      @for (status of statuses; track status) {
+        <mat-option [value]="status">{{ status | textTransformToReadable}}</mat-option>
+      }
+    </mat-select>
+    <mat-hint>Account status cannot be updated.</mat-hint>
+    @if (statusForm.status().touched() && statusForm.status().invalid()) {
+      <mat-error>
+        @switch (statusForm.status().errors()[0]?.kind) {
+          @case ('required') {
+            Status is required
+          }
+        }
+      </mat-error>
+    }
+  </mat-form-field>
+</form>
+
+<div class="title">
+  Password
+</div>
+<form class="password-form" [formRoot]="passwordForm">
+  <mat-form-field class="full-width">
+    <mat-label>Current password</mat-label>
+    <input
+      matInput
+      [type]="currentPasswordHidden() ? 'password' : 'text'"
+      [formField]="passwordForm.currentPassword"
+      autocomplete="current-password"
+    />
+    <button
+      matIconButton
+      matSuffix
+      type="button"
+      (click)="currentPasswordHidden.update((h) => !h)"
+      [attr.aria-label]="currentPasswordHidden() ? 'Show password' : 'Hide password'"
+      [attr.aria-pressed]="!currentPasswordHidden()"
+    >
+      <mat-icon>{{ currentPasswordHidden() ? 'visibility' : 'visibility_off' }}</mat-icon>
+    </button>
+    <mat-hint>Enter your current password to update your account.</mat-hint>
+    @if (passwordForm.currentPassword().touched() && passwordForm.currentPassword().invalid()) {
+      <mat-error>
+        @switch (passwordForm.currentPassword().errors()[0]?.kind) {
+          @case ('required') {
+            Current password is required
+          }
+        }
+      </mat-error>
+    }
+  </mat-form-field>
+  <mat-form-field class="full-width">
+    <mat-label>New password</mat-label>
+    <input
+      matInput
+      [type]="newPasswordHidden() ? 'password' : 'text'"
+      [formField]="passwordForm.newPassword"
+      autocomplete="new-password"
+    />
+    <button
+      matIconButton
+      matSuffix
+      type="button"
+      (click)="newPasswordHidden.update((h) => !h)"
+      [attr.aria-label]="newPasswordHidden() ? 'Show password' : 'Hide password'"
+      [attr.aria-pressed]="!newPasswordHidden()"
+    >
+      <mat-icon>{{ newPasswordHidden() ? 'visibility' : 'visibility_off' }}</mat-icon>
+    </button>
+    <mat-hint>Enter your new password to update your account.</mat-hint>
+    @if (passwordForm.newPassword().touched() && passwordForm.newPassword().invalid()) {
+      <mat-error>
+        @switch (passwordForm.newPassword().errors()[0]?.kind) {
+          @case ('required') {
+            New password is required
+          }
+        }
+      </mat-error>
+    }
+  </mat-form-field>
+  <mat-form-field class="full-width">
+    <mat-label>Confirm new password</mat-label>
+    <input
+      matInput
+      [type]="confirmNewPasswordHidden() ? 'password' : 'text'"
+      [formField]="passwordForm.confirmNewPassword"
+      autocomplete="new-password"
+    />
+    <button
+      matIconButton
+      matSuffix
+      type="button"
+      (click)="confirmNewPasswordHidden.update((h) => !h)"
+      [attr.aria-label]="confirmNewPasswordHidden() ? 'Show password' : 'Hide password'"
+      [attr.aria-pressed]="!confirmNewPasswordHidden()"
+    >
+      <mat-icon>{{ confirmNewPasswordHidden() ? 'visibility' : 'visibility_off' }}</mat-icon>
+    </button>
+    <mat-hint>Confirm your new password to update your account.</mat-hint>
+    @if (passwordForm.confirmNewPassword().touched() && passwordForm.confirmNewPassword().invalid()) {
+      <mat-error>
+        @switch (passwordForm.confirmNewPassword().errors()[0]?.kind) {
+          @case ('required') {
+            Confirm new password is required
+          }
+          @case ('passwordMismatch') {
+            Passwords must match
+          }
+          @default {
+            {{ passwordForm.confirmNewPassword().errors()[0]?.message ?? 'Invalid value' }}
+          }
+        }
+      </mat-error>
+    }
+  </mat-form-field>
+  <div class="password-form__actions">
+    <button type="submit" matButton="filled" color="primary" class="full-width" [disabled]="passwordDisabledForm()">
+      <div class="button-content">
+        <span>Save password</span>
+        @if (updatePasswordLoading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        }
+      </div>
+    </button>
+  </div>
+</form>

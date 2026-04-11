@@ -1,1 +1,37 @@
-Profile
+<div class="profile-page">
+  <div class="profile-page-header">
+    <div class="profile-page-header-title">
+      <div class="page-title">Profile & Account</div>
+    </div>
+  </div>
+
+  <div class="profile-page-main">
+    <div class="profile-page-side-navigation">
+      
+      <mat-list role="list">
+
+        @for (tab of tabs; track tab.value) {
+          <mat-list-item role="listitem" [class.active]="activeTab() === tab.value" (click)="onTabChange(tab.value)">
+            <div class="mat-list-nav-item">
+              <mat-icon>{{ tab.icon }}</mat-icon>
+              <span>{{ tab.label }}</span>
+            </div>
+          </mat-list-item>
+        }
+      </mat-list>
+    </div>
+    <div class="profile-page-content-content">
+      @switch (activeTab()) {
+        @case (ProfileTab.PERSONAL_INFORMATION) {
+          <app-personal-information-section></app-personal-information-section>
+        }
+        @case (ProfileTab.MANAGE_ACCOUNT) {
+          <app-manage-account-section></app-manage-account-section>
+        }
+        @case (ProfileTab.ROLES_AND_PERMISSIONS) {
+          <app-roles-and-permission-section></app-roles-and-permission-section>
+        }
+      }
+    </div>
+  </div>
+</div>

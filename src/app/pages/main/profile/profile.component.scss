@@ -1,0 +1,71 @@
+.profile-page {
+  padding: 3.5rem 1rem 1rem 1rem;
+  max-width: 920px;
+  margin: 0 auto;
+  height: 100%;
+}
+
+.profile-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.profile-page-header-title > .page-title {
+  font-size: 3rem;
+  font-weight: 700;
+}
+
+.profile-page-main {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1.25rem;
+
+  .profile-page-side-navigation {
+    mat-list {
+      display: flex;
+      flex-direction: column;
+      width: 280px;
+      background-color: var(--mat-sys-surface-container-low);
+      padding: 1rem 1rem;
+      border-radius: 6px;
+      gap: 0.25rem;
+      
+      mat-list-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        height: auto;
+        padding: 0.5rem;
+        border-radius: 6px;
+        cursor: pointer;
+
+        &:hover,
+        &:focus {
+          background-color: var(--mat-sys-surface-container-high);
+        }
+
+        &.active {
+          background-color: var(--mat-sys-surface-container-highest);
+          
+          .mat-list-nav-item {
+            font-weight: 600;
+          }
+        }
+
+        .mat-list-nav-item {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+      }
+
+    }
+  }
+
+  .profile-page-content-content {
+    flex: 1;
+  }
+}

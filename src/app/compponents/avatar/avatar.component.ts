@@ -1,6 +1,6 @@
 import { Component, computed, input, Input } from '@angular/core';
 
-type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 
 @Component({
   selector: 'app-avatar',

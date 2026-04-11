@@ -16,3 +16,16 @@ export const EmailLoginResponseSchema = z.object({
   refresh_token: z.string(),
   payload: TokenPayloadSchema
 });
+
+export const PatchProfileSchema = UserSchema.omit({ id: true, updated_at: true }).partial();
+
+export const PatchPasswordSchema = z.object({ 
+  current_password: z.string(),
+  new_password: z.string(),
+  confirm_new_password: z.string(),
+});
+
+export const AuthErrorResponseSchema = z.object({
+  status_code: z.number(),
+  message: z.string(),
+});

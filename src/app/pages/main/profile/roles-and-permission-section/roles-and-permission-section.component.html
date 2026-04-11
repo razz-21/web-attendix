@@ -1,0 +1,23 @@
+<div class="title">
+  Account Role
+</div>
+<form class="roles-and-permission-form" [formRoot]="rolesAndPermissionForm">
+  <mat-form-field class="full-width">
+    <mat-label>Role</mat-label>
+    <mat-select [formField]="rolesAndPermissionForm.role">
+      @for (role of roles; track role) {
+        <mat-option [value]="role">{{ role | textTransformToReadable }}</mat-option>
+      }
+      @if (rolesAndPermissionForm.role().touched() && rolesAndPermissionForm.role().invalid()) {
+        <mat-error>
+          @switch (rolesAndPermissionForm.role().errors()[0]?.kind) {
+            @case ('required') {
+              Role is required
+            }
+          }
+        </mat-error>
+      }
+    </mat-select>
+    <mat-hint>Your assigned role.</mat-hint>
+  </mat-form-field>
+</form>

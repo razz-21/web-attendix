@@ -143,3 +143,10 @@ mat-header-cell.mat-mdc-header-cell.app-table-actions-header,
 mat-cell.mat-mdc-cell.app-table-actions-cell {
   justify-content: center;
 }
+
+// Button content
+.button-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

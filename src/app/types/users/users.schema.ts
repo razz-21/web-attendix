@@ -37,3 +37,7 @@ export const PatchUserSchema = UserSchema.omit({ id: true, updated_at: true }).p
 export const DeleteUserSchema = z.object({
   id: z.string(),
 });
+export const UserErrorResponseSchema = z.object({
+  status_code: z.number(),
+  message: z.string(),
+});

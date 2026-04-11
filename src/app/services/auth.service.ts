@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '@/environments/environment';
 import { lastValueFrom } from 'rxjs';
-import { EmailLogin, EmailLoginResponse } from '../types/auth/auth.types';
+import { EmailLogin, EmailLoginResponse, PatchPassword, PatchProfile } from '../types/auth/auth.types';
 import { GetUser } from '../types/users/users.type';
 
 @Injectable({
@@ -21,5 +21,13 @@ export class AuthService {
 
   public async getMe(): Promise<GetUser> {
     return lastValueFrom(this.http.get<GetUser>(`${environment.apiBaseUrl}/api/v1/me`));
+  }
+
+  public async updateProfile(id: string, payload: PatchProfile): Promise<GetUser> {
+    return lastValueFrom(this.http.patch<GetUser>(`${environment.apiBaseUrl}/api/v1/users/${id}`, payload));
+  }
+
+  public async updatePassword(id: string, payload: PatchPassword): Promise<{ success: boolean, messsage: string }> {
+    return lastValueFrom(this.http.patch<{ success: boolean, messsage: string }>(`${environment.apiBaseUrl}/api/v1/me/password`, payload));
   }
 }

@@ -1,0 +1,34 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: 100%;
+}
+
+.profile-avatar {
+  display: flex;
+  align-items: center;
+
+  .profile-avatar-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
+.personal-information-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.personal-information-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
