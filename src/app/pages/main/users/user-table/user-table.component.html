@@ -1,39 +1,47 @@
 <div class="user-table-filter">
-  <mat-form-field appearance="outline" class="user-table-filter__search" >
-    <mat-label>Search by ID or name</mat-label>
-    <input matInput type="search" autocomplete="off" [(ngModel)]="filters().q" (ngModelChange)="searchUsers()" />
-    @if (filters().q) {
-      <button
-        mat-icon-button
-        matSuffix
-        type="button"
-        aria-label="Clear search"
-        (click)="filters().q = ''"
-      >
-        <mat-icon>close</mat-icon>
-      </button>
-    }
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="user-table-filter__status">
-    <mat-label>Status</mat-label>
-    <mat-select [(ngModel)]="filters().status" (ngModelChange)="filterUsersByStatus()">
-      <mat-option [value]="undefined">All statuses</mat-option>
-      @for (status of userStatuses; track status) {
-        <mat-option [value]="status">{{ status | textTransformToReadable }}</mat-option>
+  <div class="user-table-filter__fields">
+    <mat-form-field appearance="outline" class="user-table-filter__search" >
+      <mat-label>Search by ID or name</mat-label>
+      <input matInput type="search" autocomplete="off" [(ngModel)]="filters().q" (ngModelChange)="searchUsers()" />
+      @if (filters().q) {
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          aria-label="Clear search"
+          (click)="filters().q = ''; searchUsers()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
       }
-    </mat-select>
-  </mat-form-field>
+    </mat-form-field>
+  
+    <mat-form-field appearance="outline" class="user-table-filter__status">
+      <mat-label>Status</mat-label>
+      <mat-select [(ngModel)]="filters().status" (ngModelChange)="filterUsersByStatus()">
+        <mat-option [value]="undefined">All statuses</mat-option>
+        @for (status of userStatuses; track status) {
+          <mat-option [value]="status">{{ status | textTransformToReadable }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  
+    <mat-form-field appearance="outline" class="user-table-filter__role">
+      <mat-label>Role</mat-label>
+      <mat-select [(ngModel)]="filters().role" (ngModelChange)="filterUsersByRole()">
+        <mat-option [value]="undefined">All roles</mat-option>
+        @for (role of userRoles; track role) {
+          <mat-option [value]="role">{{ role | textTransformToReadable }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
 
-  <mat-form-field appearance="outline" class="user-table-filter__role">
-    <mat-label>Role</mat-label>
-    <mat-select [(ngModel)]="filters().role" (ngModelChange)="filterUsersByRole()">
-      <mat-option [value]="undefined">All roles</mat-option>
-      @for (role of userRoles; track role) {
-        <mat-option [value]="role">{{ role | textTransformToReadable }}</mat-option>
-      }
-    </mat-select>
-  </mat-form-field>
+  @if (hasFilters()) {
+    <button id="clear-filters-btn" mat-icon-button type="button" (click)="clearFilters()">
+      <mat-icon color="error" matTooltip="Clear filters" matTooltipPosition="above">close</mat-icon>
+    </button>
+  }
 </div>
 
 <div class="user-table-wrap">

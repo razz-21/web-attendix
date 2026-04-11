@@ -98,6 +98,11 @@
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Username</mat-label>
       <input matInput [formField]="userForm.username" autocomplete="username" />
+      @if (userForm.username().pending()) {
+        <mat-hint>
+          Checking username availability...
+        </mat-hint>
+      }
       @if (userForm.username().touched() && userForm.username().invalid()) {
         <mat-error>
           @switch (userForm.username().errors()[0]?.kind) {

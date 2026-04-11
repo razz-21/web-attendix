@@ -1,6 +1,6 @@
 import { TextTransformToReadablePipe } from '@pipes/text-transform-to-readable.pipe';
 import { UserRoleSchema, UserStatusSchema } from '@/app/types/users/users.schema';
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -54,7 +54,6 @@ export class UserTableComponent {
     'actions',
   ];
   protected readonly loadingRowColumns: string[] = ['loading'];
-
   public readonly loading = computed(() => this.usersStore.loading());
   public readonly pagination = computed(() => this.usersStore.pagination());
   public readonly filters = computed(() => this.usersStore.filters());
@@ -65,6 +64,8 @@ export class UserTableComponent {
   public readonly userRoles = UserRoleSchema.options;
   public readonly pageSizeOptions = [10, 25, 50];
 
+  public readonly hasFilters = computed(() => this.usersStore.hasFilters());
+
   public fullName(row: GetUser): string {
     return `${row.firstname} ${row.lastname}`.trim();
   }
@@ -72,6 +73,10 @@ export class UserTableComponent {
   public viewUser(row: GetUser): void {
     const path = MAIN_USER_DETAILS_PATH.replace(':id', row.id);
     this.router.navigate([path]);
+  }
+  
+  public clearFilters(): void {
+    this.dispatcher.dispatch(UsersEvents.clearFilters());
   }
 
   public async deleteUser(row: GetUser): Promise<void> {

@@ -3,7 +3,7 @@ import { signalStore, withComputed, withState } from "@ngrx/signals";
 import { addEntity, prependEntity, removeAllEntities, removeEntity, SelectEntityId, setAllEntities, withEntities } from "@ngrx/signals/entities";
 import { Events, on, withEventHandlers, withReducer } from "@ngrx/signals/events";
 import { UsersEvents } from "./users.events";
-import { inject } from "@angular/core";
+import { computed, inject } from "@angular/core";
 import { UsersService } from "@/app/services/users.service";
 import { debounceTime, distinctUntilChanged, exhaustMap, from, map, tap } from "rxjs";
 import { mapResponse } from "@ngrx/operators";
@@ -57,9 +57,11 @@ export const UsersStore = signalStore(
   { providedIn: "root" },
   withEntities<UserEntity>(),
   withState(initialState),
-  withComputed(({ entities, entityMap }) => ({
+  withComputed(({ entities, entityMap, filters }) => ({
     usersMap: entityMap,
     users: entities,
+    hasUsers: computed(() => !!entities().length),
+    hasFilters: computed(() => !!filters().q || !!filters().status || !!filters().role),
   })),
   withReducer(
     // Load users
@@ -145,6 +147,17 @@ export const UsersStore = signalStore(
       error: event.payload,
     })),
 
+    // Clear Filters
+    on(UsersEvents.clearFilters, (_, state) => ({
+      ...state,
+      loading: true,
+      filters: {
+        q: undefined,
+        status: undefined,
+        role: undefined,
+      },
+    })),
+
     // Create User
     on(UsersEvents.createUser, (_, state) => ({
       ...state,
@@ -196,7 +209,10 @@ export const UsersStore = signalStore(
           from(
             usersService.getPaginatedUsers(
               store.pagination().page,
-              store.pagination().limit
+              store.pagination().limit,
+              store.filters().q,
+              store.filters().status,
+              store.filters().role
             )
           ).pipe(
             mapResponse({
@@ -285,6 +301,22 @@ export const UsersStore = signalStore(
         map(({ payload }) => {
           snackBar.open(payload, "Close", { duration: 6000 });
         })
+      ),
+      clearFilters$: events.on(UsersEvents.clearFilters).pipe(
+        exhaustMap(() =>
+          from(usersService.getPaginatedUsers(
+            store.pagination().page,
+            store.pagination().limit,
+            store.filters().q,
+            store.filters().status,
+            store.filters().role
+          )).pipe(
+            mapResponse({
+              next: (response) => UsersEvents.paginateUsersSuccess(response),
+              error: (error: unknown) => UsersEvents.paginateUsersFailure(error instanceof Error ? error.message : "Failed to paginate users"),
+            })
+          )
+        )
       ),
 
       // Create user

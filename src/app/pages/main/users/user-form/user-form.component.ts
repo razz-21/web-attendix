@@ -13,9 +13,7 @@ import { Dispatcher } from '@ngrx/signals/events';
 import { UsersEvents } from '@/app/store/users/users.events';
 import { UsersStore } from '@/app/store/users/users.store';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { from, map } from 'rxjs';
 import { UsersService } from '@/app/services/users.service';
-import { mapResponse } from '@ngrx/operators';
 import { environment } from '@/environments/environment';
 
 export interface UserFormModel {
@@ -81,6 +79,7 @@ export class UserFormComponent {
     required(root.lastname);
     required(root.email);
     email(root.email);
+    debounce(root.email, 500);
     required(root.department);
     required(root.role);
     required(root.username);
@@ -99,17 +98,37 @@ export class UserFormComponent {
     });
     validateHttp(root.username, {
       request: (ctx) => {
+        const username = ctx.valueOf(root.username);
         return {
-          method: 'POST',
-          url: `${environment.apiBaseUrl}/api/v1/users/exist-username`,
-          body: { username: ctx.valueOf(root.username) },
+          method: 'GET',
+          url: `${environment.apiBaseUrl}/api/v1/users/username-exists/${username}`,
+          body: { username },
         };
       },
-      onSuccess: (response) => {
-        return response ? { kind: 'usernameExists', message: 'Username already exists' } : undefined;
+      onSuccess: (response: { exists: boolean }, ctx) => {
+        const exists = response.exists;
+        ctx.state.markAsTouched();
+        return exists ? { kind: 'usernameExists', message: 'Username already exists' } : undefined;
       },
       onError: (error) => {
         return { kind: 'httpError', message: error instanceof Error ? error.message : 'Failed to check username exists' };
+      }
+    });
+    validateHttp(root.email, {
+      request: (ctx) => {
+        const email = ctx.valueOf(root.email);
+        return {
+          method: 'GET',
+          url: `${environment.apiBaseUrl}/api/v1/users/email-exists/${email}`,
+        };
+      },
+      onSuccess: (response: { exists: boolean }, ctx) => {
+        const exists = response.exists;
+        ctx.state.markAsTouched();
+        return exists ? { kind: 'emailExists', message: 'Email already exists' } : undefined;
+      },
+      onError: (error) => {
+        return { kind: 'httpError', message: error instanceof Error ? error.message : 'Failed to check email exists' };
       }
     });
   }, {

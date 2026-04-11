@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import type { GetUser } from '@/app/types/users/users.type';
@@ -20,8 +20,12 @@ export class UsersComponent implements OnInit {
   private readonly dispatcher = inject(Dispatcher);
   private readonly usersStore = inject(UsersStore);
 
+  public readonly hasUsers = computed(() => this.usersStore.hasUsers());
+
   public ngOnInit(): void {
-    this.dispatcher.dispatch(UsersEvents.loadUsers());
+    if (!this.hasUsers()) {
+      this.dispatcher.dispatch(UsersEvents.loadUsers());
+    }
   }
 
   public openAddUser(): void {

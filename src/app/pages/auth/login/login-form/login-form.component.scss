@@ -5,6 +5,17 @@
   background-color: var(--mat-sys-surface-container-lowest);
 }
 
+.login-error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+  padding: 0.1rem 0.75rem;
+  border-radius: 0.25rem;
+  margin-bottom: 1rem;
+}
+
 .login-brand {
   display: flex;
   flex-direction: column;

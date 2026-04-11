@@ -33,6 +33,7 @@ export const UsersEvents = eventGroup({
     checkUsernameExistsSuccess: type<boolean>(),
     checkUsernameExistsFailure: type<string>(),
 
+    clearFilters: type<void>(),
     resetStore: type<void>(),
   },
 });

@@ -23,6 +23,8 @@ export const GetPaginatedUserParamsSchema = z.object({
   page: z.number().optional(),
   limit: z.number().optional(),
   q: z.string().optional(),
+  status: UserStatusSchema.optional(),
+  role: UserRoleSchema.optional()
 })
 export const GetPaginatedUsersSchema = z.object({
   data: z.array(GetUserSchema),
