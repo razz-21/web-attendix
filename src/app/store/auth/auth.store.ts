@@ -134,7 +134,7 @@ export const AuthStore = signalStore(
               const statusCode = errorResponse.status;
               const message = statusCode === 401 ? 'Invalid email or password' : getHttpErrorMessage(errorResponse);
               return AuthEvents.emailLoginFailure({
-                status_code: errorResponse.status,
+                status_code: statusCode,
                 message,
               });
             },
@@ -143,6 +143,7 @@ export const AuthStore = signalStore(
       ),
       emailLoginFailure$: events.on(AuthEvents.emailLoginFailure).pipe(
         tap(({ payload }) => {
+          console.log(payload);
           if (payload.status_code !== 401) {
             snackBar.open(payload.message, "Close", { duration: 6000 });
           }

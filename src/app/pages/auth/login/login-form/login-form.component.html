@@ -9,7 +9,7 @@
     @if (loginError()) {
       <div class="login-error">
         <mat-icon>error</mat-icon>
-        <p>{{ loginError() }}</p>
+        <p>{{ loginError()?.message }}</p>
       </div>
     }
 

@@ -1,7 +1,11 @@
-.login-card {
+:host {
+  display: block;
   width: 100%;
+  max-width: 520px;
+}
+
+.login-card {
   padding: 1.25rem;
-  min-width: 520px;
   background-color: var(--mat-sys-surface-container-lowest);
 }
 
