@@ -1,0 +1,73 @@
+<div class="workspaces-page">
+  <div class="workspaces-page-header">
+    <div class="page-header">
+      <div class="page-title">Workspaces</div>
+      <div class="page-description">Manage your workspaces.</div>
+    </div>
+
+    <div class="workspaces-page-header-actions">
+      <button matButton="filled" color="primary" type="button" (click)="openAddWorkspace()">
+        Add new workspace
+      </button>
+    </div>
+  </div>
+
+  <div class="workspace-page-content">
+    <div class="workspace-filters">
+      <mat-form-field class="search-workspaces-input" appearance="outline">
+        <mat-label>Search workspaces</mat-label>
+        <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+        <input
+          matInput
+          type="search"
+          autocomplete="off"
+          placeholder="Search workspaces by name"
+          [(ngModel)]="workspaceSearchQuery"
+          (ngModelChange)="searchWorkspaces()"
+        />
+        @if (workspaceSearchQuery()) {
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            aria-label="Clear workspace search"
+            (click)="clearSearchWorkspaces()"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="workspaces-list">
+      @if (loading()) {
+        <app-loading-section label="Loading workspaces" />
+      } @else {
+        @for (workspace of workspaces(); track workspace.id) {
+          <app-workspace-card [workspace]="workspace" />
+        }
+      }
+
+      @if (!loading() && workspaces().length === 0) {
+        <app-empty-section
+          title="No workspaces found"
+          message="Try adjusting your search or create a new workspace."
+        >
+        </app-empty-section>
+      }
+    </div>
+
+    @if (hasMoreWorkspaces()) {
+      <div class="load-more-workspaces">
+        <button matButton="tonal" color="primary" type="button" (click)="loadMoreWorkspaces()" [disabled]="loadingMore()">
+          <div class="load-more-workspaces-content">
+            @if (loadingMore()) {
+              <mat-progress-spinner mode="indeterminate" diameter="20"></mat-progress-spinner>
+            }
+            <span>Load more</span>
+          </div>
+        </button>
+      </div>
+    }
+  </div>
+</div>

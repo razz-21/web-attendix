@@ -14,6 +14,7 @@ export const UserSchema = z.object({
   username: z.string(),
   password: z.string(),
   status: UserStatusSchema.default('needs_verification'),
+  workspace_id: z.string().optional(),
   created_at: z.string(),
   updated_at: z.string(),
 });
