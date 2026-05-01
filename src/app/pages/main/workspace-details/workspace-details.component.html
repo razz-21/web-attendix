@@ -1,0 +1,108 @@
+<div class="workspace-details-page">
+  @if (loadingWorkspace()) {
+    <app-loading-section label="Loading workspace" />
+  } @else {
+    <div class="workspace-details-page-header-back-button">
+      <button matButton="text" color="primary" type="button" (click)="navigateBack()">
+        <mat-icon>arrow_back</mat-icon>
+        Back
+      </button>
+    </div>
+    <div class="workspace-details-page-header">
+      <div class="workspace-details-page-header-title">
+        <h1>{{ workspace()?.name }}</h1>
+        <p>{{ workspace()?.description }}</p>
+      </div>
+      <div class="workspace-details-page-header-actions">
+        <button matButton="filled" color="primary" type="button" (click)="openUpdateWorkspaceDialog()">
+          Edit workspace
+        </button>
+      </div>
+    </div>
+  
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>
+        <div class="workspace-details-page-expansion-panel-header-content">
+          <mat-icon>crowdsource</mat-icon>
+          <span>Groups (20) TODO: Add groups</span>
+        </div>
+      </mat-expansion-panel-header>
+      <div class="workspace-details-page-content">
+        <mat-list role="list">
+          <mat-list-item role="listitem">
+            <div class="workspace-details-page-expansion-panel-list-item-content">
+              <span>Group 1</span>
+  
+              <div class="workspace-details-page-expansion-panel-list-item-actions">
+                <button mat-icon-button matTooltip="View group" matTooltipPosition="above">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              </div>
+            </div>
+          </mat-list-item>
+        </mat-list>
+      </div>
+    </mat-expansion-panel>
+  
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>
+        <div class="workspace-details-page-expansion-panel-header-content">
+          <mat-icon>groups_2</mat-icon>
+          <span>Users ({{ totalUsers() }})</span>
+        </div>
+      </mat-expansion-panel-header>
+      <div class="workspace-details-page-content">
+        <mat-list role="list">
+          @if (loadingUsers()) {
+            <app-loading-section label="Loading users" />
+          } @else {
+            @if (emptyUsers()) {
+              <mat-list-item role="listitem">
+                <div class="workspace-details-page-expansion-panel-list-item-content">
+                  <span>No users found</span>
+                </div>
+              </mat-list-item>
+            }
+            @else {
+              @for (user of users(); track user.id) {
+                <mat-list-item role="listitem">
+                  <div class="workspace-details-page-expansion-panel-list-item-content">
+                    <div class="workspace-details-page-expansion-panel-list-item-content-left">
+                      <app-avatar size="md" url="https://github.com/ernestorazo.png" />
+                      <span>{{ user.firstname }} {{ user.lastname }}</span>
+                    </div>
+        
+                    <div class="workspace-details-page-expansion-panel-list-item-content-right">
+                      <button mat-icon-button matTooltip="Remove from workspace" matTooltipPosition="above">
+                        <mat-icon>remove_circle</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                </mat-list-item>
+              }
+            }
+          }
+        </mat-list>
+      </div>
+    </mat-expansion-panel>
+  
+    <mat-card appearance="outlined" class="workspace-details-page-delete-section">
+      <div class="workspace-details-page-delete-section-content">
+        <div class="workspace-details-page-delete-section-left">
+          <h3>Delete Workspace</h3>
+          <p>
+            Deleting this workspace is permanent. All groups, users access, and related records
+            under this workspace will be removed and cannot be recovered.
+          </p>
+        </div>
+  
+        <div class="workspace-details-page-delete-section-right">
+          <button matButton="filled" color="warn" type="button" class="workspace-details-page-delete-button" (click)="deleteWorkspace()">
+            <mat-icon>delete</mat-icon>
+            Delete workspace
+          </button>
+        </div>
+      </div>
+    </mat-card>
+  }
+</div>

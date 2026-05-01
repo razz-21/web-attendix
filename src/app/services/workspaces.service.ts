@@ -3,6 +3,7 @@ import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { GetPaginatedWorkspace, GetPaginatedWorkspaceParams, GetWorkspace, PatchWorkspace, PostWorkspace, Workspace } from "../types/workspaces/workspaces.types";
 import { lastValueFrom } from "rxjs";
+import { GetUser, User } from "../types/users/users.type";
 
 @Injectable({
   providedIn: 'root',
@@ -43,6 +44,12 @@ export class WorkspacesService {
   public async deleteWorkspace(id: string): Promise<void> {
     return lastValueFrom(
       this.http.delete<void>(`${this.workspacesApi}/${id}`)
+    )
+  }
+
+  public async getWorkspaceUsers(id: string): Promise<GetUser[]> {
+    return lastValueFrom(
+      this.http.get<GetUser[]>(`${this.workspacesApi}/${id}/users`)
     )
   }
 }

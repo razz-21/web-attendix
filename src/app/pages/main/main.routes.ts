@@ -8,6 +8,7 @@ import { GroupsComponent } from "./groups/groups.component";
 import { UsersComponent } from "./users/users.component";
 import { UserDetailsComponent } from "./user-details/user-details.component";
 import { WorkspacesComponent } from "./workspaces/workspaces.component";
+import { WorkspaceDetailsComponent } from "./workspace-details/workspace-details.component";
 
 export const mainRoutes: Routes = [
   {
@@ -44,7 +45,11 @@ export const mainRoutes: Routes = [
       },
       {
         path: 'workspaces',
-        component: WorkspacesComponent
+        component: WorkspacesComponent,
+      },
+      {
+        path: 'workspaces/:id',
+        component: WorkspaceDetailsComponent
       }
     ]
   }
