@@ -1,0 +1,59 @@
+<mat-dialog-content class="add-workspace-user__content">
+  <h2>Add user to workspace</h2>
+  <p class="add-workspace-user__intro">Search for people by name or email, then pick them from the list.</p>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Users</mat-label>
+    <mat-chip-grid #chipGrid aria-label="Selected users">
+      @for (user of selectedUsers(); track user.id) {
+        <mat-chip-row (removed)="removeUser(user)">
+          {{ user.firstname }} {{ user.lastname }}
+          <button type="button" matChipRemove [attr.aria-label]="'Remove ' + user.firstname + ' ' + user.lastname">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip-row>
+      }
+      <input
+        #userInput
+        matInput
+        placeholder="Search users…"
+        [matChipInputFor]="chipGrid"
+        [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+        [matAutocomplete]="auto"
+        (input)="onSearchInput(userInput.value)"
+      />
+    </mat-chip-grid>
+    @if (searchUsersLoading()) {
+      <mat-spinner
+        class="add-workspace-user__search-suffix"
+        matSuffix
+        diameter="20"
+        aria-label="Searching users"
+      />
+    }
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="userSelected($event)">
+      @for (user of filteredUsers(); track user.id) {
+        <mat-option [value]="user">
+          <span class="user-option">
+            <span class="user-option__name">{{ user.firstname }} {{ user.lastname }}</span>
+            <span class="user-option__email">{{ user.email }}</span>
+          </span>
+        </mat-option>
+      }
+      @if (showNoUsersFound()) {
+        <mat-option disabled class="add-workspace-user__empty-option">No users found</mat-option>
+      }
+    </mat-autocomplete>
+  </mat-form-field>
+  
+  <mat-dialog-actions>
+    <button matButton="tonal" color="primary" (click)="cancel()">Cancel</button>
+    <button matButton="filled" color="primary" type="submit" [disabled]="noSelectedUsers() || addWorkspaceUsersLoading()" (click)="addWorkspaceUsers()">
+      @if (addWorkspaceUsersLoading()) {
+        <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+        Add users to workspace
+      }
+    </button>
+  </mat-dialog-actions>
+</mat-dialog-content>
