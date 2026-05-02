@@ -73,7 +73,7 @@
                     </div>
         
                     <div class="workspace-details-page-expansion-panel-list-item-content-right">
-                      <button mat-icon-button matTooltip="Remove from workspace" matTooltipPosition="above">
+                      <button mat-icon-button matTooltip="Remove from workspace" matTooltipPosition="above" (click)="removeWorkspaceUsers(user)">
                         <mat-icon>remove_circle</mat-icon>
                       </button>
                     </div>
@@ -85,7 +85,25 @@
         </mat-list>
       </div>
     </mat-expansion-panel>
-  
+
+    <mat-card appearance="outlined" class="workspace-details-page-invite-section">
+      <div class="workspace-details-page-invite-section-content">
+        <div class="workspace-details-page-invite-section-left">
+          <h3>Add users</h3>
+          <p>
+            Add users to this workspace. They will gain access according to the role you assign.
+          </p>
+        </div>
+
+        <div class="workspace-details-page-invite-section-right">
+          <button matButton="filled" color="primary" type="button" class="workspace-details-page-invite-button" (click)="inviteUser()">
+            <mat-icon>person_add</mat-icon>
+            Add user
+          </button>
+        </div>
+      </div>
+    </mat-card>
+
     <mat-card appearance="outlined" class="workspace-details-page-delete-section">
       <div class="workspace-details-page-delete-section-content">
         <div class="workspace-details-page-delete-section-left">

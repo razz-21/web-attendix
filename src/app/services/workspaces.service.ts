@@ -52,4 +52,12 @@ export class WorkspacesService {
       this.http.get<GetUser[]>(`${this.workspacesApi}/${id}/users`)
     )
   }
+
+  public async addWorkspaceUsers(id: string, payload: GetUser[]): Promise<GetUser[]> {
+    return lastValueFrom(
+      this.http.post<GetUser[]>(`${this.workspacesApi}/${id}/users`, {
+        users: payload,
+      })
+    )
+  }
 }

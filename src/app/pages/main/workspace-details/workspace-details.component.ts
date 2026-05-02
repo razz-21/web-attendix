@@ -14,6 +14,8 @@ import { MatCardModule } from "@angular/material/card";
 import { LoadingSectionComponent } from "@/app/compponents/loading-section/loading-section.component";
 import { UpdateWorkspaceDetailsDialogFormComponent } from "./update-workspace-details-dialog-form/update-workspace-details-dialog-form.component";
 import { MAIN_WORKSPACES_PATH } from "@/app/constants/route.constant";
+import { AddWorkspaceUserComponent } from "./add-workspace-user/add-workspace-user.component";
+import { GetUser } from "@/app/types/users/users.type";
 
 @Component({
   selector: 'app-workspace-details',
@@ -68,6 +70,19 @@ export class WorkspaceDetailsComponent {
       height: 'auto',
       autoFocus: 'first-tabbable',
     });
+  }
+
+  public inviteUser(): void {
+    this.dialog.open(AddWorkspaceUserComponent, {
+      maxWidth: '620px',
+      width: '100%',
+      height: 'auto',
+      autoFocus: 'first-tabbable',
+    });
+  }
+
+  public removeWorkspaceUsers(user: GetUser): void {
+    this.dispatcher.dispatch(WorkspaceDetailsEvents.removeWorkspaceUser({ user }));
   }
 
   public navigateBack(): void {
