@@ -1,0 +1,91 @@
+<form class="group-form" [formRoot]="groupForm">
+  <div class="group-form__fields">
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>RFID Number</mat-label>
+      <input matInput [formField]="groupForm.rfid" autocomplete="off" />
+      @if (groupForm.rfid().touched() && groupForm.rfid().invalid()) {
+        <mat-error>
+          @switch (groupForm.rfid().errors()[0]?.kind) {
+            @case ('required') { RFID number is required }
+            @default { {{ groupForm.rfid().errors()[0]?.message ?? 'Invalid value' }} }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Name</mat-label>
+      <input matInput [formField]="groupForm.name" autocomplete="off" />
+      @if (groupForm.name().touched() && groupForm.name().invalid()) {
+        <mat-error>
+          @switch (groupForm.name().errors()[0]?.kind) {
+            @case ('required') { Name is required }
+            @default { {{ groupForm.name().errors()[0]?.message ?? 'Invalid value' }} }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Department (optional)</mat-label>
+      <mat-select [formField]="groupForm.department">
+        <mat-option [value]="''">None</mat-option>
+        @for (dept of departments; track dept.name) {
+          <mat-option [value]="dept.name">{{ dept.name }}</mat-option>
+        }
+      </mat-select>
+      @if (groupForm.department().touched() && groupForm.department().invalid()) {
+        <mat-error>
+          @switch (groupForm.department().errors()[0]?.kind) {
+            @case ('required') { Department is required }
+            @default { {{ groupForm.department().errors()[0]?.message ?? 'Invalid value' }} }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Section (optional)</mat-label>
+      <input matInput [formField]="groupForm.section" autocomplete="off" />
+      @if (groupForm.section().touched() && groupForm.section().invalid()) {
+        <mat-error>
+          @switch (groupForm.section().errors()[0]?.kind) {
+            @case ('required') { Section is required }
+            @default { {{ groupForm.section().errors()[0]?.message ?? 'Invalid value' }} }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Year Level (optional)</mat-label>
+      <mat-select [formField]="groupForm.year_level">
+        <mat-option [value]="''">None</mat-option>
+        @for (year of yearLevels; track year) {
+          <mat-option [value]="year">{{ year }}</mat-option>
+        }
+      </mat-select>
+      @if (groupForm.year_level().touched() && groupForm.year_level().invalid()) {
+        <mat-error>
+          @switch (groupForm.year_level().errors()[0]?.kind) {
+            @case ('required') { Year level is required }
+            @default { {{ groupForm.year_level().errors()[0]?.message ?? 'Invalid value' }} }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+  </div>
+
+  <div class="group-form__actions">
+    <button type="button" matButton="tonal" color="primary" class="full-width" (click)="cancel()">Cancel</button>
+    <button type="submit" matButton="filled" color="primary" class="full-width" [disabled]="loadingForm()">
+      @if (loadingForm()) {
+        <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+        <span>Create member</span>
+      }
+    </button>
+  </div>
+</form>

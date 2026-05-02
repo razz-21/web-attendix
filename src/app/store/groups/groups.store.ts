@@ -13,7 +13,7 @@ type GroupEntity = GetGroup;
 
 type GroupsState = {
   pagination: { page: number; limit: number; total: number; };
-  filters: { q?: string; workspace_id?: string; } 
+  filters: { q?: string; workspace_id?: string; }
   loading: boolean;
   loadingForm: boolean;
   deleteLoading: boolean;
@@ -25,7 +25,7 @@ const selectId: SelectEntityId<GroupEntity> = (group) => group.id;
 
 const initialFilters: GroupsState['filters'] = {
   q: undefined,
-  workspace_id: undefined, 
+  workspace_id: undefined,
 };
 const initialPagination: GroupsState['pagination'] = {
   page: 1,
@@ -48,7 +48,9 @@ export const GroupsStore = signalStore(
   withState(initialState),
   withComputed(({ entities, entityMap, filters }) => ({
     groupsMap: entityMap,
-    groups: entities,
+    groups: computed(() => [...entities()].sort((a, b) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    )),
     hasGroups: computed(() => !!entities().length),
     hasFilters: computed(() => !!filters().q || !!filters().workspace_id),
   })),
@@ -96,6 +98,11 @@ export const GroupsStore = signalStore(
     ]),
     on(GroupsEvents.createGroupFailure, (event, state) => ({ ...state, loadingForm: false, error: event.payload })),
 
+    // Update group
+    on(GroupsEvents.updateGroup, (_, state) => ({ ...state, loadingForm: true, error: null })),
+    on(GroupsEvents.updateGroupSuccess, (_, state) => ({ ...state, loadingForm: false, error: null })),
+    on(GroupsEvents.updateGroupFailure, (event, state) => ({ ...state, loadingForm: false, error: event.payload })),
+
     // Delete group
     on(GroupsEvents.deleteGroup, ({ payload }) => [
       removeEntity(payload.group.id),
@@ -123,7 +130,7 @@ export const GroupsStore = signalStore(
     ) => ({
       loadGroups$: events.on(GroupsEvents.loadGroups).pipe(
         exhaustMap(() =>
-          from(groupsService.getPaginatedGroups(store.pagination().page, store.pagination().limit, store.filters().q, store.filters().workspace_id)).pipe( 
+          from(groupsService.getPaginatedGroups(store.pagination().page, store.pagination().limit, store.filters().q, store.filters().workspace_id)).pipe(
             mapResponse({
               next: (response) => GroupsEvents.loadGroupsSuccess(response),
               error: (error: unknown) => GroupsEvents.loadGroupsFailure(error instanceof Error ? error.message : "Failed to load groups"),
@@ -139,7 +146,7 @@ export const GroupsStore = signalStore(
         distinctUntilChanged((prev, curr) => prev.payload.q === curr.payload.q),
         debounceTime(500),
         exhaustMap(() =>
-          from(groupsService.getPaginatedGroups(store.pagination().page, store.pagination().limit, store.filters().q, store.filters().workspace_id)).pipe( 
+          from(groupsService.getPaginatedGroups(store.pagination().page, store.pagination().limit, store.filters().q, store.filters().workspace_id)).pipe(
             mapResponse({
               next: (response) => GroupsEvents.searchGroupsSuccess(response),
               error: (error: unknown) => GroupsEvents.searchGroupsFailure(error instanceof Error ? error.message : "Failed to search groups"),
@@ -153,7 +160,7 @@ export const GroupsStore = signalStore(
 
       filterGroups$: events.on(GroupsEvents.filterGroups).pipe(
         exhaustMap(() =>
-          from(groupsService.getPaginatedGroups(store.pagination().page, store.pagination().limit, store.filters().q, store.filters().workspace_id)).pipe( 
+          from(groupsService.getPaginatedGroups(store.pagination().page, store.pagination().limit, store.filters().q, store.filters().workspace_id)).pipe(
             mapResponse({
               next: (response) => GroupsEvents.filterGroupsSuccess(response),
               error: (error: unknown) => GroupsEvents.filterGroupsFailure(error instanceof Error ? error.message : "Failed to filter groups"),
@@ -167,7 +174,7 @@ export const GroupsStore = signalStore(
 
       paginateGroups$: events.on(GroupsEvents.paginateGroups).pipe(
         exhaustMap(() =>
-          from(groupsService.getPaginatedGroups(store.pagination().page, store.pagination().limit, store.filters().q, store.filters().workspace_id)).pipe( 
+          from(groupsService.getPaginatedGroups(store.pagination().page, store.pagination().limit, store.filters().q, store.filters().workspace_id)).pipe(
             mapResponse({
               next: (response) => GroupsEvents.paginateGroupsSuccess(response),
               error: (error: unknown) => GroupsEvents.paginateGroupsFailure(error instanceof Error ? error.message : "Failed to paginate groups"),
@@ -206,6 +213,26 @@ export const GroupsStore = signalStore(
         })
       ),
       createGroupFailure$: events.on(GroupsEvents.createGroupFailure).pipe(
+        map(({ payload }) => { snackBar.open(payload, "Close", { duration: 6000 }); })
+      ),
+
+      updateGroup$: events.on(GroupsEvents.updateGroup).pipe(
+        exhaustMap(({ payload }) =>
+          from(groupsService.updateGroup(payload.id, payload.group)).pipe(
+            mapResponse({
+              next: (response) => GroupsEvents.updateGroupSuccess(response),
+              error: (error: unknown) => GroupsEvents.updateGroupFailure(error instanceof Error ? error.message : "Failed to update group"),
+            })
+          )
+        )
+      ),
+      updateGroupSuccess$: events.on(GroupsEvents.updateGroupSuccess).pipe(
+        tap(({ payload }) => {
+          snackBar.open(`Group ${payload?.name} updated successfully`, "Close", { duration: 6000 });
+        }),
+        map(() => GroupsEvents.loadGroups()) 
+      ),
+      updateGroupFailure$: events.on(GroupsEvents.updateGroupFailure).pipe(
         map(({ payload }) => { snackBar.open(payload, "Close", { duration: 6000 }); })
       ),
 

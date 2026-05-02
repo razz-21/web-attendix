@@ -1,0 +1,32 @@
+<section class="group-edit-modal">
+  <section class="group-edit-modal__header">
+    <h3>Update Group</h3>
+    <p>Fill out the fields below. Fields with * are required.</p>
+  </section>
+
+  <form class="group-edit-modal__form" [formRoot]="groupForm">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Group Name</mat-label>
+      <input matInput type="text" [formField]="groupForm.name" />
+      @if (groupForm.name().touched() && groupForm.name().invalid()) {
+        <mat-error>Group name is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Group Description</mat-label>
+      <textarea matInput rows="3" [formField]="groupForm.description" style="resize: vertical;"></textarea>
+    </mat-form-field>
+  </form>
+
+  <section class="group-edit-modal__actions">
+    <button matButton="tonal" color="primary" type="button" (click)="closeDialog()">Cancel</button>
+    <button matButton="filled" color="primary" type="button" [disabled]="loadingForm()" (click)="submitForm()">
+      @if (loadingForm()) {
+        <mat-spinner diameter="18"></mat-spinner>
+      } @else {
+        <span>Update Group</span>
+      }
+    </button>
+  </section>
+</section>

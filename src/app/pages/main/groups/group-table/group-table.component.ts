@@ -1,4 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
+import { Router } from '@angular/router'
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -36,6 +37,7 @@ export class GroupTableComponent {
   private readonly confirmationDialogService = inject(ConfirmationDialogService);
   private readonly groupsStore = inject(GroupsStore);
   private readonly dispatcher = inject(Dispatcher);
+  private readonly router = inject(Router);
 
  protected readonly displayedColumns: string[] = [
     'name',
@@ -52,6 +54,10 @@ export class GroupTableComponent {
   public readonly hasFilters = computed(() => this.groupsStore.hasFilters());
 
   public readonly pageSizeOptions = [10, 25, 50];
+
+  public viewGroup(row: GetGroup): void {
+    this.router.navigate(['/main/groups', row.id, 'members']);
+  }
 
   public searchGroups(): void {
     this.dispatcher.dispatch(GroupsEvents.searchGroups({ q: this.filters().q ?? '' }));

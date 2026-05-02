@@ -9,6 +9,7 @@ import type { PostGroup } from '@/app/types/groups/groups.type';
 import { Dispatcher } from '@ngrx/signals/events';
 import { GroupsEvents } from '@/app/store/groups/groups.events';
 import { GroupsStore } from '@/app/store/groups/groups.store';
+import { AuthStore } from '@/app/store/auth/auth.store';
 
 export interface GroupFormModel {
   name: string;
@@ -37,6 +38,7 @@ const emptyModel = (): GroupFormModel => ({
 export class GroupFormComponent {
   private readonly dispatcher = inject(Dispatcher);
   private readonly groupsStore = inject(GroupsStore);
+  private readonly authStore = inject(AuthStore); 
 
   public readonly model = signal<GroupFormModel>(emptyModel());
   public readonly groupCancelled = output<void>();
@@ -48,11 +50,14 @@ export class GroupFormComponent {
     submission: {
       action: async () => {
         const m = this.model();
+        const now = new Date().toISOString();
         const payload: PostGroup = {
+          id: crypto.randomUUID() as string,
           name: m.name.trim(),
           description: m.description.trim() || undefined,
-          workspace_id: crypto.randomUUID(), 
-          created_by: crypto.randomUUID(),  
+          workspace_id: crypto.randomUUID() as string,
+          created_by: this.authStore.user()?.id ?? crypto.randomUUID(),
+          created_at: now,
         };
         PostGroupSchema.parse(payload);
         this.dispatcher.dispatch(GroupsEvents.createGroup({ group: payload }));

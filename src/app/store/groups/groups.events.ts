@@ -1,6 +1,6 @@
 import { type } from '@ngrx/signals';
 import { eventGroup } from '@ngrx/signals/events';
-import { GetPaginatedGroups, GetGroup, PostGroup } from '@/app/types/groups/groups.type';
+import { GetPaginatedGroups, GetGroup, PostGroup, PatchGroup  } from '@/app/types/groups/groups.type';
 
 export const GroupsEvents = eventGroup({
   source: 'Groups Page',
@@ -24,6 +24,10 @@ export const GroupsEvents = eventGroup({
     createGroup: type<{ group: PostGroup }>(),
     createGroupSuccess: type<GetGroup>(),
     createGroupFailure: type<string>(),
+
+    updateGroup: type<{ id: string; group: PatchGroup }>(), 
+    updateGroupSuccess: type<GetGroup>(),                  
+    updateGroupFailure: type<string>(),    
 
     deleteGroup: type<{ group: GetGroup }>(),
     deleteGroupSuccess: type<{ group: GetGroup }>(),
