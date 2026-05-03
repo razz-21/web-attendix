@@ -1,0 +1,73 @@
+<form class="update-member-form" [formRoot]="memberForm">
+  <div class="update-member-form__fields">
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>RFID Number</mat-label>
+      <input matInput [formField]="memberForm.rfid" autocomplete="off" />
+      @if (memberForm.rfid().touched() && memberForm.rfid().invalid()) {
+        <mat-error>
+          @switch (memberForm.rfid().errors()[0]?.kind) {
+            @case ('required') { RFID Number is required }
+            @default { {{ memberForm.rfid().errors()[0]?.message ?? 'Invalid value' }} }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Name *</mat-label>
+      <input matInput [formField]="memberForm.name" autocomplete="off" />
+      @if (memberForm.name().touched() && memberForm.name().invalid()) {
+        <mat-error>
+          @switch (memberForm.name().errors()[0]?.kind) {
+            @case ('required') { Name is required }
+            @default { {{ memberForm.name().errors()[0]?.message ?? 'Invalid value' }} }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Department *</mat-label>
+      <mat-select [formField]="memberForm.department">
+        @for (dept of departments; track dept.name) {
+          <mat-option [value]="dept.name">{{ dept.name }}</mat-option>
+        }
+      </mat-select>
+      @if (memberForm.department().touched() && memberForm.department().invalid()) {
+        <mat-error>
+          @switch (memberForm.department().errors()[0]?.kind) {
+            @case ('required') { Department is required }
+            @default { {{ memberForm.department().errors()[0]?.message ?? 'Invalid value' }} }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Section</mat-label>
+      <input matInput [formField]="memberForm.section" autocomplete="off" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Year Level</mat-label>
+      <mat-select [formField]="memberForm.year_level">
+        @for (year of yearLevels; track year) {
+          <mat-option [value]="year">{{ year }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+  </div>
+
+  <div class="update-member-form__actions">
+    <button type="button" matButton="tonal" color="primary" class="full-width" (click)="cancel()">Cancel</button>
+    <button type="submit" matButton="filled" color="primary" class="full-width" [disabled]="loadingForm()">
+      @if (loadingForm()) {
+        <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+        <span>Update Member</span>
+      }
+    </button>
+  </div>
+</form>

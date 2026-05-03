@@ -1,0 +1,54 @@
+.workspaces-page {
+  padding: 1.5rem;
+}
+
+.workspaces-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.workspace-page-content {
+  display: flex;
+  flex-direction: column;
+  margin-top: 2rem;
+}
+
+.workspaces-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.workspaces-list app-loading-section {
+  grid-column: 1 / -1;
+}
+
+.search-workspaces-input {
+  width: 40%;
+}
+
+.workspaces-list-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 0.5rem;
+}
+
+.load-more-workspaces {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+
+  .load-more-workspaces-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}

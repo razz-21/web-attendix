@@ -13,6 +13,8 @@ export const MAIN_ATTENDANCES_PATH = `${MAIN_BASE_PATH}/attendances`;
 export const MAIN_GROUPS_PATH = `${MAIN_BASE_PATH}/groups`;
 export const MAIN_USERS_PATH = `${MAIN_BASE_PATH}/users`;
 export const MAIN_USER_DETAILS_PATH = `${MAIN_BASE_PATH}/users/:id`;
+export const MAIN_WORKSPACES_PATH = `${MAIN_BASE_PATH}/workspaces`;
+export const MAIN_WORKSPACE_DETAILS_PATH = `${MAIN_WORKSPACES_PATH}/:id`;
 
 export const PUBLIC_ROUTES = [
   AUTH_BASE_PATH,

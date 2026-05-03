@@ -1,0 +1,27 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.update-member-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.update-member-form__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.update-member-form__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.full-width {
+  width: 100%;
+}

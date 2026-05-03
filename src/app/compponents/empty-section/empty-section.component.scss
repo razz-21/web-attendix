@@ -1,0 +1,49 @@
+:host {
+  display: block;
+}
+
+.empty-section {
+  min-height: 8rem;
+  border-style: dashed;
+  border-width: 1px;
+  border-radius: 12px;
+  border-color: var(--mat-sys-outline, rgba(0, 0, 0, 0.2));
+  background: var(--mat-sys-surface, #fff);
+  color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+  padding: 1.25rem;
+}
+
+.empty-section-icon {
+  font-size: 2rem;
+  width: 2rem;
+  height: 2rem;
+  color: var(--mat-sys-primary, #6750a4);
+}
+
+.empty-section-title {
+  margin: 0;
+  color: var(--mat-sys-on-surface, rgba(0, 0, 0, 0.87));
+  font: var(
+    --mat-sys-title-medium,
+    500 1rem / 1.5rem "Roboto",
+    "Helvetica Neue",
+    sans-serif
+  );
+}
+
+.empty-section-message {
+  margin: 0;
+  color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
+  font: var(
+    --mat-sys-body-medium,
+    400 0.875rem / 1.25rem "Roboto",
+    "Helvetica Neue",
+    sans-serif
+  );
+}

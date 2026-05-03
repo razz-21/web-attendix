@@ -2,7 +2,7 @@ import { Component } from "@angular/core";
 import { MatListModule } from "@angular/material/list";
 import { MatIconModule } from "@angular/material/icon";
 import { RouterLink, RouterLinkActive } from "@angular/router";
-import { MAIN_ATTENDANCES_PATH, MAIN_DASHBOARD_PATH, MAIN_GROUPS_PATH, MAIN_PROFILE_PATH, MAIN_SETTINGS_PATH, MAIN_USERS_PATH } from "@/app/constants/route.constant";
+import { MAIN_ATTENDANCES_PATH, MAIN_DASHBOARD_PATH, MAIN_GROUPS_PATH, MAIN_PROFILE_PATH, MAIN_SETTINGS_PATH, MAIN_USERS_PATH, MAIN_WORKSPACES_PATH } from "@/app/constants/route.constant";
 
 @Component({
   selector: 'app-main-sidebar',
@@ -36,6 +36,11 @@ export class MainSidebarComponent {
       path: MAIN_PROFILE_PATH,
       label: 'Profile',
       icon: 'person'
+    },
+    {
+      path: MAIN_WORKSPACES_PATH,
+      label: 'Workspaces',
+      icon: 'workspace'
     },
     {
       path: MAIN_SETTINGS_PATH,

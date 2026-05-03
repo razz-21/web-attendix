@@ -1,0 +1,34 @@
+<form class="group-form" [formRoot]="groupForm">
+  <div class="group-form__fields">
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Name</mat-label>
+      <input matInput [formField]="groupForm.name" autocomplete="off" />
+      @if (groupForm.name().touched() && groupForm.name().invalid()) {
+        <mat-error>
+          @switch (groupForm.name().errors()[0]?.kind) {
+            @case ('required') { Name is required }
+            @default { {{ groupForm.name().errors()[0]?.message ?? 'Invalid value' }} }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description (optional)</mat-label>
+      <textarea matInput [formField]="groupForm.description" rows="3" autocomplete="off"></textarea>
+    </mat-form-field>
+
+  </div>
+
+  <div class="group-form__actions">
+    <button type="button" matButton="tonal" color="primary" class="full-width" (click)="cancel()">Cancel</button>
+    <button type="submit" matButton="filled" color="primary" class="full-width" [disabled]="loadingForm()">
+      @if (loadingForm()) {
+        <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+        <span>Create group</span>
+      }
+    </button>
+  </div>
+</form>

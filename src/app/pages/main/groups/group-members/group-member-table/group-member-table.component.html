@@ -1,0 +1,126 @@
+<div class="group-table-filter">
+  <div class="group-table-filter__fields">
+    <mat-form-field appearance="outline" class="group-table-filter__search">
+      <mat-label>Search by name or student ID</mat-label>
+      <input matInput type="search" autocomplete="off" [(ngModel)]="filters().q" (ngModelChange)="searchMembers()" />
+      @if (filters().q) {
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          aria-label="Clear search"
+          (click)="filters().q = ''; searchMembers()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="group-table-filter__department">
+      <mat-label>Department</mat-label>
+      <mat-select [(ngModel)]="filters().department" (ngModelChange)="filterMembersByDepartment()">
+        <mat-option [value]="undefined">All departments</mat-option>
+        @for (dept of departments; track dept.name) {
+          <mat-option [value]="dept.name">{{ dept.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+</div>
+
+<div class="group-table-wrap">
+  <table mat-table [dataSource]="loading() ? [null] : data()" class="group-table">
+    <ng-container matColumnDef="rfid">
+      <th mat-header-cell *matHeaderCellDef scope="col">RFID Number</th>
+      <td mat-cell *matCellDef="let row">{{ row.rfid }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef scope="col">Name</th>
+      <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="department">
+      <th mat-header-cell *matHeaderCellDef scope="col">Department</th>
+      <td mat-cell *matCellDef="let row">{{ row.department }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="section">
+      <th mat-header-cell *matHeaderCellDef scope="col">Section</th>
+      <td mat-cell *matCellDef="let row">{{ row.section }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="year_level">
+      <th mat-header-cell *matHeaderCellDef scope="col">Year Level</th>
+      <td mat-cell *matCellDef="let row">{{ row.year_level }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef scope="col" class="app-table-actions-header">Actions</th>
+      <td mat-cell *matCellDef="let row" class="app-table-actions-cell">
+        <button
+          matIconButton
+          type="button"
+          class="group-table__action-btn"
+          (click)="$event.stopPropagation(); editMember(row)"
+          aria-label="Edit member"
+          matTooltip="Edit member"
+          matTooltipPosition="above"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+
+        <button
+          matIconButton
+          type="button"
+          class="group-table__action-btn"
+          (click)="$event.stopPropagation(); deleteMember(row)"
+          aria-label="Delete group"
+          matTooltip="Delete group"
+          matTooltipPosition="above"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="loading">
+      <td mat-cell *matCellDef="let _" [attr.colspan]="displayedColumns.length" class="group-table-loading-cell">
+        <div class="group-table-loading" role="status" aria-live="polite" aria-busy="true">
+          <mat-spinner [diameter]="22" [strokeWidth]="3"></mat-spinner>
+          <span>Loading groups...</span>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    @if (loading()) {
+      <tr mat-row *matRowDef="let row; columns: loadingRowColumns"></tr>
+    } @else {
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    }
+
+    <tr class="mat-mdc-row group-table-empty-row" *matNoDataRow>
+      <td class="mat-mdc-cell group-table-empty-cell" [attr.colspan]="displayedColumns.length">
+        <div class="group-table-empty-state">
+          <mat-icon aria-hidden="true">group_off</mat-icon>
+          <span>No groups found</span>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<div class="group-table-paginator-wrap">
+  <mat-paginator
+    [length]="pagination().total"
+    [pageIndex]="pagination().page - 1"
+    [pageSize]="pagination().limit"
+    [pageSizeOptions]="pageSizeOptions"
+    [disabled]="loading()"
+    (page)="paginateMembers($event)"
+    showFirstLastButtons
+    aria-label="Groups table pagination"
+  />
+</div>
