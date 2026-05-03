@@ -1,5 +1,5 @@
 import { Component, computed, input, inject, output } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { DatePipe, TitleCasePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -22,7 +22,15 @@ export interface Attendance {
   selector: 'app-attendance-table',
   templateUrl: './attendance-table.component.html',
   styleUrl: './attendance-table.component.scss',
-  imports: [MatCardModule, MatButtonModule, MatIconModule, MatTooltipModule, DatePipe, LoadingSectionComponent],
+  imports: [
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
+    DatePipe,
+    LoadingSectionComponent,
+    TitleCasePipe
+  ],
 })
 export class AttendanceTableComponent {
   public readonly attendances = input<Attendance[]>([]);
