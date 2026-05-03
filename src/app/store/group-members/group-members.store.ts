@@ -143,7 +143,7 @@ export const GroupMembersStore = signalStore(
     ) => ({
       loadGroupMembers$: events.on(GroupMembersEvents.loadGroupMembers).pipe(
         exhaustMap(({ payload }) =>
-          from(groupMembersService.getPaginatedGroupMembers(payload.group_id, store.pagination().page, store.pagination().limit, store.filters().q, store.filters().department)).pipe(
+          from(groupMembersService.getPaginatedGroupMembers(payload.group_id, { page: store.pagination().page, limit: store.pagination().limit, q: store.filters().q, department: store.filters().department, })).pipe(
             mapResponse({
               next: (response) => GroupMembersEvents.loadGroupMembersSuccess(response),
               error: (error: unknown) => GroupMembersEvents.loadGroupMembersFailure(error instanceof Error ? error.message : "Failed to load group members"),
@@ -159,7 +159,7 @@ export const GroupMembersStore = signalStore(
         distinctUntilChanged((prev, curr) => prev.payload.q === curr.payload.q),
         debounceTime(500),
         exhaustMap(() =>
-          from(groupMembersService.getPaginatedGroupMembers(store.currentGroupId()!, store.pagination().page, store.pagination().limit, store.filters().q, store.filters().department)).pipe(
+          from(groupMembersService.getPaginatedGroupMembers(store.currentGroupId()!, { page: store.pagination().page, limit: store.pagination().limit, q: store.filters().q, department: store.filters().department, })).pipe(
             mapResponse({
               next: (response) => GroupMembersEvents.searchGroupMembersSuccess(response),
               error: (error: unknown) => GroupMembersEvents.searchGroupMembersFailure(error instanceof Error ? error.message : "Failed to search group members"),
@@ -173,7 +173,7 @@ export const GroupMembersStore = signalStore(
 
       filterGroupMembers$: events.on(GroupMembersEvents.filterGroupMembers).pipe(
         exhaustMap(() =>
-          from(groupMembersService.getPaginatedGroupMembers(store.currentGroupId()!, store.pagination().page, store.pagination().limit, store.filters().q, store.filters().department)).pipe(
+          from(groupMembersService.getPaginatedGroupMembers(store.currentGroupId()!, { page: store.pagination().page, limit: store.pagination().limit, q: store.filters().q, department: store.filters().department, })).pipe(
             mapResponse({
               next: (response) => GroupMembersEvents.filterGroupMembersSuccess(response),
               error: (error: unknown) => GroupMembersEvents.filterGroupMembersFailure(error instanceof Error ? error.message : "Failed to filter group members"),
@@ -187,7 +187,7 @@ export const GroupMembersStore = signalStore(
 
       paginateGroupMembers$: events.on(GroupMembersEvents.paginateGroupMembers).pipe(
         exhaustMap(() =>
-          from(groupMembersService.getPaginatedGroupMembers(store.currentGroupId()!, store.pagination().page, store.pagination().limit, store.filters().q, store.filters().department)).pipe(
+          from(groupMembersService.getPaginatedGroupMembers(store.currentGroupId()!, { page: store.pagination().page, limit: store.pagination().limit, q: store.filters().q, department: store.filters().department, })).pipe(
             mapResponse({
               next: (response) => GroupMembersEvents.paginateGroupMembersSuccess(response),
               error: (error: unknown) => GroupMembersEvents.paginateGroupMembersFailure(error instanceof Error ? error.message : "Failed to paginate group members"),
@@ -201,7 +201,7 @@ export const GroupMembersStore = signalStore(
 
       clearFilters$: events.on(GroupMembersEvents.clearFilters).pipe(
         exhaustMap(() =>
-          from(groupMembersService.getPaginatedGroupMembers(store.currentGroupId()!, store.pagination().page, store.pagination().limit)).pipe(
+          from(groupMembersService.getPaginatedGroupMembers(store.currentGroupId()!, { page: store.pagination().page, limit: store.pagination().limit, })).pipe(
             mapResponse({
               next: (response) => GroupMembersEvents.paginateGroupMembersSuccess(response),
               error: (error: unknown) => GroupMembersEvents.paginateGroupMembersFailure(error instanceof Error ? error.message : "Failed to load group members"),

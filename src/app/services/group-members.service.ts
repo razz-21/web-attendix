@@ -1,7 +1,7 @@
 import { environment } from "@/environments/environment";
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { GetPaginatedGroupMembers, GetGroupMember, PatchGroupMember, PostGroupMember } from "../types/group-members/group-members.type";
+import { GetPaginatedGroupMembers, GetPaginatedGroupMemberParams, GetGroupMember, PatchGroupMember, PostGroupMember } from "../types/group-members/group-members.type";
 import { lastValueFrom } from "rxjs";
 
 @Injectable({
@@ -11,7 +11,8 @@ export class GroupMembersService {
   private readonly http = inject(HttpClient);
   private readonly groupsApi = `${environment.apiBaseUrl}/api/v1/groups`;
 
-  public async getPaginatedGroupMembers(group_id: string, page: number, limit: number, q?: string, department?: string): Promise<GetPaginatedGroupMembers> {
+  public async getPaginatedGroupMembers(group_id: string, params: GetPaginatedGroupMemberParams): Promise<GetPaginatedGroupMembers> {
+    const { page = 1, limit = 10, q, department } = params;
     return lastValueFrom(
       this.http.get<GetPaginatedGroupMembers>(
         `${this.groupsApi}/${group_id}/members?page=${page}&limit=${limit}${q ? `&q=${q}` : ''}${department ? `&department=${department}` : ''}`

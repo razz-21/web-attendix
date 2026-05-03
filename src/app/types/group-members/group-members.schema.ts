@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+export const GroupMemberTypeSchema = z.enum(['student']);
+
 export const GroupMemberSchema = z.object({
   id: z.string().uuid(),
   rfid: z.string(),
@@ -7,7 +9,7 @@ export const GroupMemberSchema = z.object({
   department: z.string().optional(),
   year_level: z.string().optional(),
   section: z.string().optional(),
-  group_type: z.enum(['student']).default('student'),
+  group_type: GroupMemberTypeSchema.default('student'),
   group_id: z.string().uuid(),
   created_at: z.string(),
   updated_at: z.string(),
