@@ -11,8 +11,8 @@ import { Dispatcher } from '@ngrx/signals/events';
 import { AttendancesStore } from '@/app/store/attendances/attendances.store';
 import { AttendancesEvents } from '@/app/store/attendances/attendances.events';
 import { AuthService } from '@/app/services/auth.service';
-import { CreateAttendancePayload } from '@/app/services/attendances.service';
 import { SCHEDULE_DAY_MAP } from '@/app/constants/schedule-days.constant';
+import { AttendanceScheduleDays, PostAttendance } from '@/app/types/attendaces/attendances.types';
 
 @Component({
   selector: 'app-attendances',
@@ -93,12 +93,13 @@ export class AttendancesComponent implements OnInit {
       return;
     }
 
-    const backendPayload: CreateAttendancePayload = {
+    const eme = formData.scheduleDays.map(day => SCHEDULE_DAY_MAP[day]);
+    const backendPayload: PostAttendance = {
       id: crypto.randomUUID(),
       name: formData.name,
       code: formData.code,
       status: 'Active',
-      schedule_days: formData.scheduleDays.map(day => SCHEDULE_DAY_MAP[day]),
+      schedule_days: formData.scheduleDays.map(day => SCHEDULE_DAY_MAP[day] as AttendanceScheduleDays[number]),
       description: formData.description,
       late_threshold: formData.lateThreshold,
       created_by: this.currentUserId,

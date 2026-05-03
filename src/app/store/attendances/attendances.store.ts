@@ -1,15 +1,15 @@
 import { signalStore, withComputed, withState } from "@ngrx/signals";
-import { addEntity, removeEntity, setAllEntities, withEntities, SelectEntityId } from "@ngrx/signals/entities";
+import { addEntity, removeEntity, setAllEntities, withEntities, SelectEntityId, prependEntity } from "@ngrx/signals/entities";
 import { Events, on, withEventHandlers, withReducer } from "@ngrx/signals/events";
 import { AttendancesEvents } from "./attendances.events";
-import { BackendAttendance } from "@/app/services/attendances.service";
 import { computed, inject } from "@angular/core";
 import { AttendancesService } from "@/app/services/attendances.service";
 import { exhaustMap, from, map, tap } from "rxjs";
 import { mapResponse } from "@ngrx/operators";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { GetAttendance } from "@/app/types/attendaces/attendances.types";
 
-type AttendanceEntity = BackendAttendance;
+type AttendanceEntity = GetAttendance;
 
 type AttendancesState = {
   loading: boolean;
@@ -64,7 +64,7 @@ export const AttendancesStore = signalStore(
       error: null,
     })),
     on(AttendancesEvents.createAttendanceSuccess, ({ payload }) => [
-      addEntity(payload),
+      prependEntity(payload),
       {
         createLoading: false,
         error: null,
@@ -102,7 +102,7 @@ export const AttendancesStore = signalStore(
       error: null,
     })),
     on(AttendancesEvents.deleteAttendanceSuccess, ({ payload }) => [
-      removeEntity(payload),
+      removeEntity(payload.id),
       {
         deleteLoading: false,
         error: null,
@@ -111,7 +111,7 @@ export const AttendancesStore = signalStore(
     on(AttendancesEvents.deleteAttendanceFailure, (event, state) => ({
       ...state,
       deleteLoading: false,
-      error: event.payload,
+      error: event.payload.error,
     })),
   ),
 
@@ -126,7 +126,7 @@ export const AttendancesStore = signalStore(
         exhaustMap(() =>
           from(attendancesService.getAttendances()).pipe(
             mapResponse({
-              next: (response) => AttendancesEvents.loadAttendancesSuccess(response.data),
+              next: (response) => AttendancesEvents.loadAttendancesSuccess(response),
               error: (error: unknown) => AttendancesEvents.loadAttendancesFailure(error instanceof Error ? error.message : "Failed to load attendances"),
             })
           )
@@ -182,10 +182,10 @@ export const AttendancesStore = signalStore(
 
       deleteAttendance$: events.on(AttendancesEvents.deleteAttendance).pipe(
         exhaustMap(({ payload }) =>
-          from(attendancesService.deleteAttendance(payload)).pipe(
+          from(attendancesService.deleteAttendance(payload.id)).pipe(
             mapResponse({
               next: () => AttendancesEvents.deleteAttendanceSuccess(payload),
-              error: (error: unknown) => AttendancesEvents.deleteAttendanceFailure(error instanceof Error ? error.message : "Failed to delete attendance"),
+              error: (error: unknown) => AttendancesEvents.deleteAttendanceFailure({ error: error instanceof Error ? error.message : "Failed to delete attendance", attendance: payload }),
             })
           )
         )
@@ -197,7 +197,7 @@ export const AttendancesStore = signalStore(
       ),
       deleteAttendanceFailure$: events.on(AttendancesEvents.deleteAttendanceFailure).pipe(
         map(({ payload }) => {
-          snackBar.open(payload, "Close", { duration: 6000 });
+          snackBar.open(payload.error, "Close", { duration: 6000 });
         })
       ),
     })
