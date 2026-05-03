@@ -1,0 +1,37 @@
+:host {
+  display: block;
+  width: 100%;
+  max-height: 90vh; 
+}
+
+.group-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  max-height: 90vh;  
+}
+
+.group-form__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.group-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+textarea[matInput] {
+  min-height: 80px;
+  max-height: 400px;    
+  overflow-y: auto;      
+  resize: vertical;     
+}

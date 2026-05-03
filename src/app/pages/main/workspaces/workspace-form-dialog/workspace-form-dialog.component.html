@@ -1,0 +1,43 @@
+<mat-dialog-content class="workspace-form-dialog__content">
+  <h2>Add new workspace</h2>
+  <p>
+    Add a new workspace to the system. Fill the form below to create a new workspace.
+  </p>
+
+  <form [formRoot]="workspaceForm" class="workspace-form-dialog__form">
+    <div class="workspace-form-dialog__fields">
+      <mat-form-field class="full-width">
+        <mat-label>Name</mat-label>
+        <input matInput [formField]="workspaceForm.name" />
+        @if (workspaceForm.name().touched() && workspaceForm.name().invalid()) {
+          <mat-error>
+            @switch (workspaceForm.name().errors()[0]?.kind) {
+              @case ('required') {
+                Name is required
+              }
+            }
+          </mat-error>
+        }
+        <mat-hint>The name of the workspace.</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field class="full-width">
+        <mat-label>Description</mat-label>
+        <textarea matInput [formField]="workspaceForm.description" rows="3"></textarea>
+        <mat-hint>The description of the workspace.</mat-hint>
+      </mat-form-field>
+    </div>
+    
+    <div class="workspace-form-dialog__actions">
+      <button matButton="text" color="primary" (click)="cancel()">Cancel</button>
+      <button matButton="filled" color="primary" type="submit" [disabled]="workspaceForm().invalid() || loadingForm()">
+        @if (loadingForm()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          Create Workspace
+        }
+      </button>
+    </div>
+  </form>
+
+</mat-dialog-content>

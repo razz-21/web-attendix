@@ -5,8 +5,11 @@ import { ProfileComponent } from "./profile/profile.component";
 import { SettingsComponent } from "./settings/settings.component";
 import { AttendancesComponent } from "./attendances/attendaces.component";
 import { GroupsComponent } from "./groups/groups.component";
+import { GroupMemberComponent } from "./groups/group-members/groups-member.component"; 
 import { UsersComponent } from "./users/users.component";
 import { UserDetailsComponent } from "./user-details/user-details.component";
+import { WorkspacesComponent } from "./workspaces/workspaces.component";
+import { WorkspaceDetailsComponent } from "./workspace-details/workspace-details.component";
 
 export const mainRoutes: Routes = [
   {
@@ -30,6 +33,10 @@ export const mainRoutes: Routes = [
         component: UsersComponent
       },
       {
+        path: 'groups/:id/members', 
+        component: GroupMemberComponent 
+      },
+      {
         path: 'users/:id',
         component: UserDetailsComponent
       },
@@ -40,6 +47,14 @@ export const mainRoutes: Routes = [
       {
         path: 'settings',
         component: SettingsComponent
+      },
+      {
+        path: 'workspaces',
+        component: WorkspacesComponent,
+      },
+      {
+        path: 'workspaces/:id',
+        component: WorkspaceDetailsComponent
       }
     ]
   }

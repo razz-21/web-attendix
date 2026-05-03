@@ -13,7 +13,6 @@ import { Dispatcher } from '@ngrx/signals/events';
 import { UsersEvents } from '@/app/store/users/users.events';
 import { UsersStore } from '@/app/store/users/users.store';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { UsersService } from '@/app/services/users.service';
 import { environment } from '@/environments/environment';
 
 export interface UserFormModel {
@@ -44,7 +43,6 @@ const emptyModel = (): UserFormModel => ({
   selector: 'app-user-form',
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormRoot,
     FormField,
@@ -60,7 +58,6 @@ const emptyModel = (): UserFormModel => ({
 export class UserFormComponent {
   private readonly dispatcher = inject(Dispatcher);
   private readonly usersStore = inject(UsersStore);
-  private readonly usersService = inject(UsersService);
 
   public readonly model = signal<UserFormModel>(emptyModel());
   public readonly passwordHidden = signal(true);
@@ -147,6 +144,7 @@ export class UserFormComponent {
           username: m.username.trim(),
           password: m.password,
           status: 'needs_verification',
+          workspace_id: "",
           created_at: now,
           updated_at: now,
         };

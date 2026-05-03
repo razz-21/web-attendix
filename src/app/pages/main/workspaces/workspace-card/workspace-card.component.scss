@@ -1,0 +1,73 @@
+mat-card {
+  cursor: pointer;
+  height: 100%;
+
+  &:hover,
+  &:focus-visible {
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  }
+}
+
+mat-card-header {
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+mat-card-actions {
+  margin-top: auto;
+  padding: 0.75rem;
+}
+
+.workspace-card__header-image {
+  height: 4rem;
+  padding: 1rem;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+
+  svg {
+    position: absolute;
+    left: 45%;
+    bottom: -1.5rem;
+    transform: translateX(-50%);
+    width: 8rem;
+    height: 8rem;
+  }
+}
+
+.workspace-card__description {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--mat-sys-on-surface-variant);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.workspace-card__stats {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.workspace-card__stat {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 1rem;
+  background-color: var(--mat-sys-surface-container-high);
+
+  > mat-icon {
+    font-size: 1.25rem;
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+.workspace-card__stat-value {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+}
