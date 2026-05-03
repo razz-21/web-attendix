@@ -4,7 +4,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
-import { AttendanceTableComponent, Attendance } from './attendance-table/attendance-table.component';
+import { AttendanceTableComponent } from './attendance-table/attendance-table.component';
 import { AttendanceFormModalComponent } from './attendance-form-modal/attendance-form-modal.component';
 import { AttendanceFormModel } from './attendance-form/attendance-form.component';
 import { Dispatcher } from '@ngrx/signals/events';
@@ -12,17 +12,7 @@ import { AttendancesStore } from '@/app/store/attendances/attendances.store';
 import { AttendancesEvents } from '@/app/store/attendances/attendances.events';
 import { AuthService } from '@/app/services/auth.service';
 import { CreateAttendancePayload } from '@/app/services/attendances.service';
-
-
-const SCHEDULE_DAY_MAP: Record<string, string> = {
-  'Monday': 'Mon',
-  'Tuesday': 'Tue',
-  'Wednesday': 'Wed',
-  'Thursday': 'Thu',
-  'Friday': 'Fri',
-  'Saturday': 'Sat',
-  'Sunday': 'Sun',
-};
+import { SCHEDULE_DAY_MAP } from '@/app/constants/schedule-days.constant';
 
 @Component({
   selector: 'app-attendances',
@@ -107,7 +97,7 @@ export class AttendancesComponent implements OnInit {
       id: crypto.randomUUID(),
       name: formData.name,
       code: formData.code,
-      status: formData.status,
+      status: 'Active',
       schedule_days: formData.scheduleDays.map(day => SCHEDULE_DAY_MAP[day]),
       description: formData.description,
       late_threshold: formData.lateThreshold,
@@ -120,15 +110,6 @@ export class AttendancesComponent implements OnInit {
   }
 
   private backendDaysToFrontendDays(days: string[]): string[] {
-    const dayMap: Record<string, string> = {
-      'Mon': 'Monday',
-      'Tue': 'Tuesday',
-      'Wed': 'Wednesday',
-      'Thu': 'Thursday',
-      'Fri': 'Friday',
-      'Sat': 'Saturday',
-      'Sun': 'Sunday',
-    };
-    return days.map(day => dayMap[day] || day);
+    return days.map(day => SCHEDULE_DAY_MAP[day] || day);
   }
 }
