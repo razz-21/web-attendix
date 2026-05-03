@@ -23,6 +23,6 @@ export const GetPaginatedGroupsSchema = z.object({
   page: z.number(),
   limit: z.number(),
 });
-export const PostGroupSchema = GroupSchema.omit({ updated_at: true });
+export const PostGroupSchema = GroupSchema;
 export const PatchGroupSchema = PostGroupSchema.partial();
 export const DeleteGroupSchema = z.object({ id: z.string() });

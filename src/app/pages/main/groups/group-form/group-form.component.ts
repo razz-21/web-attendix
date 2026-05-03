@@ -58,6 +58,7 @@ export class GroupFormComponent {
           workspace_id: crypto.randomUUID() as string,
           created_by: this.authStore.user()?.id ?? crypto.randomUUID(),
           created_at: now,
+          updated_at: now,
         };
         PostGroupSchema.parse(payload);
         this.dispatcher.dispatch(GroupsEvents.createGroup({ group: payload }));
