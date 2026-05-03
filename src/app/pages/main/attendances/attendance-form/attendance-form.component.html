@@ -1,0 +1,99 @@
+<form class="attendance-form" [formRoot]="attendanceForm">
+  <div class="attendance-form__fields">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Attendance name</mat-label>
+      <input matInput [formField]="attendanceForm.name" type="text" />
+      <mat-hint>Name of the attendance configuration (e.g., Morning Shift)</mat-hint>
+      @if (attendanceForm.name().touched() && attendanceForm.name().invalid()) {
+        <mat-error>
+          @switch (attendanceForm.name().errors()[0]?.kind) {
+            @case ('required') {
+              Attendance name is required
+            }
+            @default {
+              {{ attendanceForm.name().errors()[0]?.message ?? 'Invalid value' }}
+            }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput [formField]="attendanceForm.description" rows="3"></textarea>
+      <mat-hint>Short description of the attendance configuration</mat-hint>
+      @if (attendanceForm.description().touched() && attendanceForm.description().invalid()) {
+        <mat-error>
+          @switch (attendanceForm.description().errors()[0]?.kind) {
+            @case ('required') {
+              Description is required
+            }
+            @default {
+              {{ attendanceForm.description().errors()[0]?.message ?? 'Invalid value' }}
+            }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Late threshold (minutes)</mat-label>
+      <input matInput [formField]="attendanceForm.lateThreshold" type="number" />
+      <mat-hint>Minutes allowed before marking as late</mat-hint>
+      @if (attendanceForm.lateThreshold().touched() && attendanceForm.lateThreshold().invalid()) {
+        <mat-error>
+          @switch (attendanceForm.lateThreshold().errors()[0]?.kind) {
+            @case ('required') {
+              Late threshold is required
+            }
+            @case ('min') {
+              Minimum value is 1
+            }
+            @default {
+              {{ attendanceForm.lateThreshold().errors()[0]?.message ?? 'Invalid value' }}
+            }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <div class="attendance-form__schedule-section">
+      <label class="attendance-form__schedule-label">Schedule Days</label>
+      <div class="attendance-form__schedule-grid">
+        @for (day of scheduleDays; track day) {
+          <mat-checkbox
+            [checked]="isScheduleDaySelected(day)"
+            (change)="toggleScheduleDay(day)"
+            class="attendance-form__schedule-checkbox"
+          >
+            {{ day }}
+          </mat-checkbox>
+        }
+      </div>
+      @if (model().scheduleDays.length === 0) {
+        <mat-hint class="attendance-form__schedule-hint">Select at least one day</mat-hint>
+      }
+    </div>
+
+    <div class="attendance-form__code-section">
+      <label class="attendance-form__code-label">Code:</label>
+      <div class="attendance-form__code-box">
+        <span class="attendance-form__code-value">{{ generatedCode() }}</span>
+      </div>
+      <p class="attendance-form__code-hint">The code will be used to identify the attendance and allow participants to join.</p>
+    </div>
+  </div>
+
+  <div class="attendance-form__actions">
+    <button type="button" matButton="tonal" color="primary" class="full-width" (click)="cancel()">
+      Cancel
+    </button>
+    <button type="submit" matButton="filled" color="primary" class="full-width" [disabled]="isLoadingForm() || attendanceForm().invalid()">
+      @if (isLoadingForm()) {
+        <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+        <span>Create attendance</span>
+      }
+    </button>
+  </div>
+</form>

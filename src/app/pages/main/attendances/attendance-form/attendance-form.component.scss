@@ -1,0 +1,102 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.attendance-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.attendance-form__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.attendance-form__schedule-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--mat-sys-outline, rgba(0, 0, 0, 0.12));
+  border-radius: 4px;
+  background: var(--mat-sys-surface, rgba(0, 0, 0, 0.02));
+}
+
+.attendance-form__schedule-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface, rgba(0, 0, 0, 0.87));
+}
+
+.attendance-form__schedule-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.5rem;
+}
+
+.attendance-form__schedule-checkbox {
+  margin: 0;
+}
+
+.attendance-form__schedule-hint {
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
+  margin-top: 0.25rem;
+}
+
+.attendance-form__code-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.attendance-form__code-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface, rgba(0, 0, 0, 0.87));
+}
+
+.attendance-form__code-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  border: 2px dashed var(--mat-sys-primary, #6200ea);
+  border-radius: 4px;
+  background: var(--mat-sys-surface-container-low, rgba(0, 0, 0, 0.02));
+  min-height: 80px;
+}
+
+.attendance-form__code-value {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--mat-sys-primary, #6200ea);
+  letter-spacing: 2px;
+}
+
+.attendance-form__code-hint {
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
+  margin: 0;
+  line-height: 1.4;
+}
+
+.attendance-form__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+@media (max-width: 520px) {
+  .attendance-form__schedule-grid {
+    grid-template-columns: 1fr;
+  }
+}

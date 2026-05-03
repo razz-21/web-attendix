@@ -1,0 +1,7 @@
+<mat-dialog-content class="attendance-form-modal__content">
+  <h2>Add attendance configuration</h2>
+  <p>
+    Create a new attendance configuration. Fill the form below to add it to the system.
+  </p>
+  <app-attendance-form (formSubmitted)="onFormSubmitted($event)" (formCancelled)="onFormCancelled()" />
+</mat-dialog-content>

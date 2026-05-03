@@ -1,0 +1,52 @@
+.attendances-page {
+  padding: 1.5rem;
+}
+
+.attendances-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+
+
+
+.attendances-page-header-actions {
+  flex-shrink: 0;
+}
+
+.attendance-filter {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--mat-sys-outline);
+}
+
+.attendance-filter__search {
+  width: 320px;
+}
+
+.attendances-page-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+@media (max-width: 640px) {
+  .attendances-page {
+    padding: 1rem;
+  }
+
+  .attendances-page-header {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .attendances-page-header-actions {
+      width: 100%;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+}

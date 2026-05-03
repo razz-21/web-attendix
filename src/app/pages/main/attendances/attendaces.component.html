@@ -1,1 +1,30 @@
-Attendances
+<div class="attendances-page">
+  <div class="attendances-page-header">
+    <div class="page-header">
+      <div class="page-title">Attendances</div>
+      <div class="page-description">Manage attendance configurations and schedules.</div>
+    </div>
+
+    <div class="attendances-page-header-actions">
+      <button matButton="filled" color="primary" type="button" (click)="openAddAttendance()">
+        Add new attendance
+      </button>
+    </div>
+  </div>
+
+  <div class="attendance-filter">
+    <mat-form-field appearance="outline" class="attendance-filter__search">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput placeholder="Search attendances" [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)" />
+      @if(searchQuery()) {
+        <button mat-icon-button matSuffix type="button" (click)="searchQuery.set('')">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+  </div>
+
+  <div class="attendances-page-content">
+    <app-attendance-table [attendances]="filteredAttendances()" />
+  </div>
+</div>
