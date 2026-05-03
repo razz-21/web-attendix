@@ -12,22 +12,12 @@ import { AttendancesStore } from '@/app/store/attendances/attendances.store';
 import { AttendancesEvents } from '@/app/store/attendances/attendances.events';
 import { AuthService } from '@/app/services/auth.service';
 import { CreateAttendancePayload } from '@/app/services/attendances.service';
-
-
-const SCHEDULE_DAY_MAP: Record<string, string> = {
-  'Monday': 'Mon',
-  'Tuesday': 'Tue',
-  'Wednesday': 'Wed',
-  'Thursday': 'Thu',
-  'Friday': 'Fri',
-  'Saturday': 'Sat',
-  'Sunday': 'Sun',
-};
+import { SCHEDULE_DAY_MAP } from '@/app/constants/schedule-days.constant';
 
 @Component({
   selector: 'app-attendances',
-  templateUrl: './attendaces.component.html',
-  styleUrl: './attendaces.component.scss',
+  templateUrl: './attendances.component.html',
+  styleUrl: './attendances.component.scss',
   imports: [MatButtonModule, MatFormFieldModule, MatInputModule, MatIconModule, AttendanceTableComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

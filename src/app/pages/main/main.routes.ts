@@ -3,7 +3,7 @@ import { DashboardComponent } from "./dashboard/dashboard.component";
 import { MainComponent } from "./main.component";
 import { ProfileComponent } from "./profile/profile.component";
 import { SettingsComponent } from "./settings/settings.component";
-import { AttendancesComponent } from "./attendances/attendaces.component";
+import { AttendancesComponent } from "./attendances/attendances.component";
 import { GroupsComponent } from "./groups/groups.component";
 import { UsersComponent } from "./users/users.component";
 import { UserDetailsComponent } from "./user-details/user-details.component";
