@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, output, signal } from '@angular/core';
-import { FormField, FormRoot, form, required, min } from '@angular/forms/signals';
+import { FormField, FormRoot, form, required, min, validate } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -88,6 +88,9 @@ export class AttendanceFormComponent {
     required(root.description);
     required(root.lateThreshold);
     min(root.lateThreshold, 1);
+    validate(root.scheduleDays, () => {
+      return this.model().scheduleDays.length === 0 ? [{ kind: 'required' }] : null;
+    });
   }, {
     submission: {
       action: async () => {

@@ -15,7 +15,9 @@ type AttendancesState = {
   loading: boolean;
   createLoading: boolean;
   updateLoading: boolean;
+  archiveLoading: boolean;
   deleteLoading: boolean;
+  currentArchiveAttendance: GetAttendance | null;
   error: string | null;
 };
 
@@ -25,7 +27,9 @@ const initialState: AttendancesState = {
   loading: false,
   createLoading: false,
   updateLoading: false,
+  archiveLoading: false,
   deleteLoading: false,
+  currentArchiveAttendance: null,
   error: null,
 };
 
@@ -33,8 +37,9 @@ export const AttendancesStore = signalStore(
   { providedIn: "root" },
   withEntities<AttendanceEntity>(),
   withState(initialState),
-  withComputed(({ entities }) => ({
+  withComputed(({ entities, entityMap }) => ({
     attendances: entities,
+    attendancesMap: entityMap,
     hasAttendances: computed(() => !!entities().length),
   })),
   withReducer(
@@ -94,6 +99,20 @@ export const AttendancesStore = signalStore(
       updateLoading: false,
       error: event.payload,
     })),
+
+    // Archive Attendance
+    on(AttendancesEvents.archiveAttendance, ({ payload }, state) => [
+      removeEntity(payload.id),
+      { ...state, archiveLoading: true, currentArchiveAttendance: payload, error: null },
+    ]),
+    on(AttendancesEvents.archiveAttendanceSuccess, ({ payload }) => [
+      addEntity(payload),
+      { archiveLoading: false, error: null, currentArchiveAttendance: null },
+    ]),
+    on(AttendancesEvents.archiveAttendanceFailure, (event) => [
+      addEntity(event.payload.attendance),
+      { archiveLoading: false, error: event.payload.error, currentArchiveAttendance: null },
+    ]),
 
     // Delete Attendance
     on(AttendancesEvents.deleteAttendance, (_, state) => ({
@@ -177,6 +196,27 @@ export const AttendancesStore = signalStore(
       updateAttendanceFailure$: events.on(AttendancesEvents.updateAttendanceFailure).pipe(
         map(({ payload }) => {
           snackBar.open(payload, "Close", { duration: 6000 });
+        })
+      ),
+
+      archiveAttendance$: events.on(AttendancesEvents.archiveAttendance).pipe(
+        exhaustMap(({ payload }) =>
+          from(attendancesService.updateAttendance(payload.id, { status: 'Archived' })).pipe(
+            mapResponse({
+              next: (response) => AttendancesEvents.archiveAttendanceSuccess(response),
+              error: (error: unknown) => AttendancesEvents.archiveAttendanceFailure({ error: error instanceof Error ? error.message : "Failed to archive attendance", attendance: payload }),
+            })
+          )
+        )
+      ),
+      archiveAttendanceSuccess$: events.on(AttendancesEvents.archiveAttendanceSuccess).pipe(
+        map(() => {
+          snackBar.open('Attendance archived successfully', 'Close', { duration: 5000 });
+        })
+      ),
+      archiveAttendanceFailure$: events.on(AttendancesEvents.archiveAttendanceFailure).pipe(
+        map(({ payload }) => {
+          snackBar.open(payload.error, "Close", { duration: 6000 });
         })
       ),
 

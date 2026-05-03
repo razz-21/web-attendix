@@ -17,6 +17,10 @@ export const AttendancesEvents = eventGroup({
     updateAttendanceSuccess: type<GetAttendance>(),
     updateAttendanceFailure: type<string>(),
 
+    archiveAttendance: type<GetAttendance>(),
+    archiveAttendanceSuccess: type<GetAttendance>(),
+    archiveAttendanceFailure: type<{ error: string; attendance: GetAttendance }>(),
+
     deleteAttendance: type<GetAttendance>(),
     deleteAttendanceSuccess: type<GetAttendance>(),
     deleteAttendanceFailure: type<{ error: string, attendance: GetAttendance }>(),

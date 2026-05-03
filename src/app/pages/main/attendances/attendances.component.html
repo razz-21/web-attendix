@@ -22,9 +22,17 @@
         </button>
       }
     </mat-form-field>
+
+    <mat-form-field appearance="outline" class="attendance-filter__status">
+      <mat-label>Status</mat-label>
+      <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
+        <mat-option value="Active">Active</mat-option>
+        <mat-option value="Archived">Archived</mat-option>
+      </mat-select>
+    </mat-form-field>
   </div>
 
   <div class="attendances-page-content">
-    <app-attendance-table [attendances]="filteredAttendances()" />
+    <app-attendance-table [attendances]="filteredAttendances()" (attendanceArchived)="onArchiveAttendance($event)" />
   </div>
 </div>

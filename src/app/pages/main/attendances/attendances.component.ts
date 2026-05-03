@@ -3,6 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
 import { MatDialog } from '@angular/material/dialog';
 import { AttendanceTableComponent } from './attendance-table/attendance-table.component';
 import { AttendanceFormModalComponent } from './attendance-form-modal/attendance-form-modal.component';
@@ -11,20 +12,22 @@ import { Dispatcher } from '@ngrx/signals/events';
 import { AttendancesStore } from '@/app/store/attendances/attendances.store';
 import { AttendancesEvents } from '@/app/store/attendances/attendances.events';
 import { AuthService } from '@/app/services/auth.service';
+import { ConfirmationDialogService } from '@/app/services/confirmation-dialog.service';
 import { SCHEDULE_DAY_MAP } from '@/app/constants/schedule-days.constant';
-import { AttendanceScheduleDays, PostAttendance } from '@/app/types/attendaces/attendances.types';
+import { AttendanceScheduleDays, PostAttendance, GetAttendance } from '@/app/types/attendaces/attendances.types';
 
 @Component({
   selector: 'app-attendances',
   templateUrl: './attendances.component.html',
   styleUrl: './attendances.component.scss',
-  imports: [MatButtonModule, MatFormFieldModule, MatInputModule, MatIconModule, AttendanceTableComponent],
+  imports: [MatButtonModule, MatFormFieldModule, MatInputModule, MatIconModule, MatSelectModule, AttendanceTableComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AttendancesComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly dispatcher = inject(Dispatcher);
   private readonly authService = inject(AuthService);
+  private readonly confirmationDialogService = inject(ConfirmationDialogService);
   private readonly attendancesStore = inject(AttendancesStore);
 
   public readonly attendances = computed(() =>
@@ -41,18 +44,19 @@ export class AttendancesComponent implements OnInit {
   );
 
   public readonly searchQuery = signal('');
+  public readonly statusFilter = signal<'Active' | 'Archived'>('Active');
 
   public readonly filteredAttendances = computed(() => {
     const q = this.searchQuery().toLowerCase().trim();
-    if (!q) return this.attendances();
-    return this.attendances().filter(a => {
-      return (
-        a.name.toLowerCase().includes(q) ||
-        a.code.toLowerCase().includes(q) ||
-        a.description.toLowerCase().includes(q) ||
-        a.status.toLowerCase().includes(q)
-      );
-    });
+    const status = this.statusFilter();
+    let filtered = this.attendances();
+
+    if (q) {
+      filtered = filtered.filter(a => a.name.toLowerCase().includes(q));
+    }
+
+    filtered = filtered.filter(a => a.status === status);
+    return filtered;
   });
 
   private currentUserId: string | null = null;
@@ -112,5 +116,21 @@ export class AttendancesComponent implements OnInit {
 
   private backendDaysToFrontendDays(days: string[]): string[] {
     return days.map(day => SCHEDULE_DAY_MAP[day] || day);
+  }
+
+  public async onArchiveAttendance(attendanceId: string): Promise<void> {
+    const attendance = this.attendancesStore.attendancesMap()[attendanceId];
+    if (!attendance) return;
+
+    const confirmed = await this.confirmationDialogService.confirm({
+      title: 'Archive Attendance',
+      message: `Are you sure you want to archive <strong>${attendance.name}</strong>? This action can be undone.`,
+      positiveButtonText: 'Archive',
+      negativeButtonText: 'Cancel',
+    });
+
+    if (confirmed) {
+      this.dispatcher.dispatch(AttendancesEvents.archiveAttendance(attendance));
+    }
   }
 }

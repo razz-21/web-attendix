@@ -1,4 +1,4 @@
-import { Component, computed, input, inject } from '@angular/core';
+import { Component, computed, input, inject, output } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -26,13 +26,14 @@ export class AttendanceTableComponent {
   public readonly attendances = input<Attendance[]>([]);
   public readonly hasAttendances = computed(() => this.attendances().length > 0);
 
+  public readonly attendanceArchived = output<string>();
+
   public onEditAttendance(attendance: Attendance): void {
     console.log('Edit attendance:', attendance);
     // TODO: Handle edit action
   }
 
-  public onDeleteAttendance(id: string): void {
-    console.log('Delete attendance:', id);
-    // TODO: Handle delete action
+  public onArchiveAttendance(id: string): void {
+    this.attendanceArchived.emit(id);
   }
 }

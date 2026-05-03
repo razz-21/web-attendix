@@ -15,10 +15,17 @@
 
 .attendance-filter {
   margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
 }
 
 .attendance-filter__search {
   width: 320px;
+}
+
+.attendance-filter__status {
+  width: 200px;
 }
 
 .attendances-page-content {
