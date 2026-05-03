@@ -1,1 +1,18 @@
-Groups
+<div class="groups-page">
+  <div class="groups-page-header">
+    <div class="page-header">
+      <div class="page-title">Groups</div>
+      <div class="page-description">Manage your groups.</div>
+    </div>
+
+    <div class="groups-page-header-actions">
+      <button matButton="filled" color="primary" type="button" (click)="openAddGroup()">
+        Add new group
+      </button>
+    </div>
+  </div>
+
+  <div class="groups-page-content">
+    <app-group-table />
+  </div>
+</div>

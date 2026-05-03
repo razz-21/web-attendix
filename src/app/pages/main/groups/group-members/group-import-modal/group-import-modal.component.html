@@ -1,0 +1,44 @@
+<section class="group-import-modal">
+  <h2 class="group-import-modal__title">Import Group Members</h2>
+  <p class="group-import-modal__subtitle">Upload a CSV file to import group members into the group.</p>
+
+  @if (!importLoading()) {
+    <div
+      class="drop-zone"
+      [class.drag-over]="isDragOver"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+      (click)="triggerFileInput()"
+      tabindex="0"
+      role="button"
+    >
+      <p>Drag and drop your CSV file here</p>
+      <p class="drop-zone__or">or</p>
+      <button matButton="outlined" color="primary" type="button" (click)="$event.stopPropagation(); triggerFileInput()">
+        Choose file
+      </button>
+
+      @if (selectedFileName) {
+        <p class="drop-zone__filename">Selected: <strong>{{ selectedFileName }}</strong></p>
+      } @else {
+        <p class="drop-zone__hint">Only .csv files are supported.</p>
+      }
+
+      <input #fileInput type="file" class="hidden-input" accept=".csv" (change)="onFileChange($event)" />
+    </div>
+  } @else {
+    <section class="import-loading">
+      <mat-spinner diameter="20"></mat-spinner>
+      <p>Processing your file. Please don't close this window.</p>
+    </section>
+  }
+
+  <section class="group-import-modal__actions">
+    <button matButton="text" color="primary" type="button" (click)="downloadTemplate()">
+      <mat-icon>download</mat-icon>
+      Download Template
+    </button>
+    <button matButton="tonal" color="primary" type="button" (click)="closeDialog()">Cancel</button>
+  </section>
+</section>

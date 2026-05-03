@@ -9,9 +9,27 @@
   gap: 1rem;
 }
 
+.groups-page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.page-header-info { 
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
 .groups-page-content {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   margin-top: 2rem;
+}
+
+.page-header-top {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
