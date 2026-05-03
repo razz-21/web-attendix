@@ -15,9 +15,9 @@
   <div class="attendance-filter">
     <mat-form-field appearance="outline" class="attendance-filter__search">
       <mat-icon matPrefix>search</mat-icon>
-      <input matInput placeholder="Search attendances" [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)" />
+      <input matInput placeholder="Search attendances" [ngModel]="searchQuery()" (ngModelChange)="searchAttendances($event)" />
       @if(searchQuery()) {
-        <button mat-icon-button matSuffix type="button" (click)="searchQuery.set('')">
+        <button mat-icon-button matSuffix type="button" (click)="clearSearchAttendances()">
           <mat-icon>close</mat-icon>
         </button>
       }
@@ -25,14 +25,14 @@
 
     <mat-form-field appearance="outline" class="attendance-filter__status">
       <mat-label>Status</mat-label>
-      <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
-        <mat-option value="Active">Active</mat-option>
-        <mat-option value="Archived">Archived</mat-option>
+      <mat-select [ngModel]="statusFilter()" (ngModelChange)="filterAttendancesByStatus($event)">
+        <mat-option value="active">Active</mat-option>
+        <mat-option value="archived">Archived</mat-option>
       </mat-select>
     </mat-form-field>
   </div>
 
   <div class="attendances-page-content">
-    <app-attendance-table [attendances]="filteredAttendances()" (attendanceArchived)="onArchiveAttendance($event)" />
+    <app-attendance-table [attendances]="attendances()" [loading]="loading()" (attendanceArchived)="onArchiveAttendance($event)" />
   </div>
 </div>

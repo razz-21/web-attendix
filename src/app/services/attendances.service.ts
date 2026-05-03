@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '@/environments/environment';
 import { lastValueFrom } from 'rxjs';
-import { GetAttendance, GetPaginatedAttendances, PatchAttendance, PostAttendance } from '../types/attendaces/attendances.types';
+import { GetAttendance, GetAttendancesQuery, GetPaginatedAttendances, PatchAttendance, PostAttendance } from '../types/attendaces/attendances.types';
 
 @Injectable({
   providedIn: 'root'
@@ -11,10 +11,14 @@ export class AttendancesService {
   private readonly http = inject(HttpClient);
   private readonly attendancesApi = `${environment.apiBaseUrl}/api/v1/attendances`;
 
-  public getAttendances(): Promise<GetAttendance[]> {
+  public getAttendances(params: GetAttendancesQuery): Promise<GetAttendance[]> {
+    const queryParams = new URLSearchParams();
+    if (params.q) queryParams.set('q', params.q);
+    if (params.status) queryParams.set('status', params.status);
+    
     return lastValueFrom(
       this.http.get<GetAttendance[]>(
-        `${this.attendancesApi}`
+        `${this.attendancesApi}?${queryParams.toString()}`
       )
     );
   }

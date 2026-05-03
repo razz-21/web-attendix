@@ -1,4 +1,4 @@
-import { GetAttendance, GetPaginatedAttendances, PatchAttendance, PostAttendance } from '@/app/types/attendaces/attendances.types';
+import { AttendanceStatus, GetAttendance, GetPaginatedAttendances, PatchAttendance, PostAttendance } from '@/app/types/attendaces/attendances.types';
 import { type } from '@ngrx/signals';
 import { eventGroup } from '@ngrx/signals/events';
 
@@ -8,6 +8,14 @@ export const AttendancesEvents = eventGroup({
     loadAttendances: type<void>(),
     loadAttendancesSuccess: type<GetAttendance[]>(),
     loadAttendancesFailure: type<string>(),
+
+    searchAttendances: type<{ q: string }>(),
+    searchAttendancesSuccess: type<GetAttendance[]>(),
+    searchAttendancesFailure: type<string>(),
+
+    filterAttendances: type<{ status: AttendanceStatus }>(),
+    filterAttendancesSuccess: type<GetAttendance[]>(),
+    filterAttendancesFailure: type<string>(),
 
     createAttendance: type<PostAttendance>(),
     createAttendanceSuccess: type<GetAttendance>(),

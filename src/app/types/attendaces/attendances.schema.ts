@@ -3,7 +3,7 @@ import { UserSchema } from "../users/users.schema";
 
 export const AttendanceScheduleDaysSchema = z.array(z.enum(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']))
 
-export const AttendanceStatusSchema = z.enum(['Active', 'Archived'])
+export const AttendanceStatusSchema = z.enum(['active', 'archived'])
 
 export const AttendanceSchema = z.object({
   id: z.uuidv4(),
@@ -34,4 +34,5 @@ export const PatchAttendanceSchema = AttendanceSchema.omit({ id: true, created_a
 export const DeleteAttendanceSchema = AttendanceSchema.pick({ id: true })
 export const GetAttendancesQuerySchema = z.object({
   q: z.string().optional(),
+  status: AttendanceStatusSchema.optional(),
 })

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal, computed, model } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -14,14 +14,23 @@ import { AttendancesEvents } from '@/app/store/attendances/attendances.events';
 import { AuthService } from '@/app/services/auth.service';
 import { ConfirmationDialogService } from '@/app/services/confirmation-dialog.service';
 import { SCHEDULE_DAY_MAP } from '@/app/constants/schedule-days.constant';
-import { AttendanceScheduleDays, PostAttendance, GetAttendance } from '@/app/types/attendaces/attendances.types';
+import { AttendanceScheduleDays, PostAttendance, GetAttendance, AttendanceStatus } from '@/app/types/attendaces/attendances.types';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-attendances',
   templateUrl: './attendances.component.html',
   styleUrl: './attendances.component.scss',
-  imports: [MatButtonModule, MatFormFieldModule, MatInputModule, MatIconModule, MatSelectModule, AttendanceTableComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatSelectModule,
+    AttendanceTableComponent,
+    FormsModule,
+    ReactiveFormsModule
+  ],
 })
 export class AttendancesComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
@@ -29,6 +38,12 @@ export class AttendancesComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly confirmationDialogService = inject(ConfirmationDialogService);
   private readonly attendancesStore = inject(AttendancesStore);
+
+  public readonly statusFilter = model<AttendanceStatus>('active');
+
+  public readonly searchQuery = model<string>('');
+
+  private currentUserId: string | null = null;
 
   public readonly attendances = computed(() =>
     this.attendancesStore.attendances().map(attendance => ({
@@ -43,26 +58,29 @@ export class AttendancesComponent implements OnInit {
     }))
   );
 
-  public readonly searchQuery = signal('');
-  public readonly statusFilter = signal<'Active' | 'Archived'>('Active');
-
-  public readonly filteredAttendances = computed(() => {
-    const q = this.searchQuery().toLowerCase().trim();
-    const status = this.statusFilter();
-    let filtered = this.attendances();
-
-    if (q) {
-      filtered = filtered.filter(a => a.name.toLowerCase().includes(q));
-    }
-
-    filtered = filtered.filter(a => a.status === status);
-    return filtered;
-  });
-
-  private currentUserId: string | null = null;
+  public readonly loading = computed(() => this.attendancesStore.loading());
 
   public ngOnInit(): void {
     this.loadUserAndAttendances();
+  }
+
+  public searchAttendances(query: string): void {
+    this.searchQuery.set(query);
+    this.dispatcher.dispatch(AttendancesEvents.searchAttendances({ q: this.searchQuery() ?? '' }));
+  }
+
+  public clearSearchAttendances(): void {
+    this.searchQuery.set('');
+    this.dispatcher.dispatch(AttendancesEvents.searchAttendances({ q: '' }));
+  }
+
+  public filterAttendancesByStatus(status: AttendanceStatus): void {
+    this.statusFilter.set(status);
+    this.dispatcher.dispatch(AttendancesEvents.filterAttendances({ status }));
+  }
+
+  public filterAttendances(): void {
+    this.dispatcher.dispatch(AttendancesEvents.filterAttendances({ status: this.statusFilter() }));
   }
 
   private async loadUserAndAttendances(): Promise<void> {
@@ -97,12 +115,11 @@ export class AttendancesComponent implements OnInit {
       return;
     }
 
-    const eme = formData.scheduleDays.map(day => SCHEDULE_DAY_MAP[day]);
     const backendPayload: PostAttendance = {
       id: crypto.randomUUID(),
       name: formData.name,
       code: formData.code,
-      status: 'Active',
+      status: 'active',
       schedule_days: formData.scheduleDays.map(day => SCHEDULE_DAY_MAP[day] as AttendanceScheduleDays[number]),
       description: formData.description,
       late_threshold: formData.lateThreshold,
