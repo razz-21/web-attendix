@@ -141,13 +141,29 @@ export class AttendancesComponent implements OnInit {
 
     const confirmed = await this.confirmationDialogService.confirm({
       title: 'Archive Attendance',
-      message: `Are you sure you want to archive <strong>${attendance.name}</strong>? This action can be undone.`,
+      message: `Are you sure you want to archive <strong>${attendance.name}</strong>? This attendance will move to the archived list and will not be visible to the users.`,
       positiveButtonText: 'Archive',
       negativeButtonText: 'Cancel',
     });
 
     if (confirmed) {
       this.dispatcher.dispatch(AttendancesEvents.archiveAttendance(attendance));
+    }
+  }
+
+  public async onSetAttendanceAsActive(attendanceId: string): Promise<void> {
+    const attendance = this.attendancesStore.attendancesMap()[attendanceId];
+    if (!attendance) return;
+
+    const confirmed = await this.confirmationDialogService.confirm({
+      title: 'Set Attendance as Active',
+      message: `Are you sure you want to set <strong>${attendance.name}</strong> as active?`,
+      positiveButtonText: 'Set as Active',
+      negativeButtonText: 'Cancel',
+    });
+
+    if (confirmed) {
+      this.dispatcher.dispatch(AttendancesEvents.setAttendanceAsActive(attendance));
     }
   }
 }

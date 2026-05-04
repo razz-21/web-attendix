@@ -33,6 +33,6 @@
   </div>
 
   <div class="attendances-page-content">
-    <app-attendance-table [attendances]="attendances()" [loading]="loading()" (attendanceArchived)="onArchiveAttendance($event)" />
+    <app-attendance-table [attendances]="attendances()" [loading]="loading()" (attendanceArchived)="onArchiveAttendance($event)" (attendanceSetAsActive)="onSetAttendanceAsActive($event)" />
   </div>
 </div>

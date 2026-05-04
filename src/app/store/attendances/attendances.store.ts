@@ -20,6 +20,7 @@ type AttendancesState = {
   createLoading: boolean;
   updateLoading: boolean;
   archiveLoading: boolean;
+  setActiveLoading: boolean;
   deleteLoading: boolean;
   currentArchiveAttendance: GetAttendance | null;
   error: string | null;
@@ -36,6 +37,7 @@ const initialState: AttendancesState = {
   createLoading: false,
   updateLoading: false,
   archiveLoading: false,
+  setActiveLoading: false,
   deleteLoading: false,
   currentArchiveAttendance: null,
   error: null,
@@ -161,6 +163,25 @@ export const AttendancesStore = signalStore(
       addEntity(event.payload.attendance),
       { archiveLoading: false, error: event.payload.error, currentArchiveAttendance: null },
     ]),
+
+    // Set Attendance As Active
+    on(AttendancesEvents.setAttendanceAsActive, ({ payload }, state) => [
+      removeEntity(payload.id),
+      {
+        ...state,
+        setActiveLoading: true,
+        error: null,
+      }
+    ]),
+    on(AttendancesEvents.setAttendanceAsActiveSuccess, ({ payload }) => [
+      removeEntity(payload.id),
+      { setActiveLoading: false, error: null },
+    ]),
+    on(AttendancesEvents.setAttendanceAsActiveFailure, (event, state) => ({
+      ...state,
+      setActiveLoading: false,
+      error: event.payload.error,
+    })),
 
     // Delete Attendance
     on(AttendancesEvents.deleteAttendance, (_, state) => ({
@@ -298,6 +319,27 @@ export const AttendancesStore = signalStore(
         })
       ),
       archiveAttendanceFailure$: events.on(AttendancesEvents.archiveAttendanceFailure).pipe(
+        map(({ payload }) => {
+          snackBar.open(payload.error, "Close", { duration: 6000 });
+        })
+      ),
+
+      setAttendanceAsActive$: events.on(AttendancesEvents.setAttendanceAsActive).pipe(
+        exhaustMap(({ payload }) =>
+          from(attendancesService.updateAttendance(payload.id, { status: 'active' })).pipe(
+            mapResponse({
+              next: (response) => AttendancesEvents.setAttendanceAsActiveSuccess(response),
+              error: (error: unknown) => AttendancesEvents.setAttendanceAsActiveFailure({ error: error instanceof Error ? error.message : "Failed to set attendance as active", attendance: payload }),
+            })
+          )
+        )
+      ),
+      setAttendanceAsActiveSuccess$: events.on(AttendancesEvents.setAttendanceAsActiveSuccess).pipe(
+        map(() => {
+          snackBar.open('Attendance set as active successfully', 'Close', { duration: 5000 });
+        })
+      ),
+      setAttendanceAsActiveFailure$: events.on(AttendancesEvents.setAttendanceAsActiveFailure).pipe(
         map(({ payload }) => {
           snackBar.open(payload.error, "Close", { duration: 6000 });
         })

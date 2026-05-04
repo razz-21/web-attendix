@@ -37,15 +37,32 @@ export class AttendanceTableComponent {
   public readonly loading = input<boolean>(false);
 
   public readonly attendanceArchived = output<string>();
+  public readonly attendanceSetAsActive = output<string>();
 
   public readonly hasAttendances = computed(() => this.attendances().length > 0);
 
   public onEditAttendance(attendance: Attendance): void {
+    if (attendance.status === 'archived') {
+      return;
+    }
+
     console.log('Edit attendance:', attendance);
     // TODO: Handle edit action
   }
 
-  public onArchiveAttendance(id: string): void {
-    this.attendanceArchived.emit(id);
+  public onArchiveAttendance(attendance: Attendance): void {
+    if (attendance.status === 'archived') {
+      return;
+    }
+
+    this.attendanceArchived.emit(attendance.id);
+  }
+
+  public onSetAttendanceAsActive(attendance: Attendance): void {
+    if (attendance.status === 'active') {
+      return;
+    }
+
+    this.attendanceSetAsActive.emit(attendance.id);
   }
 }

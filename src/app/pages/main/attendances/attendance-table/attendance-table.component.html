@@ -9,16 +9,25 @@
             <mat-card-header>
               <div class="attendance-card-header-content">
                 <div class="attendance-header-info">
-                  <mat-card-title>{{ attendance.name }}</mat-card-title>
+                  <mat-card-title class="attendance-card-title">{{ attendance.name }}</mat-card-title>
                   <mat-card-subtitle>{{ attendance.code }}</mat-card-subtitle>
                 </div>
                 <div class="attendance-header-actions">
-                  <button mat-icon-button type="button" (click)="onEditAttendance(attendance)" matTooltip="Edit" matTooltipPosition="above">
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                  <button mat-icon-button type="button" (click)="onArchiveAttendance(attendance.id)" matTooltip="Archive" matTooltipPosition="above">
-                    <mat-icon>archive</mat-icon>
-                  </button>
+                  @if (attendance.status !== 'archived') {
+                    <button mat-icon-button type="button" (click)="onEditAttendance(attendance)" matTooltip="Edit attendance" matTooltipPosition="above">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                  }
+                  @if (attendance.status === 'archived') {
+                    <button mat-icon-button type="button" (click)="onSetAttendanceAsActive(attendance)" matTooltip="Set attendance as active" matTooltipPosition="above">
+                      <mat-icon>select_check_box</mat-icon>
+                    </button>
+                  }
+                  @if (attendance.status === 'active') {
+                    <button mat-icon-button type="button" (click)="onArchiveAttendance(attendance)" matTooltip="Archieve attendance" matTooltipPosition="above">
+                      <mat-icon>archive</mat-icon>
+                    </button>
+                  }
                 </div>
               </div>
             </mat-card-header>
@@ -47,7 +56,7 @@
                 </div>
                 <div class="detail-item">
                   <span class="detail-label">Created</span>
-                  <span class="detail-value">{{ attendance.createdAt | date: 'MMM d, y' }}</span>
+                  <span class="detail-value">{{ attendance.createdAt | date: 'MMM d, y h:mm a' }}</span>
                 </div>
               </div>
             </mat-card-content>

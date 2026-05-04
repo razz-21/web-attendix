@@ -32,6 +32,18 @@
   gap: 1rem;
 }
 
+.attendance-header-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.attendance-card-title {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 
 .attendance-header-actions {
   display: flex;
@@ -40,13 +52,13 @@
 
   button {
     --mat-icon-button-state-layer-size: 32px;
-    --mat-icon-button-icon-size: 18px;
+    --mat-icon-button-icon-size: 20px;
 
     mat-icon {
-      font-size: 18px;
-      line-height: 18px;
-      width: 18px;
-      height: 18px;
+      font-size: 20px;
+      line-height: 20px;
+      width: 20px;
+      height: 20px;
     }
 
     color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
