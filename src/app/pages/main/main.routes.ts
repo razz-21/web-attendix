@@ -27,7 +27,7 @@ export const mainRoutes: Routes = [
       },
       {
         path: 'attendances/:id',
-        component: AttendanceDetailsComponent
+        loadChildren: () => import('./attendance-details/attendance-details.module').then(m => m.AttendanceDetailsModule)
       },
       {
         path: 'groups',

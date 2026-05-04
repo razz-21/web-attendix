@@ -29,34 +29,18 @@
 
   <div class="attendance-details-tabs">
     @for (tab of tabs; track tab) {
-      <button
-        type="button"
+      <a
         class="attendance-details-tab"
-        [class.attendance-details-tab-active]="activeTab() === tab"
-        (click)="onTabClick(tab)"
+        [routerLink]="tab.route"
+        routerLinkActive="attendance-details-tab-active"
+        [routerLinkActiveOptions]="{ exact: true }"
       >
-        {{ tab | titlecase }}
-      </button>
+        {{ tab.label | titlecase }}
+      </a>
     }
   </div>
 
   <div class="attendance-details-content">
-    @switch (activeTab()) {
-      @case ("attendances") {
-        <h2>Attendances</h2>
-      }
-      @case ("attendees") {
-        <h2>Attendees</h2>
-      }
-      @case ("records") {
-        <h2>Records</h2>
-      }
-      @case ("analysis") {
-        <h2>Analysis</h2>
-      }
-      @case ("configurations") {
-        <h2>Configurations</h2>
-      }
-    }
+    <router-outlet></router-outlet>
   </div>
 </div>
