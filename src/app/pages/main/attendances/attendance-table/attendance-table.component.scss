@@ -1,0 +1,152 @@
+.attendance-table-wrap {
+  width: 100%;
+}
+
+.attendance-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.attendance-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  mat-card-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--mat-sys-outline-variant, rgba(0, 0, 0, 0.12));
+  }
+
+  mat-card-content {
+    padding: 1.5rem;
+    flex: 1;
+  }
+}
+
+.attendance-card-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  gap: 1rem;
+}
+
+.attendance-header-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.attendance-card-title {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.attendance-header-actions {
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
+
+  button {
+    --mat-icon-button-state-layer-size: 32px;
+    --mat-icon-button-icon-size: 20px;
+
+    mat-icon {
+      font-size: 20px;
+      line-height: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
+
+    &:hover {
+      color: var(--mat-sys-on-surface, rgba(0, 0, 0, 0.87));
+    }
+  }
+}
+
+.attendance-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+
+  .detail-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    opacity: 0.7;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .detail-value {
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+}
+
+.schedule-days {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.schedule-day-badge {
+  display: inline-flex;
+  align-items: center;
+  background: var(--mat-sys-primary-container, rgba(0, 0, 0, 0.08));
+  color: var(--mat-sys-on-primary-container, rgba(0, 0, 0, 0.87));
+  padding: 0.375rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.attendance-empty-state {
+  min-height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.75rem;
+  color: rgba(0, 0, 0, 0.6);
+
+  mat-icon {
+    font-size: 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.4;
+  }
+
+  span {
+    font-size: 0.9375rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .attendance-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .attendance-card {
+    mat-card-header {
+      padding: 1rem;
+    }
+
+    mat-card-content {
+      padding: 1rem;
+    }
+  }
+}

@@ -1,0 +1,73 @@
+<div class="attendance-table-wrap">
+  @if (loading()) {
+    <app-loading-section label="Loading attendances" />
+  } @else {
+    @if (hasAttendances()) {
+      <div class="attendance-grid">
+        @for (attendance of attendances(); track attendance.id) {
+          <mat-card appearance="outlined" class="attendance-card">
+            <mat-card-header>
+              <div class="attendance-card-header-content">
+                <div class="attendance-header-info">
+                  <mat-card-title class="attendance-card-title">{{ attendance.name }}</mat-card-title>
+                  <mat-card-subtitle>{{ attendance.code }}</mat-card-subtitle>
+                </div>
+                <div class="attendance-header-actions">
+                  @if (attendance.status !== 'archived') {
+                    <button mat-icon-button type="button" (click)="onEditAttendance(attendance)" matTooltip="Edit attendance" matTooltipPosition="above">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                  }
+                  @if (attendance.status === 'archived') {
+                    <button mat-icon-button type="button" (click)="onSetAttendanceAsActive(attendance)" matTooltip="Set attendance as active" matTooltipPosition="above">
+                      <mat-icon>select_check_box</mat-icon>
+                    </button>
+                  }
+                  @if (attendance.status === 'active') {
+                    <button mat-icon-button type="button" (click)="onArchiveAttendance(attendance)" matTooltip="Archieve attendance" matTooltipPosition="above">
+                      <mat-icon>archive</mat-icon>
+                    </button>
+                  }
+                </div>
+              </div>
+            </mat-card-header>
+  
+            <mat-card-content>
+              <div class="attendance-details">
+                <div class="detail-item">
+                  <span class="detail-label">Description</span>
+                  <span class="detail-value">{{ attendance.description }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Late Threshold</span>
+                  <span class="detail-value">{{ attendance.lateThreshold }} minutes</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Schedule Days</span>
+                  <div class="schedule-days">
+                    @for (day of attendance.scheduleDays; track day) {
+                      <span class="schedule-day-badge">{{ day }}</span>
+                    }
+                  </div>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Status</span>
+                  <span class="detail-value">{{ attendance.status | titlecase }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Created</span>
+                  <span class="detail-value">{{ attendance.createdAt | date: 'MMM d, y h:mm a' }}</span>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+    } @else {
+      <div class="attendance-empty-state">
+        <mat-icon aria-hidden="true">calendar_today</mat-icon>
+        <span>No attendance configurations found</span>
+      </div>
+    }
+  }
+</div>
