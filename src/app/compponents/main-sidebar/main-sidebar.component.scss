@@ -1,5 +1,14 @@
+// :host {
+//   display: block;
+//   height: 100%;
+// }
+
 .main-sidebar {
+  display: flex;
+  flex-direction: column;
   padding: 1rem;
+  max-height: calc(100dvh - 2rem);
+  height: 100%;
 }
 
 .main-sidebar-brand {
@@ -26,6 +35,10 @@
       font-weight: 700;
     }
   }
+}
+
+.main-sidebar-footer {
+  margin-top: auto;
 }
 
 .main-sidebar-item span {

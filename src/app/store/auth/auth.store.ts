@@ -2,7 +2,7 @@ import { GetUser } from "@/app/types/users/users.type";
 import { signalStore, withState } from "@ngrx/signals";
 import { Events, on, withEventHandlers, withReducer } from "@ngrx/signals/events";
 import { AuthEvents } from "./auth.events";
-import { exhaustMap, from, tap } from "rxjs";
+import { exhaustMap, filter, from, map, tap } from "rxjs";
 import { inject } from "@angular/core";
 import { mapResponse } from "@ngrx/operators";
 import { AuthService } from "@/app/services/auth.service";
@@ -10,6 +10,9 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { HttpErrorResponse } from "@angular/common/http";
 import { getHttpErrorMessage } from "@/app/utils/get-http-error-message";
 import { AuthErrorResponse } from "@/app/types/auth/auth.types";
+import { Router } from "@angular/router";
+import { AUTH_BASE_PATH } from "@/app/constants/route.constant";
+import { ConfirmationDialogService } from "@/app/services/confirmation-dialog.service";
 
 interface AuthState {
   access_token: string | null;
@@ -122,8 +125,10 @@ export const AuthStore = signalStore(
     (
       store,
       events = inject(Events),
-      authService = inject(AuthService),
+      router = inject(Router),
       snackBar = inject(MatSnackBar),
+      authService = inject(AuthService),
+      confirmationDialogService = inject(ConfirmationDialogService),
     ) => ({
       emailLogin$: events.on(AuthEvents.emailLogin).pipe(
         exhaustMap(({ payload }) => from(authService.emailLogin({ email: payload.email, password: payload.password })).pipe(
@@ -200,6 +205,37 @@ export const AuthStore = signalStore(
       ),
       updatePasswordFailure$: events.on(AuthEvents.updatePasswordFailure).pipe(
         tap(({ payload }) => {
+          snackBar.open(payload.message, "Close", { duration: 6000 });
+        })
+      ),
+
+      // Logout
+      logout$: events.on(AuthEvents.logout).pipe(
+        exhaustMap(() => from(confirmationDialogService.confirm({
+          title: 'Logout',
+          message: 'Are you sure you want to logout?',
+          positiveButtonText: 'Yes, logout',
+          negativeButtonText: 'No, cancel',
+        })).pipe(
+          filter((result): result is true => result === true),
+          exhaustMap(() => from(authService.logout()).pipe(
+          mapResponse({
+            next: () => AuthEvents.logoutSuccess(),
+            error: (error: unknown) => {
+              const errorResponse = error as HttpErrorResponse;
+              const message = getHttpErrorMessage(errorResponse);
+              return AuthEvents.logoutFailure({ message });
+            },
+          })
+        ))))
+      ),
+      logoutSuccess$: events.on(AuthEvents.logoutSuccess).pipe(
+        tap(() => {
+          router.navigate([AUTH_BASE_PATH]);
+        })
+      ),
+      logoutFailure$: events.on(AuthEvents.logoutFailure).pipe(
+        map(({ payload }) => {
           snackBar.open(payload.message, "Close", { duration: 6000 });
         })
       ),

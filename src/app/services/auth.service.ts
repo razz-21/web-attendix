@@ -16,7 +16,7 @@ export class AuthService {
   }
 
   public logout(): Promise<boolean> {
-    return lastValueFrom(this.http.post<boolean>(`${environment.apiBaseUrl}/api/v1/auth/logout`, {}));
+    return lastValueFrom(this.http.delete<boolean>(`${environment.apiBaseUrl}/api/v1/auth/logout`, {}));
   }
 
   public async getMe(): Promise<GetUser> {

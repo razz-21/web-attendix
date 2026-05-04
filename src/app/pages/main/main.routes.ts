@@ -10,6 +10,7 @@ import { UsersComponent } from "./users/users.component";
 import { UserDetailsComponent } from "./user-details/user-details.component";
 import { WorkspacesComponent } from "./workspaces/workspaces.component";
 import { WorkspaceDetailsComponent } from "./workspace-details/workspace-details.component";
+import { AttendanceDetailsComponent } from "./attendance-details/attendance-details.component";
 
 export const mainRoutes: Routes = [
   {
@@ -23,6 +24,10 @@ export const mainRoutes: Routes = [
       {
         path: 'attendances',
         component: AttendancesComponent
+      },
+      {
+        path: 'attendances/:id',
+        component: AttendanceDetailsComponent
       },
       {
         path: 'groups',

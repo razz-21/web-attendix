@@ -5,7 +5,7 @@
     @if (hasAttendances()) {
       <div class="attendance-grid">
         @for (attendance of attendances(); track attendance.id) {
-          <mat-card appearance="outlined" class="attendance-card">
+          <mat-card appearance="outlined" class="attendance-card" (click)="onAttendanceClick(attendance)">
             <mat-card-header>
               <div class="attendance-card-header-content">
                 <div class="attendance-header-info">

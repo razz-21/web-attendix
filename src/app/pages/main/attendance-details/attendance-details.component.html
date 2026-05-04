@@ -1,0 +1,62 @@
+<div class="attendance-details-page">
+  <div class="attendance-details-page-header">
+    <div class="attendance-details-page-header-left">
+      <div class="attendance-details-page-header-back-button">
+        <button mat-icon-button color="primary" type="button" (click)="navigateBack()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </div>
+      <div class="attendance-details-page-header-title">
+        <h1>Attendance Details</h1>
+      </div>
+    </div>
+
+    <div class="attendance-details-page-header-right">
+      <button mat-icon-button color="primary" type="button" matTooltip="Edit Attendance" matTooltipPosition="above">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button color="primary" type="button" matTooltip="Delete Attendance" matTooltipPosition="above">
+        <mat-icon>delete</mat-icon>
+      </button>
+      <button mat-icon-button color="primary" type="button" matTooltip="Duplicate Attendance" matTooltipPosition="above">
+        <mat-icon>content_copy</mat-icon>
+      </button>
+      <button matButton="filled" color="primary" type="button">
+        Add Attendance Record
+      </button>
+    </div>
+  </div>
+
+  <div class="attendance-details-tabs">
+    @for (tab of tabs; track tab) {
+      <button
+        type="button"
+        class="attendance-details-tab"
+        [class.attendance-details-tab-active]="activeTab() === tab"
+        (click)="onTabClick(tab)"
+      >
+        {{ tab | titlecase }}
+      </button>
+    }
+  </div>
+
+  <div class="attendance-details-content">
+    @switch (activeTab()) {
+      @case ("attendances") {
+        <h2>Attendances</h2>
+      }
+      @case ("attendees") {
+        <h2>Attendees</h2>
+      }
+      @case ("records") {
+        <h2>Records</h2>
+      }
+      @case ("analysis") {
+        <h2>Analysis</h2>
+      }
+      @case ("configurations") {
+        <h2>Configurations</h2>
+      }
+    }
+  </div>
+</div>

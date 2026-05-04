@@ -6,6 +6,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { LoadingSectionComponent } from "@/app/compponents/loading-section/loading-section.component";
 import { AttendanceStatus } from '@/app/types/attendaces/attendances.types';
+import { MAIN_ATTENDANCE_DETAILS_PATH } from '@/app/constants/route.constant';
+import { Router } from '@angular/router';
 
 export interface Attendance {
   id: string;
@@ -33,6 +35,8 @@ export interface Attendance {
   ],
 })
 export class AttendanceTableComponent {
+  private readonly router = inject(Router);
+
   public readonly attendances = input<Attendance[]>([]);
   public readonly loading = input<boolean>(false);
 
@@ -64,5 +68,10 @@ export class AttendanceTableComponent {
     }
 
     this.attendanceSetAsActive.emit(attendance.id);
+  }
+
+  public onAttendanceClick(attendance: Attendance): void {
+    const path = MAIN_ATTENDANCE_DETAILS_PATH.replace(':id', attendance.id);
+    this.router.navigate([path]);
   }
 }
