@@ -5,6 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:development": "ng build --configuration development",
+    "build:vercel": "node scripts/vercel-build.mjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "prepare": "husky"
