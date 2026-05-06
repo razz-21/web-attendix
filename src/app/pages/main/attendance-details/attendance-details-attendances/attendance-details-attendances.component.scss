@@ -1,0 +1,28 @@
+.attendances-page {
+  padding: 1rem 0;
+
+  &-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  &-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  &-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.button-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%; // 👈 THIS is the missing piece
+}
+

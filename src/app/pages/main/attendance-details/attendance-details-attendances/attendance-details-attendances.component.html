@@ -1,1 +1,13 @@
-<h1>Attendances</h1>
+<div class="attendances-page">
+  <div class="attendances-page-header">
+    <div class="button-wrapper">
+        <button matButton="filled" color="primary" type="button" (click)="openAddRecord()">
+        Add Attendance Details
+        </button>
+    </div>
+  </div>
+
+  <div class="attendances-page-content">
+    <app-attendance-details-table />
+  </div>
+</div>
