@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FormField, FormRoot, form, required, min, validate } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -54,6 +54,7 @@ const emptyModel = (): AttendanceFormModel => ({
   ],
 })
 export class AttendanceFormComponent {
+  public readonly initialData = input<AttendanceFormModel>();
   public readonly model = signal<AttendanceFormModel>(emptyModel());
   public readonly loading = signal(false);
 
@@ -74,12 +75,17 @@ export class AttendanceFormComponent {
   });
 
   constructor() {
-    // Auto-fill code when component initializes
+    // Auto-fill code when component initializes or set initial data
     effect(() => {
-      this.model.update(m => ({
-        ...m,
-        code: this.generatedCode(),
-      }));
+      const initial = this.initialData();
+      if (initial) {
+        this.model.set(initial);
+      } else {
+        this.model.update(m => ({
+          ...m,
+          code: this.generatedCode(),
+        }));
+      }
     }, { allowSignalWrites: true });
   }
 

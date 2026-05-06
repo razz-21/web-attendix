@@ -7,18 +7,18 @@
         </button>
       </div>
       <div class="attendance-details-page-header-title">
-        <h1>Attendance Details</h1>
+        <h1>{{ attendance()?.name || 'Attendance Details' }}</h1>
       </div>
     </div>
 
     <div class="attendance-details-page-header-right">
-      <button mat-icon-button color="primary" type="button" matTooltip="Edit Attendance" matTooltipPosition="above">
+      <button mat-icon-button color="primary" type="button" matTooltip="Edit Attendance" matTooltipPosition="above" (click)="onEdit()" [disabled]="updateLoading() || deleteLoading() || loading()">
         <mat-icon>edit</mat-icon>
       </button>
-      <button mat-icon-button color="primary" type="button" matTooltip="Delete Attendance" matTooltipPosition="above">
+      <button mat-icon-button color="primary" type="button" matTooltip="Delete Attendance" matTooltipPosition="above" (click)="onDelete()" [disabled]="updateLoading() || deleteLoading() || loading()">
         <mat-icon>delete</mat-icon>
       </button>
-      <button mat-icon-button color="primary" type="button" matTooltip="Duplicate Attendance" matTooltipPosition="above">
+      <button mat-icon-button color="primary" type="button" matTooltip="Duplicate Attendance" matTooltipPosition="above" (click)="onDuplicate()" [disabled]="createLoading() || loading()">
         <mat-icon>content_copy</mat-icon>
       </button>
     </div>
