@@ -1,28 +1,25 @@
-.attendances-page {
-  padding: 1rem 0;
+.attendance-details-attendances-page {
+  padding: 1rem;
+}
 
-  &-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-  }
+.attendance-details-attendances-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
 
-  &-title {
-    font-size: 1.5rem;
+.attendance-details-attendances-page-header-left {
+  display: flex;
+  align-items: center;
+
+  h1 {
+    margin: 0;
+    font-size: 1.25rem;
     font-weight: 600;
   }
-
-  &-content {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
 }
 
-.button-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  width: 100%; // 👈 THIS is the missing piece
+.attendance-details-attendances-page-content {
+  margin-top: 1.5rem;
 }
-

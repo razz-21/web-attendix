@@ -9,6 +9,7 @@ import { AttendanceRecordsEvents } from '@/app/store/attendance-records/attendan
 import { AttendanceRecordTableComponent } from '../attendance-details-attendances/attendance-details-table/attendance-details-table.component';
 import { AttendanceRecordFormModalComponent } from '../attendance-details-attendances/attendance-details-form-modal/attendance-details-form-modal.component';
 import type { GetAttendanceRecord } from '@/app/types/attendance-records/attendance-records.types';
+import { EditAttendanceRecordModalComponent } from '../attendance-details-attendances/edit-attendance-form-modal/edit-attendance-form-modal.component';
 
 @Component({
   selector: 'app-attendance-details-attendances',
@@ -18,8 +19,7 @@ import type { GetAttendanceRecord } from '@/app/types/attendance-records/attenda
   imports: [MatButtonModule, MatIconModule, AttendanceRecordTableComponent],
 })
 export class AttendanceDetailsAttendancesComponent implements OnInit {
-
-private readonly dialog = inject(MatDialog);
+  private readonly dialog = inject(MatDialog);
   private readonly dispatcher = inject(Dispatcher);
   private readonly attendanceRecordsStore = inject(AttendanceRecordsStore);
   private readonly route = inject(ActivatedRoute);
@@ -44,5 +44,13 @@ private readonly dialog = inject(MatDialog);
         autoFocus: 'first-tabbable',
       }
     );
+  }
+
+  public openEditDetails(row: GetAttendanceRecord): void {
+    this.dialog.open(EditAttendanceRecordModalComponent, {
+      maxWidth: '620px',
+      width: '100%',
+      data: row, 
+    });
   }
 }

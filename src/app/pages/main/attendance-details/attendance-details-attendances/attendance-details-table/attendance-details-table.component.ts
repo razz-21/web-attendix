@@ -13,7 +13,7 @@ import { AttendanceRecordsEvents } from '@/app/store/attendance-records/attendan
 import { Dispatcher } from '@ngrx/signals/events';
 import { GetAttendanceRecord } from '@/app/types/attendance-records/attendance-records.types';
 import { ConfirmationDialogService } from '@/app/services/confirmation-dialog.service';
-import { AttendanceRecordFormModalComponent } from '../attendance-details-form-modal/attendance-details-form-modal.component';
+import { EditAttendanceRecordModalComponent } from '../edit-attendance-form-modal/edit-attendance-form-modal.component';
 
 @Component({
   selector: 'app-attendance-details-table',
@@ -47,8 +47,8 @@ export class AttendanceRecordTableComponent {
 
   public readonly loading = computed(() => this.attendanceRecordsStore.loading());
   public readonly records = computed(() => this.attendanceRecordsStore.records());
-  public readonly data = computed(() => [...this.records()]);
   public readonly filters = computed(() => this.attendanceRecordsStore.filters());
+  public readonly data = computed(() => [...this.records()]);
 
   public readonly isLoading = (_index: number, _row: any) => this.loading();
   public readonly isNotLoading = (_index: number, _row: any) => !this.loading();
@@ -60,10 +60,10 @@ export class AttendanceRecordTableComponent {
   }
 
   public openEditDetails(row: GetAttendanceRecord): void {
-    this.dialog.open(AttendanceRecordFormModalComponent, {
+    this.dialog.open(EditAttendanceRecordModalComponent, {
       maxWidth: '620px',
       width: '100%',
-      data: { record: row },
+      data: row,
     });
   }
 

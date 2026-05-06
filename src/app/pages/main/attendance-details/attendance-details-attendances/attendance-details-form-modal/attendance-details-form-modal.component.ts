@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { FormField, FormRoot, form, required } from '@angular/forms/signals';
+import { FormField, FormRoot, form, required, validate  } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -11,7 +11,6 @@ import { AttendanceRecordsStore } from '@/app/store/attendance-records/attendanc
 import { GetAttendanceRecord } from '@/app/types/attendance-records/attendance-records.types';
 import { map, pipe, tap } from 'rxjs';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { ActivatedRoute } from '@angular/router';
 
 interface AttendanceRecordFormData {
   record?: GetAttendanceRecord;
@@ -45,7 +44,6 @@ export class AttendanceRecordFormModalComponent {
   private readonly dispatcher = inject(Dispatcher);
   private readonly attendanceRecordsStore = inject(AttendanceRecordsStore);
   private readonly events = inject(Events);
-  private readonly route = inject(ActivatedRoute);
 
   public readonly isEditMode = !!this.data?.record;
   public readonly loadingForm = computed(() => this.attendanceRecordsStore.loadingForm());
@@ -57,14 +55,20 @@ export class AttendanceRecordFormModalComponent {
     end_time: this.data?.record?.end_time ?? '',
   });
 
-  public readonly recordForm = form(this.formData, (root) => {
+  public readonly recordForm = form(this.formData, (root) => {  
     required(root.name, { message: 'Name is required' });
     required(root.attendance_date, { message: 'Date is required' });
+    validate(root.attendance_date, (ctx) => { 
+        const date = ctx.value();
+        if (!date) return undefined;
+        const year = new Date(date).getFullYear();
+        if (String(year).length > 4) {
+        return { kind: 'invalidYear', message: 'Year must be 4 digits only' };
+        }
+        return undefined;
+    });
     required(root.start_time, { message: 'Start time is required' });
     required(root.end_time, { message: 'End time is required' });
-
-    
-
   }, {
     submission: {
       action: async () => {
@@ -105,14 +109,15 @@ export class AttendanceRecordFormModalComponent {
   });
 
   public readonly isEndTimeValid = computed(() => {
-   const m = this.formData();
-   if (!m.start_time || !m.end_time) return true;
-   return m.end_time > m.start_time;
+    const m = this.formData();
+    if (!m.start_time || !m.end_time) return true;
+    return m.end_time > m.start_time;
   });
 
   public readonly isFormDisabled = computed(() =>
-   this.loadingForm() || !this.isEndTimeValid()
+    this.loadingForm() || !this.isEndTimeValid()
   );
+  
 
   #closeOnCreateSuccess = rxMethod<GetAttendanceRecord>(
     pipe(tap(() => this.dialogRef.close()))
