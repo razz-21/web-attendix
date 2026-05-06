@@ -144,7 +144,7 @@ export class UserFormComponent {
           username: m.username.trim(),
           password: m.password,
           status: 'needs_verification',
-          workspace_id: "",
+          workspace_id: null,
           created_at: now,
           updated_at: now,
         };
