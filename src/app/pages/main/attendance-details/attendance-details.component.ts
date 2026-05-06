@@ -13,7 +13,7 @@ import { Dispatcher } from "@ngrx/signals/events";
 import { AttendancesEvents } from "@/app/store/attendances/attendances.events";
 import { ConfirmationDialogService } from "@/app/services/confirmation-dialog.service";
 import { SCHEDULE_DAY_MAP } from "@/app/constants/schedule-days.constant";
-import { AttendanceScheduleDays, PostAttendance } from "@/app/types/attendaces/attendances.types";
+import { AttendanceScheduleDays } from "@/app/types/attendaces/attendances.types";
 import { AuthService } from "@/app/services/auth.service";
 
 @Component({
@@ -46,7 +46,6 @@ export class AttendanceDetailsComponent implements OnInit {
   public readonly loading = computed(() => this.attendancesStore.loading());
   public readonly updateLoading = computed(() => this.attendancesStore.updateLoading());
   public readonly deleteLoading = computed(() => this.attendancesStore.deleteLoading());
-  public readonly createLoading = computed(() => this.attendancesStore.createLoading());
 
   public readonly tabs = [
     { label: "attendances", route: "attendances" },
@@ -135,22 +134,5 @@ export class AttendanceDetailsComponent implements OnInit {
       this.dispatcher.dispatch(AttendancesEvents.deleteAttendance(attendance));
       this.navigateBack();
     }
-  }
-
-  public onDuplicate(): void {
-    const attendance = this.attendance();
-    if (!attendance || !this.currentUserId) return;
-
-    const newAttendance: PostAttendance = {
-      ...attendance,
-      id: crypto.randomUUID(),
-      name: `${attendance.name} (Copy)`,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      created_by: this.currentUserId,
-    };
-
-    this.dispatcher.dispatch(AttendancesEvents.createAttendance(newAttendance));
-    // Optional: navigate to the new attendance or stay here
   }
 }

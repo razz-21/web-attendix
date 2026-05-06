@@ -138,7 +138,7 @@ export const AttendancesStore = signalStore(
       error: null,
     })),
     on(AttendancesEvents.updateAttendanceSuccess, ({ payload }) => [
-      updateEntity({ id: payload.id, changes: payload }),
+      addEntity(payload),
       {
         updateLoading: false,
         error: null,
