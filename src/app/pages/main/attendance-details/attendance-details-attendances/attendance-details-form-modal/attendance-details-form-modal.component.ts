@@ -39,6 +39,7 @@ export interface AttendanceRecordFormModel {
   ],
 })
 export class AttendanceRecordFormModalComponent {
+  
   private readonly dialogRef = inject(MatDialogRef<AttendanceRecordFormModalComponent>);
   private readonly data = inject<AttendanceRecordFormData>(MAT_DIALOG_DATA, { optional: true });
   private readonly dispatcher = inject(Dispatcher);
@@ -48,11 +49,27 @@ export class AttendanceRecordFormModalComponent {
   public readonly isEditMode = !!this.data?.record;
   public readonly loadingForm = computed(() => this.attendanceRecordsStore.loadingForm());
 
+  private formatDate(date: Date): string {
+    return date.toISOString().split('T')[0];
+  }
+
+  private formatTime(date: Date): string {
+    return date.toTimeString().slice(0, 5);
+  }
+
+  private formatNameDate(date: Date): string {
+    return date.toLocaleDateString('en-US', {
+      month: '2-digit',
+      day: '2-digit', 
+      year: 'numeric'
+    }).replace(/\//g, '-');
+  }
+
   public readonly formData = signal<AttendanceRecordFormModel>({
-    name: this.data?.record?.name ?? '',
-    attendance_date: this.data?.record?.attendance_date ?? '',
-    start_time: this.data?.record?.start_time ?? '',
-    end_time: this.data?.record?.end_time ?? '',
+    name: this.data?.record?.name ?? this.formatNameDate(new Date()),
+    attendance_date: this.data?.record?.attendance_date ?? this.formatDate(new Date()),
+    start_time: this.data?.record?.start_time ?? this.formatTime(new Date()),
+    end_time: this.data?.record?.end_time ?? this.formatTime(new Date(Date.now() + 3600000)), 
   });
 
   public readonly recordForm = form(this.formData, (root) => {  

@@ -6,7 +6,7 @@
 
   <form class="details-form-modal__form" [formRoot]="recordForm">
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Name *</mat-label>
+      <mat-label>Name</mat-label>
       <input matInput type="text" [formField]="recordForm.name" />
       @if (recordForm.name().touched() && recordForm.name().invalid()) {
         <mat-error>Name is required</mat-error>
@@ -14,7 +14,7 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Date *</mat-label>
+      <mat-label>Date</mat-label>
       <input matInput type="date" [formField]="recordForm.attendance_date" />
      @if (recordForm.attendance_date().touched() && recordForm.attendance_date().invalid()) {
         <mat-error>
@@ -28,7 +28,7 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Start Time *</mat-label>
+      <mat-label>Start Time</mat-label>
       <input matInput type="time" [formField]="recordForm.start_time" />
       @if (recordForm.start_time().touched() && recordForm.start_time().invalid()) {
         <mat-error>Start time is required</mat-error>
@@ -36,7 +36,7 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>End Time *</mat-label>
+      <mat-label>End Time</mat-label>
       <input matInput type="time" [formField]="recordForm.end_time" />
       @if (recordForm.end_time().touched() && recordForm.end_time().invalid()) {
         <mat-error>End time is required</mat-error>
