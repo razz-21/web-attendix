@@ -1,4 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,6 +21,7 @@ import { EditAttendanceRecordModalComponent } from '../edit-attendance-form-moda
   templateUrl: './attendance-details-table.component.html',
   styleUrl: './attendance-details-table.component.scss',
   imports: [
+    DatePipe,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
@@ -41,6 +43,7 @@ export class AttendanceRecordTableComponent {
     'attendance_date',
     'start_time',
     'end_time',
+    'created_at',
     'actions',
   ];
   protected readonly loadingRowColumns: string[] = ['loading'];
