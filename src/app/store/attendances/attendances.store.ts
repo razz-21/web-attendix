@@ -24,6 +24,8 @@ type AttendancesState = {
   deleteLoading: boolean;
   currentArchiveAttendance: GetAttendance | null;
   error: string | null;
+  lastLoaded: number | null;
+  cacheExpireTime: number; // Cache expiration time in milliseconds (default: 5 minutes)
 };
 
 const selectId: SelectEntityId<AttendanceEntity> = (attendance) => attendance.id;
@@ -41,6 +43,8 @@ const initialState: AttendancesState = {
   deleteLoading: false,
   currentArchiveAttendance: null,
   error: null,
+  lastLoaded: null,
+  cacheExpireTime: 5 * 60 * 1000, // 5 minutes
 };
 
 export const AttendancesStore = signalStore(
@@ -59,11 +63,16 @@ export const AttendancesStore = signalStore(
       loading: true,
       error: null,
     })),
+    on(AttendancesEvents.loadAttendancesFromCache, (_, state) => ({
+      ...state,
+      loading: false,
+    })),
     on(AttendancesEvents.loadAttendancesSuccess, ({ payload }) => [
       setAllEntities(payload ?? []),
       {
         loading: false,
         error: null,
+        lastLoaded: Date.now(),
       },
     ]),
     on(AttendancesEvents.loadAttendancesFailure, (event, state) => ({
@@ -84,6 +93,7 @@ export const AttendancesStore = signalStore(
       {
         loading: false,
         error: null,
+        lastLoaded: Date.now(),
       },
     ]),
     on(AttendancesEvents.searchAttendancesFailure, (event, state) => ({
@@ -104,6 +114,7 @@ export const AttendancesStore = signalStore(
       {
         loading: false,
         error: null,
+        lastLoaded: Date.now(),
       },
     ]),
     on(AttendancesEvents.filterAttendancesFailure, (event, state) => ({
@@ -211,14 +222,25 @@ export const AttendancesStore = signalStore(
       snackBar = inject(MatSnackBar)
     ) => ({
       loadAttendances$: events.on(AttendancesEvents.loadAttendances).pipe(
-        exhaustMap(() =>
-          from(attendancesService.getAttendances(store.filters())).pipe(
+        exhaustMap(() => {
+          const now = Date.now();
+          const lastLoaded = store.lastLoaded();
+          const cacheExpire = store.cacheExpireTime();
+          
+          // Check if cache is still valid (not expired and has data)
+          if (lastLoaded && (now - lastLoaded) < cacheExpire && store.entities().length > 0) {
+            // Use cached data, don't make API call
+            return from([AttendancesEvents.loadAttendancesFromCache()]);
+          }
+          
+          // Cache expired or no data, fetch from API
+          return from(attendancesService.getAttendances(store.filters())).pipe(
             mapResponse({
               next: (response) => AttendancesEvents.loadAttendancesSuccess(response),
               error: (error: unknown) => AttendancesEvents.loadAttendancesFailure(error instanceof Error ? error.message : "Failed to load attendances"),
             })
-          )
-        )
+          );
+        })
       ),
       loadAttendancesFailure$: events.on(AttendancesEvents.loadAttendancesFailure).pipe(
         map(({ payload }) => {

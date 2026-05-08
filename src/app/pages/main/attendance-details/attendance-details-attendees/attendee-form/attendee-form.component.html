@@ -1,0 +1,64 @@
+<form class="attendee-form" [formRoot]="attendeeForm">
+  <div class="attendee-form__fields">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>RFID (optional)</mat-label>
+      <input matInput [formField]="attendeeForm.rfid" autocomplete="off" type="text" />
+      @if (attendeeForm.rfid().touched() && attendeeForm.rfid().invalid()) {
+        <mat-error>
+          @switch (attendeeForm.rfid().errors()[0]?.kind) {
+            @default { {{ attendeeForm.rfid().errors()[0]?.message ?? 'Invalid value' }} }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Name *</mat-label>
+      <input matInput [formField]="attendeeForm.name" autocomplete="off" type="text" />
+      @if (attendeeForm.name().touched() && attendeeForm.name().invalid()) {
+        <mat-error>
+          @switch (attendeeForm.name().errors()[0]?.kind) {
+            @case ('required') { Name is required }
+            @default { {{ attendeeForm.name().errors()[0]?.message ?? 'Invalid value' }} }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Department</mat-label>
+      <mat-select [formField]="attendeeForm.department">
+        <mat-option [value]="''">None</mat-option>
+        @for (dept of departments; track dept.name) {
+          <mat-option [value]="dept.name">{{ dept.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Year Level</mat-label>
+      <mat-select [formField]="attendeeForm.year_level">
+        <mat-option [value]="''">None</mat-option>
+        @for (year of yearLevels; track year) {
+          <mat-option [value]="year">{{ year }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Section</mat-label>
+      <input matInput [formField]="attendeeForm.section" autocomplete="off" type="text" />
+    </mat-form-field>
+  </div>
+
+  <div class="attendee-form__actions">
+    <button type="button" matButton="tonal" color="primary" (click)="cancel()">Cancel</button>
+    <button type="submit" matButton="filled" color="primary" [disabled]="loadingForm()">
+      @if (loadingForm()) {
+        <mat-spinner [diameter]="16" [strokeWidth]="2"></mat-spinner>
+      } @else {
+        <span>Save</span>
+      }
+    </button>
+  </div>
+</form>

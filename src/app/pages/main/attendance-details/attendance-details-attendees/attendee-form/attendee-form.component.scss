@@ -1,0 +1,28 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.attendee-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.attendee-form__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.attendee-form__actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.full-width {
+  width: 100%;
+}
