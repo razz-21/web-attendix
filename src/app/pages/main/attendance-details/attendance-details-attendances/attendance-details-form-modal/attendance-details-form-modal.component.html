@@ -1,0 +1,60 @@
+<section class="details-form-modal">
+  <section class="details-form-modal__header">
+    <h3>Add Attendance</h3>
+    <p>Fill out the fields below. Fields with * are required.</p>
+  </section>
+
+  <form class="details-form-modal__form" [formRoot]="recordForm">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Name</mat-label>
+      <input matInput type="text" [formField]="recordForm.name" />
+      @if (recordForm.name().touched() && recordForm.name().invalid()) {
+        <mat-error>Name is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Date</mat-label>
+      <input matInput type="date" [formField]="recordForm.attendance_date" />
+     @if (recordForm.attendance_date().touched() && recordForm.attendance_date().invalid()) {
+        <mat-error>
+            @switch (recordForm.attendance_date().errors()[0]?.kind) {
+            @case ('required') { Date is required }
+            @case ('invalidYear') { Year must be 4 digits only }
+            @default { {{ recordForm.attendance_date().errors()[0]?.message ?? 'Invalid date' }} }
+            }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Start Time</mat-label>
+      <input matInput type="time" [formField]="recordForm.start_time" />
+      @if (recordForm.start_time().touched() && recordForm.start_time().invalid()) {
+        <mat-error>Start time is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>End Time</mat-label>
+      <input matInput type="time" [formField]="recordForm.end_time" />
+      @if (recordForm.end_time().touched() && recordForm.end_time().invalid()) {
+        <mat-error>End time is required</mat-error>
+      }
+      @if (recordForm.end_time().touched() && !isEndTimeValid()) {
+        <mat-error>End time must be later than start time</mat-error>
+      }
+    </mat-form-field>
+
+    <section class="details-form-modal__actions">
+      <button matButton="tonal" color="primary" type="button" (click)="closeDialog()">Cancel</button>
+      <button matButton="filled" color="primary" type="submit" [disabled]="isFormDisabled()">
+        @if (loadingForm()) {
+          <mat-spinner diameter="18"></mat-spinner>
+        } @else {
+          <span>Create Attendance</span>
+        }
+      </button>
+    </section>
+  </form>
+</section>

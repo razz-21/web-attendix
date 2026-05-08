@@ -1,0 +1,85 @@
+import { Component, computed, inject } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog } from '@angular/material/dialog';
+import { FormsModule } from '@angular/forms';
+import { AttendanceRecordsStore } from '@/app/store/attendance-records/attendance-records.store';
+import { AttendanceRecordsEvents } from '@/app/store/attendance-records/attendance-records.events';
+import { Dispatcher } from '@ngrx/signals/events';
+import { GetAttendanceRecord } from '@/app/types/attendance-records/attendance-records.types';
+import { ConfirmationDialogService } from '@/app/services/confirmation-dialog.service';
+import { EditAttendanceRecordModalComponent } from '../edit-attendance-form-modal/edit-attendance-form-modal.component';
+
+@Component({
+  selector: 'app-attendance-details-table',
+  templateUrl: './attendance-details-table.component.html',
+  styleUrl: './attendance-details-table.component.scss',
+  imports: [
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    FormsModule,
+  ],
+})
+export class AttendanceRecordTableComponent {
+  private readonly confirmationDialogService = inject(ConfirmationDialogService);
+  private readonly attendanceRecordsStore = inject(AttendanceRecordsStore);
+  private readonly dispatcher = inject(Dispatcher);
+  private readonly dialog = inject(MatDialog);
+
+  protected readonly displayedColumns: string[] = [
+    'name',
+    'attendance_date',
+    'start_time',
+    'end_time',
+    'actions',
+  ];
+  protected readonly loadingRowColumns: string[] = ['loading'];
+
+  public readonly loading = computed(() => this.attendanceRecordsStore.loading());
+  public readonly records = computed(() => this.attendanceRecordsStore.records());
+  public readonly filters = computed(() => this.attendanceRecordsStore.filters());
+  public readonly data = computed(() => [...this.records()]);
+
+  public readonly isLoading = (_index: number, _row: any) => this.loading();
+  public readonly isNotLoading = (_index: number, _row: any) => !this.loading();
+
+  public searchDetails(): void {
+    this.dispatcher.dispatch(AttendanceRecordsEvents.searchAttendanceRecords({
+      q: this.filters().q ?? '',
+    }));
+  }
+
+  public openEditDetails(row: GetAttendanceRecord): void {
+    this.dialog.open(EditAttendanceRecordModalComponent, {
+      maxWidth: '620px',
+      width: '100%',
+      data: row,
+    });
+  }
+
+  public async deleteDetails(row: GetAttendanceRecord): Promise<void> {
+    const result = await this.confirmationDialogService.confirm({
+      title: 'Delete Attendance Record',
+      message: `Are you sure you want to delete <strong>${row.name}</strong>?`,
+      positiveButtonText: 'Yes, delete',
+      negativeButtonText: 'No, cancel',
+    });
+
+    if (result) {
+      this.dispatcher.dispatch(AttendanceRecordsEvents.deleteAttendanceRecord({
+        attendance_id: row.attendance_id,
+        record: row,
+      }));
+    }
+  }
+}
