@@ -12,8 +12,6 @@ export class AttendeesService {
   public getAttendeesByAttendance(attendanceId: string, params?: GetAttendeesQuery): Promise<GetPaginatedAttendees> {
     const qp = new URLSearchParams();
     if (params?.q) qp.set('q', params.q);
-    if (params?.page) qp.set('page', String(params.page));
-    if (params?.limit) qp.set('limit', String(params.limit));
 
     return lastValueFrom(
       this.http.get<GetPaginatedAttendees>(`${environment.apiBaseUrl}/api/v1/attendances/${attendanceId}/attendees?${qp.toString()}`)

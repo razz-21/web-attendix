@@ -6,17 +6,17 @@ import { ActivatedRoute } from '@angular/router';
 import { Dispatcher } from '@ngrx/signals/events';
 import { AttendanceStore } from '@/app/store/attendance/attendance.store';
 import { AttendanceEvents } from '@/app/store/attendance/attendance.events';
-import { AttendanceRecordTableComponent } from '../attendance-details-attendances/attendance-details-table/attendance-details-table.component';
-import { AttendanceRecordFormModalComponent } from '../attendance-details-attendances/attendance-details-form-modal/attendance-details-form-modal.component';
-import type { GetAttendanceRecord } from '@/app/types/attendance/attendance.types';
-import { EditAttendanceRecordModalComponent } from '../attendance-details-attendances/edit-attendance-form-modal/edit-attendance-form-modal.component';
+import { AttendanceTableComponent } from '../attendance-details-attendances/attendance-details-table/attendance-details-table.component';
+import { AttendanceFormModalComponent } from '../attendance-details-attendances/attendance-details-form-modal/attendance-details-form-modal.component';
+import type { GetAttendance } from '@/app/types/attendance/attendance.types';
+import { EditAttendanceModalComponent } from '../attendance-details-attendances/edit-attendance-form-modal/edit-attendance-form-modal.component';
 
 @Component({
   selector: 'app-attendance-details-attendances',
   templateUrl: './attendance-details-attendances.component.html',
   styleUrls: ['./attendance-details-attendances.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatIconModule, AttendanceRecordTableComponent],
+  imports: [MatButtonModule, MatIconModule, AttendanceTableComponent],
 })
 export class AttendanceDetailsAttendancesComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
@@ -35,8 +35,8 @@ export class AttendanceDetailsAttendancesComponent implements OnInit {
   }
 
   public openAddRecord(): void {
-    this.dialog.open<AttendanceRecordFormModalComponent, undefined, GetAttendanceRecord | undefined>(
-      AttendanceRecordFormModalComponent,
+    this.dialog.open<AttendanceFormModalComponent, undefined, GetAttendance | undefined>(
+      AttendanceFormModalComponent,
       {
         maxWidth: '620px',
         width: '100%',
@@ -46,8 +46,8 @@ export class AttendanceDetailsAttendancesComponent implements OnInit {
     );
   }
 
-  public openEditDetails(row: GetAttendanceRecord): void {
-    this.dialog.open(EditAttendanceRecordModalComponent, {
+  public openEditDetails(row: GetAttendance): void {
+    this.dialog.open(EditAttendanceModalComponent, {
       maxWidth: '620px',
       width: '100%',
       data: row, 

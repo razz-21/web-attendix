@@ -13,7 +13,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule } from '@angular/forms';
 import { AttendeesService } from '@/app/services/attendees.service';
@@ -35,7 +34,6 @@ import { AttendeeFormModalComponent } from '@/app/pages/main/attendance-details/
     MatInputModule,
     MatButtonModule,
     MatTooltipModule,
-    MatPaginatorModule,
     MatProgressSpinnerModule,
     FormsModule,
   ],
@@ -53,12 +51,10 @@ export class AttendeeTableComponent {
 
   private readonly rawAttendees = signal<GetAttendee[]>([]);
   public readonly loading = signal<boolean>(false);
-  public readonly pagination = signal({ page: 1, limit: 10, total: 0 });
   public readonly filters = signal<{ q?: string }>({ q: undefined });
 
   public readonly data = computed(() => [...this.rawAttendees()]);
   public readonly departments = DEPARTMENTS;
-  public readonly pageSizeOptions = [10, 25, 50];
 
   constructor() {
     // Watch for attendanceId changes and reload data.
@@ -79,21 +75,9 @@ export class AttendeeTableComponent {
     this.loading.set(true);
 
     try {
-      const { page, limit } = this.pagination();
       const { q } = this.filters();
-
-      const resp = await this.attendeesService.getAttendeesByAttendance(id, {
-        page,
-        limit,
-        q,
-      });
-
+      const resp = await this.attendeesService.getAttendeesByAttendance(id, {q,});
       this.rawAttendees.set(resp.data ?? []);
-      this.pagination.set({
-        page: resp.page ?? 1,
-        limit: resp.limit ?? 10,
-        total: resp.total ?? 0,
-      });
     } catch (err: any) {
       console.error('[AttendeeTable] loadAttendees error:', err);
       this.snackBar.open(err?.message ?? 'Failed to load attendees', 'Close', {
@@ -105,16 +89,6 @@ export class AttendeeTableComponent {
   }
 
   public searchAttendees(): void {
-    this.pagination.update(p => ({ ...p, page: 1 }));
-    this.loadAttendees();
-  }
-
-  public paginateAttendees(event: PageEvent): void {
-    this.pagination.set({
-      page: event.pageIndex + 1,
-      limit: event.pageSize,
-      total: this.pagination().total,
-    });
     this.loadAttendees();
   }
 
