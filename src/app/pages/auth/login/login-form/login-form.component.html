@@ -7,10 +7,10 @@
     </div>
 
     @if (loginError()) {
-      <div class="login-error">
-        <mat-icon>error</mat-icon>
-        <p>{{ loginError()?.message }}</p>
-      </div>
+    <div class="login-error">
+      <mat-icon>error</mat-icon>
+      <p>{{ loginError()?.message }}</p>
+    </div>
     }
 
     <form class="login-fields" [formGroup]="form" (ngSubmit)="onSubmit()">
@@ -21,25 +21,25 @@
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Password</mat-label>
-        <input
-          matInput
-          type="password"
-          formControlName="password"
-          autocomplete="current-password"
-        />
+        <input matInput type="password" formControlName="password" autocomplete="current-password" />
       </mat-form-field>
 
       <div class="login-buttons">
-        <button type="submit" matButton="filled" color="primary" class="full-width" [disabled]="loggingLoading()" [attr.aria-label]="loggingLoading() ? 'Logging in...' : 'Sign in'">
+        <div class="forgot-password-wrapper">
+          <a routerLink="/forgot-password">Forgot Password?</a>
+        </div>
+        <button type="submit" matButton="filled" color="primary" class="full-width" [disabled]="loggingLoading()"
+          [attr.aria-label]="loggingLoading() ? 'Logging in...' : 'Sign in'">
           @if (loggingLoading()) {
-            <mat-progress-spinner mode="indeterminate" diameter="20"></mat-progress-spinner>
+          <mat-progress-spinner mode="indeterminate" diameter="20"></mat-progress-spinner>
           } @else {
-            Sign in
+          Sign in
           }
         </button>
         <div class="login-request-account">
           <p>Don't have an account? You can request one below.</p>
-          <button type="button" matButton="tonal" color="primary" class="full-width" (click)="navigateToRequestAccount()">Request an account</button>
+          <button type="button" matButton="tonal" color="primary" class="full-width"
+            (click)="navigateToRequestAccount()">Request an account</button>
         </div>
       </div>
     </form>

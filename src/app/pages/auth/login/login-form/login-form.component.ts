@@ -10,7 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Dispatcher, Events } from '@ngrx/signals/events';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { map, pipe, tap } from 'rxjs';
@@ -25,6 +25,7 @@ import { map, pipe, tap } from 'rxjs';
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    RouterModule,
   ],
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.scss',
