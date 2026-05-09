@@ -12,4 +12,14 @@
 .attendance-details-attendances-page-header-left {
   display: flex;
   align-items: center;
+
+  h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+}
+
+.attendance-details-attendances-page-content {
+  margin-top: 1.5rem;
 }
