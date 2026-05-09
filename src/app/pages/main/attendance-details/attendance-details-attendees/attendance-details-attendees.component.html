@@ -1,1 +1,17 @@
-<h1>Attendees</h1>
+<div class="attendees-page">
+  <div class="attendees-page-header">
+    <div class="page-header">
+      <div class="page-title">Attendees</div>
+    </div>
+
+    <div class="attendees-page-header-actions">
+      <button matButton="filled" color="primary" type="button" (click)="openCreate()">
+        Add Attendee
+      </button>
+    </div>
+  </div>
+
+  <div class="attendees-page-content">
+    <app-attendee-table [attendanceId]="attendanceId()"></app-attendee-table>
+  </div>
+</div>

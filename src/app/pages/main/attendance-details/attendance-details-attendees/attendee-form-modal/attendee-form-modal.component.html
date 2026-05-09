@@ -1,0 +1,9 @@
+<mat-dialog-content class="attendee-form-modal__content">
+  <h2>@if(data?.attendee) { Edit Attendee } @else { Add New Attendee }</h2>
+  <p>
+    @if(data?.attendee) { 
+      Update the attendee details below.
+    }
+  </p>
+  <app-attendee-form [data]="data" (attendeeSaved)="dialogRef.close($event)" (formCancelled)="cancel()" />
+</mat-dialog-content>
