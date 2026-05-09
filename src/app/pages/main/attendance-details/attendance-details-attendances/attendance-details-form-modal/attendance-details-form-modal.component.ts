@@ -6,9 +6,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Dispatcher, Events } from '@ngrx/signals/events';
-import { AttendanceRecordsEvents } from '@/app/store/attendance-records/attendance-records.events';
-import { AttendanceRecordsStore } from '@/app/store/attendance-records/attendance-records.store';
-import { GetAttendanceRecord } from '@/app/types/attendance-records/attendance-records.types';
+import { AttendanceEvents } from '@/app/store/attendance/attendance.events';
+import { AttendanceStore } from '@/app/store/attendance/attendance.store';
+import { GetAttendanceRecord } from '@/app/types/attendance/attendance.types';
 import { map, pipe, tap } from 'rxjs';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 
@@ -43,7 +43,7 @@ export class AttendanceRecordFormModalComponent {
   private readonly dialogRef = inject(MatDialogRef<AttendanceRecordFormModalComponent>);
   private readonly data = inject<AttendanceRecordFormData>(MAT_DIALOG_DATA, { optional: true });
   private readonly dispatcher = inject(Dispatcher);
-  private readonly attendanceRecordsStore = inject(AttendanceRecordsStore);
+  private readonly attendanceRecordsStore = inject(AttendanceStore);
   private readonly events = inject(Events);
 
   public readonly isEditMode = !!this.data?.record;
@@ -94,7 +94,7 @@ export class AttendanceRecordFormModalComponent {
         const now = new Date().toISOString();
 
         if (this.isEditMode && this.data?.record) {
-          this.dispatcher.dispatch(AttendanceRecordsEvents.updateAttendanceRecord({
+          this.dispatcher.dispatch(AttendanceEvents.updateAttendanceRecord({
             attendance_id,
             id: this.data.record.id,
             data: {
@@ -106,7 +106,7 @@ export class AttendanceRecordFormModalComponent {
             },
           }));
         } else {
-          this.dispatcher.dispatch(AttendanceRecordsEvents.createAttendanceRecord({
+          this.dispatcher.dispatch(AttendanceEvents.createAttendanceRecord({
             attendance_id,
             record: {
               id: crypto.randomUUID() as string,
@@ -138,13 +138,13 @@ export class AttendanceRecordFormModalComponent {
 
   #closeOnCreateSuccess = rxMethod<GetAttendanceRecord>(
     pipe(tap(() => this.dialogRef.close()))
-  )(this.events.on(AttendanceRecordsEvents.createAttendanceRecordSuccess).pipe(
+  )(this.events.on(AttendanceEvents.createAttendanceRecordSuccess).pipe(
     map(({ payload }) => payload)
   ));
 
   #closeOnUpdateSuccess = rxMethod<GetAttendanceRecord>(
     pipe(tap(() => this.dialogRef.close()))
-  )(this.events.on(AttendanceRecordsEvents.updateAttendanceRecordSuccess).pipe(
+  )(this.events.on(AttendanceEvents.updateAttendanceRecordSuccess).pipe(
     map(({ payload }) => payload)
   ));
 

@@ -4,11 +4,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { Dispatcher } from '@ngrx/signals/events';
-import { AttendanceRecordsStore } from '@/app/store/attendance-records/attendance-records.store';
-import { AttendanceRecordsEvents } from '@/app/store/attendance-records/attendance-records.events';
+import { AttendanceStore } from '@/app/store/attendance/attendance.store';
+import { AttendanceEvents } from '@/app/store/attendance/attendance.events';
 import { AttendanceRecordTableComponent } from '../attendance-details-attendances/attendance-details-table/attendance-details-table.component';
 import { AttendanceRecordFormModalComponent } from '../attendance-details-attendances/attendance-details-form-modal/attendance-details-form-modal.component';
-import type { GetAttendanceRecord } from '@/app/types/attendance-records/attendance-records.types';
+import type { GetAttendanceRecord } from '@/app/types/attendance/attendance.types';
 import { EditAttendanceRecordModalComponent } from '../attendance-details-attendances/edit-attendance-form-modal/edit-attendance-form-modal.component';
 
 @Component({
@@ -21,7 +21,7 @@ import { EditAttendanceRecordModalComponent } from '../attendance-details-attend
 export class AttendanceDetailsAttendancesComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly dispatcher = inject(Dispatcher);
-  private readonly attendanceRecordsStore = inject(AttendanceRecordsStore);
+  private readonly attendanceRecordsStore = inject(AttendanceStore);
   private readonly route = inject(ActivatedRoute);
 
   private get attendanceId(): string {
@@ -29,7 +29,7 @@ export class AttendanceDetailsAttendancesComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.dispatcher.dispatch(AttendanceRecordsEvents.loadAttendanceRecords({
+    this.dispatcher.dispatch(AttendanceEvents.loadAttendanceRecords({
       attendance_id: this.attendanceId,
     }));
   }

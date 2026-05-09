@@ -1,8 +1,8 @@
 import { type } from '@ngrx/signals';
 import { eventGroup } from '@ngrx/signals/events';
-import { GetAttendanceRecord, PostAttendanceRecord, PatchAttendanceRecord } from '@/app/types/attendance-records/attendance-records.types';
+import { GetAttendanceRecord, PostAttendanceRecord, PatchAttendanceRecord } from '@/app/types/attendance/attendance.types';
 
-export const AttendanceRecordsEvents = eventGroup({
+export const AttendanceEvents = eventGroup({
   source: 'Attendance Records Page',
   events: {
     loadAttendanceRecords: type<{ attendance_id: string }>(),

@@ -9,10 +9,10 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
-import { AttendanceRecordsStore } from '@/app/store/attendance-records/attendance-records.store';
-import { AttendanceRecordsEvents } from '@/app/store/attendance-records/attendance-records.events';
+import { AttendanceStore } from '@/app/store/attendance/attendance.store';
+import { AttendanceEvents } from '@/app/store/attendance/attendance.events';
 import { Dispatcher } from '@ngrx/signals/events';
-import { GetAttendanceRecord } from '@/app/types/attendance-records/attendance-records.types';
+import { GetAttendanceRecord } from '@/app/types/attendance/attendance.types';
 import { ConfirmationDialogService } from '@/app/services/confirmation-dialog.service';
 import { EditAttendanceRecordModalComponent } from '../edit-attendance-form-modal/edit-attendance-form-modal.component';
 
@@ -34,7 +34,7 @@ import { EditAttendanceRecordModalComponent } from '../edit-attendance-form-moda
 })
 export class AttendanceRecordTableComponent {
   private readonly confirmationDialogService = inject(ConfirmationDialogService);
-  private readonly attendanceRecordsStore = inject(AttendanceRecordsStore);
+  private readonly attendanceRecordsStore = inject(AttendanceStore);
   private readonly dispatcher = inject(Dispatcher);
   private readonly dialog = inject(MatDialog);
 
@@ -57,7 +57,7 @@ export class AttendanceRecordTableComponent {
   public readonly isNotLoading = (_index: number, _row: any) => !this.loading();
 
   public searchDetails(): void {
-    this.dispatcher.dispatch(AttendanceRecordsEvents.searchAttendanceRecords({
+    this.dispatcher.dispatch(AttendanceEvents.searchAttendanceRecords({
       q: this.filters().q ?? '',
     }));
   }
@@ -79,7 +79,7 @@ export class AttendanceRecordTableComponent {
     });
 
     if (result) {
-      this.dispatcher.dispatch(AttendanceRecordsEvents.deleteAttendanceRecord({
+      this.dispatcher.dispatch(AttendanceEvents.deleteAttendanceRecord({
         attendance_id: row.attendance_id,
         record: row,
       }));
