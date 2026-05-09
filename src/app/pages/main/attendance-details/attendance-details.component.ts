@@ -1,19 +1,23 @@
 import { MAIN_ATTENDANCES_PATH } from "@/app/constants/route.constant";
 import { TitleCasePipe } from "@angular/common";
-import { Component, inject } from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
-import { AttendancesStore } from "@/app/store/attendances/attendances.store";
 import { ConfirmationDialogService } from "@/app/services/confirmation-dialog.service";
 import { MatDialog } from "@angular/material/dialog";
-import { Dispatcher } from "@ngrx/signals/events";
+import { Dispatcher, Events } from "@ngrx/signals/events";
 import { computed } from "@angular/core";
 import { AttendanceFormModalComponent } from "../attendances/attendance-form-modal/attendance-form-modal.component";
-import { AttendancesEvents } from "@/app/store/attendances/attendances.events";
 import { SCHEDULE_DAY_MAP } from "@/app/constants/schedule-days.constant";
 import { AttendanceScheduleDays } from "@/app/types/attendaces/attendances.types";
+import { AttendanceDetailsStore } from "@/app/store/attendance-details/attendance-details.store";
+import { AttendanceDetailsEvents } from "@/app/store/attendance-details/attendance-details.events";
+import { LoadingSectionComponent } from "@/app/compponents/loading-section/loading-section.component";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { rxMethod } from "@ngrx/signals/rxjs-interop";
+import { pipe, tap, map } from "rxjs";
 
 @Component({
   selector: 'app-attendance-details',
@@ -26,24 +30,25 @@ import { AttendanceScheduleDays } from "@/app/types/attendaces/attendances.types
     MatTooltipModule,
     RouterLink,
     RouterLinkActive,
-    RouterOutlet
+    RouterOutlet,
+    LoadingSectionComponent
   ]
 })
-export class AttendanceDetailsComponent {
+export class AttendanceDetailsComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
-  private readonly attendancesStore = inject(AttendancesStore);
-  private readonly confirmationDialogService = inject(ConfirmationDialogService);
   private readonly dialog = inject(MatDialog);
   private readonly dispatcher = inject(Dispatcher);
+  private readonly snackBar = inject(MatSnackBar);
+  private readonly events = inject(Events);
+  private readonly attendanceDetailsStore = inject(AttendanceDetailsStore);
+  private readonly confirmationDialogService = inject(ConfirmationDialogService);
 
-  private readonly attendanceId = computed(() => this.route.snapshot.paramMap.get('id'));
+  private attendanceId = computed(() => this.route.snapshot.paramMap.get('id'));
   
-  public readonly attendance = computed(() => {
-    const id = this.attendanceId();
-    if (!id) return null;
-    return this.attendancesStore.attendancesMap()[id] ?? null;
-  });
+  public attendanceDetails = computed(() => this.attendanceDetailsStore.attendanceDetails());
+
+  public loading = computed(() => this.attendanceDetailsStore.loading());
 
   public readonly tabs = [
     { label: "attendances", route: "attendances" },
@@ -53,12 +58,27 @@ export class AttendanceDetailsComponent {
     { label: "configurations", route: "configurations" }
   ] as const;
 
+  public ngOnInit(): void {
+    const id = this.attendanceId();
+    if (id) {
+      this.dispatcher.dispatch(AttendanceDetailsEvents.loadAttendanceDetails({ id }));
+    }
+  }
+
   public navigateBack(): void {
     this.router.navigate([MAIN_ATTENDANCES_PATH]);
   }
 
+  public copyCode(): void {
+    const attendance = this.attendanceDetails();
+    if (!attendance) return;
+
+    navigator.clipboard.writeText(attendance.code);
+    this.snackBar.open('Code copied to clipboard', 'Close', { duration: 5000 });
+  }
+
   public openEditAttendance(): void {
-    const attendance = this.attendance();
+    const attendance = this.attendanceDetails();
     if (!attendance) return;
 
     // Convert backend schedule days to frontend representation
@@ -92,13 +112,13 @@ export class AttendanceDetailsComponent {
           late_threshold: data.lateThreshold,
           schedule_days: data.scheduleDays.map((day: string) => SCHEDULE_DAY_MAP[day] as AttendanceScheduleDays[number]),
         };
-        this.dispatcher.dispatch(AttendancesEvents.updateAttendance({ id: attendance.id, data: payload }));
+        this.dispatcher.dispatch(AttendanceDetailsEvents.updateAttendanceDetails({ id: attendance.id, payload }));
       }
     });
   }
 
   public async deleteAttendance(): Promise<void> {
-    const attendance = this.attendance();
+    const attendance = this.attendanceDetails();
     if (!attendance) return;
 
     const confirmed = await this.confirmationDialogService.confirm({
@@ -109,8 +129,15 @@ export class AttendanceDetailsComponent {
     });
 
     if (confirmed) {
-      this.dispatcher.dispatch(AttendancesEvents.deleteAttendance(attendance));
-      this.navigateBack();
+      this.dispatcher.dispatch(AttendanceDetailsEvents.deleteAttendanceDetails({ id: attendance.id }));
     }
   }
+
+  #onDeleteAttedanceDetailsSuccess = rxMethod<void>(
+    pipe(
+      tap(() => {
+        this.navigateBack();
+      })
+    )
+  )(this.events.on(AttendanceDetailsEvents.deleteAttendanceDetailsSuccess).pipe(map(() => void 0)));
 }

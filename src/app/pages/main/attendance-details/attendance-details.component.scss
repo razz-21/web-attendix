@@ -5,20 +5,87 @@
 .attendance-details-page-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
   gap: 0.5rem;
+}
+
+.attendance-details-page-header-title {
+  max-width: 620px;
+  
+  h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--mat-sys-on-surface-variant);
+    word-wrap: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .attendance-details-page-header-title-days {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+
+    span {
+      font-size: 0.75rem;
+      color: var(--mat-sys-on-surface-variant);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      background-color: var(--mat-sys-primary-container);
+    }
+  }
 }
 
 .attendance-details-page-header-left {
   display: flex;
-  align-items: center;
   gap: 0.5rem;
 }
 
 .attendance-details-page-header-right {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 0.5rem;
+}
+
+.attendance-details-page-header-right-actions {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: 0.5rem;
+}
+
+.attendance-details-page-header-right-code {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  padding: 0.5rem;
+  border: 1px dashed var(--mat-sys-primary, #6200ea);
+  border-radius: 8px;
+  background: var(--mat-sys-surface-container-low, rgba(0, 0, 0, 0.02));
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--mat-sys-primary, #6200ea);
+    }
+  }
 }
 
 .attendance-details-tabs {

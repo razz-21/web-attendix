@@ -1,43 +1,60 @@
 <div class="attendance-details-page">
-  <div class="attendance-details-page-header">
-    <div class="attendance-details-page-header-left">
-      <div class="attendance-details-page-header-back-button">
-        <button mat-icon-button color="primary" type="button" (click)="navigateBack()">
-          <mat-icon>arrow_back</mat-icon>
-        </button>
+  @if (loading()) {
+    <app-loading-section label="Loading attendance details" />
+  } @else {
+    <div class="attendance-details-page-header">
+      <div class="attendance-details-page-header-left">
+        <div class="attendance-details-page-header-back-button">
+          <button mat-icon-button color="primary" type="button" (click)="navigateBack()">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+        </div>
+        <div class="attendance-details-page-header-title">
+          <h1>{{ attendanceDetails()?.name }}</h1>
+          <p>{{ attendanceDetails()?.description }}</p>
+          <div class="attendance-details-page-header-title-days">
+            @for (day of attendanceDetails()?.schedule_days; track day) {
+              <span>{{ day | titlecase }}</span>
+            }
+          </div>
+        </div>
       </div>
-      <div class="attendance-details-page-header-title">
-        <h1>Attendance Details</h1>
+  
+      <div class="attendance-details-page-header-right">
+        <div class="attendance-details-page-header-right-actions">
+          <button mat-icon-button color="primary" type="button" matTooltip="Edit Attendance" matTooltipPosition="above" (click)="openEditAttendance()">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="primary" type="button" matTooltip="Delete Attendance" matTooltipPosition="above" (click)="deleteAttendance()">
+            <mat-icon>delete</mat-icon>
+          </button>
+          <button mat-icon-button color="primary" type="button" matTooltip="Duplicate Attendance" matTooltipPosition="above">
+            <mat-icon>content_copy</mat-icon>
+          </button>
+        </div>
+
+        <div class="attendance-details-page-header-right-code">
+          <span>Code: <strong>{{ attendanceDetails()?.code }}</strong></span>
+          <mat-icon (click)="copyCode()">content_copy</mat-icon>
+        </div>
       </div>
     </div>
-
-    <div class="attendance-details-page-header-right">
-      <button mat-icon-button color="primary" type="button" matTooltip="Edit Attendance" matTooltipPosition="above" (click)="openEditAttendance()">
-        <mat-icon>edit</mat-icon>
-      </button>
-      <button mat-icon-button color="primary" type="button" matTooltip="Delete Attendance" matTooltipPosition="above" (click)="deleteAttendance()">
-        <mat-icon>delete</mat-icon>
-      </button>
-      <button mat-icon-button color="primary" type="button" matTooltip="Duplicate Attendance" matTooltipPosition="above">
-        <mat-icon>content_copy</mat-icon>
-      </button>
+  
+    <div class="attendance-details-tabs">
+      @for (tab of tabs; track tab) {
+        <a
+          class="attendance-details-tab"
+          [routerLink]="tab.route"
+          routerLinkActive="attendance-details-tab-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          {{ tab.label | titlecase }}
+        </a>
+      }
     </div>
-  </div>
-
-  <div class="attendance-details-tabs">
-    @for (tab of tabs; track tab) {
-      <a
-        class="attendance-details-tab"
-        [routerLink]="tab.route"
-        routerLinkActive="attendance-details-tab-active"
-        [routerLinkActiveOptions]="{ exact: true }"
-      >
-        {{ tab.label | titlecase }}
-      </a>
-    }
-  </div>
-
-  <div class="attendance-details-content">
-    <router-outlet></router-outlet>
-  </div>
+  
+    <div class="attendance-details-content">
+      <router-outlet></router-outlet>
+    </div>
+  }
 </div>
