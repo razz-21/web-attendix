@@ -6,9 +6,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Dispatcher, Events } from '@ngrx/signals/events';
-import { AttendanceRecordsEvents } from '@/app/store/attendance-records/attendance-records.events';
-import { AttendanceRecordsStore } from '@/app/store/attendance-records/attendance-records.store';
-import { GetAttendanceRecord } from '@/app/types/attendance-records/attendance-records.types';
+import { AttendanceEvents } from '@/app/store/attendance/attendance.events';
+import { AttendanceStore } from '@/app/store/attendance/attendance.store';
+import { GetAttendanceRecord } from '@/app/types/attendance/attendance.types';
 import { map, pipe, tap } from 'rxjs';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 
@@ -31,7 +31,7 @@ export class EditAttendanceRecordModalComponent {
   private readonly dialogRef = inject(MatDialogRef<EditAttendanceRecordModalComponent>);
   public readonly record = inject<GetAttendanceRecord>(MAT_DIALOG_DATA);
   private readonly dispatcher = inject(Dispatcher);
-  private readonly attendanceRecordsStore = inject(AttendanceRecordsStore);
+  private readonly attendanceRecordsStore = inject(AttendanceStore);
   private readonly events = inject(Events);
   public readonly maxYear = 9999;
 
@@ -56,7 +56,7 @@ export class EditAttendanceRecordModalComponent {
         const attendance_id = this.attendanceRecordsStore.currentAttendanceId()!;
         const now = new Date().toISOString();
 
-        this.dispatcher.dispatch(AttendanceRecordsEvents.updateAttendanceRecord({
+        this.dispatcher.dispatch(AttendanceEvents.updateAttendanceRecord({
           attendance_id,
           id: this.record.id,
           data: {
@@ -97,7 +97,7 @@ export class EditAttendanceRecordModalComponent {
 
   #closeOnUpdateSuccess = rxMethod<GetAttendanceRecord>(
     pipe(tap(() => this.dialogRef.close()))
-  )(this.events.on(AttendanceRecordsEvents.updateAttendanceRecordSuccess).pipe(
+  )(this.events.on(AttendanceEvents.updateAttendanceRecordSuccess).pipe(
     map(({ payload }) => payload)
   ));
 
