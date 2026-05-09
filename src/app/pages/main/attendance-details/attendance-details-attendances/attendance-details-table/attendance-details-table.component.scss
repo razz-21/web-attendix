@@ -1,0 +1,40 @@
+.details-table-filter {
+    margin-top: -60px;
+
+  &__search {
+    width: 100%;
+    max-width: 400px;
+  }
+}
+
+.details-table-wrap {
+  overflow-x: auto;
+}
+
+.details-table {
+  width: 100%;
+}
+
+.details-table-loading-cell {
+  padding: 2rem;
+}
+
+.details-table-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.details-table-empty-row .details-table-empty-cell {
+  padding: 3rem;
+}
+
+.details-table-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0.5;
+  
+}

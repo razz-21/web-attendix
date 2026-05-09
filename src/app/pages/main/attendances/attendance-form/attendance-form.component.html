@@ -75,7 +75,7 @@
     <div class="attendance-form__code-section">
       <label class="attendance-form__code-label">Code:</label>
       <div class="attendance-form__code-box">
-        <span class="attendance-form__code-value">{{ generatedCode() }}</span>
+        <span class="attendance-form__code-value">{{ model().code }}</span>
       </div>
       <p class="attendance-form__code-hint">The code will be used to identify the attendance and allow participants to join.</p>
     </div>
@@ -89,7 +89,7 @@
       @if (isLoadingForm()) {
         <mat-spinner diameter="20"></mat-spinner>
       } @else {
-        <span>Create attendance</span>
+        <span>{{ initialData() ? 'Save changes' : 'Create attendance' }}</span>
       }
     </button>
   </div>
