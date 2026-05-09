@@ -1,0 +1,85 @@
+.attendance-drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--mat-sys-surface-container-high);
+
+  &-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    h1 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+  }
+
+  &-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    button {
+      margin: 0;
+      padding: 0;
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+}
+
+.attendance-drawer-content {
+  padding: 1rem;
+  
+  mat-list {
+    mat-list-item {
+      padding: 1rem 0.5rem;
+
+      &:not(:last-child) {
+        border-bottom: 1px solid var(--mat-sys-surface-container-high);
+      }
+
+      &:hover {
+        background-color: var(--mat-sys-surface-container-low);
+      }
+
+      .attendance-drawer-content-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+
+        &-left {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        &-right {
+          display: flex;
+          align-items: center;
+          gap: 0.375rem;
+        }
+      }
+    }
+  }
+}
+
+// Compact mat-button-toggle-group (tokens inherit; label padding needs piercing encapsulation)
+:host ::ng-deep .attendance-record-type-toggle {
+  --mat-button-toggle-height: 28px;
+  --mat-button-toggle-label-text-size: 0.75rem;
+  --mat-button-toggle-label-text-line-height: 1.2;
+  --mat-button-toggle-shape: 8px;
+
+  .mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+    padding-inline: 6px;
+  }
+}

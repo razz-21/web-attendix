@@ -1,5 +1,22 @@
+.attendance-details-attendances-container {
+  height: 100%;
+}
+
+.attendance-details-attendances-drawer {
+  position: fixed;
+  min-width: 620px;
+  border-radius: 0;
+  border-left: 1px solid var(--mat-sys-surface-container-high);
+  background-color: var(--mat-sys-surface-container-lowest);
+}
+
+.attendance-details-attendances-page-content {
+  background-color: var(--mat-sys-surface-container-lowest);
+}
+
 .attendance-details-attendances-page {
   padding: 1rem;
+  margin-top: 1.5rem;
 }
 
 .attendance-details-attendances-page-header {
@@ -18,8 +35,4 @@
     font-size: 1.25rem;
     font-weight: 600;
   }
-}
-
-.attendance-details-attendances-page-content {
-  margin-top: 1.5rem;
 }

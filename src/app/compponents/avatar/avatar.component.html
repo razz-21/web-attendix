@@ -7,12 +7,16 @@
   [class.avatar-wrapper--xl]="size() === 'xl'"
   [class.avatar-wrapper--xxl]="size() === 'xxl'"
 >
-  <img
-    class="avatar"
-    [src]="avatarUrl()"
-    [alt]="alt()"
-    loading="lazy"
-    decoding="async"
-    (error)="onImageError($event)"
-  />
+  @if (showLetterAvatar()) {
+    <span class="avatar-initial" role="img" [attr.aria-label]="alt()">{{ initialLetter() }}</span>
+  } @else {
+    <img
+      class="avatar"
+      [src]="avatarUrl()"
+      [alt]="alt()"
+      loading="lazy"
+      decoding="async"
+      (error)="onImageError($event)"
+    />
+  }
 </div>

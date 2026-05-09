@@ -62,6 +62,10 @@ export class AttendanceTableComponent {
     }));
   }
 
+  public selectAttendance(row: GetAttendance): void {
+    this.dispatcher.dispatch(AttendanceEvents.selectAttendance({ attendance: row }));
+  }
+
   public openEditDetails(row: GetAttendance): void {
     this.dialog.open(EditAttendanceModalComponent, {
       maxWidth: '620px',

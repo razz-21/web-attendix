@@ -1,16 +1,29 @@
-<div class="attendance-details-attendances-page">
-  <div class="attendance-details-attendances-page-header">
-    <div class="attendance-details-attendances-page-header-left">
+<mat-drawer-container class="attendance-details-attendances-container" [hasBackdrop]="false">
+  <mat-drawer
+    #drawerHost
+    class="attendance-details-attendances-drawer"
+    mode="over"
+    position="end"
+    [opened]="drawerOpen()"
+  >
+    <app-attendance-drawer />
+  </mat-drawer>
+  <mat-drawer-content class="attendance-details-attendances-page-content">
+    <div class="attendance-details-attendances-page">
+      <div class="attendance-details-attendances-page-header">
+        <div class="attendance-details-attendances-page-header-left">
+        </div>
+    
+        <div class="attendance-details-attendances-page-header-right">
+          <button matButton="filled" color="primary" type="button" (click)="openAddRecord()">
+            Add Attendance Record
+          </button>
+        </div>
+      </div>
+    
+      <div class="attendance-details-attendances-page-content">
+        <app-attendance-details-table />   
+      </div>
     </div>
-
-    <div class="attendance-details-attendances-page-header-right">
-      <button matButton="filled" color="primary" type="button" (click)="openAddRecord()">
-        Add Attendance Record
-      </button>
-    </div>
-  </div>
-
-  <div class="attendance-details-attendances-page-content">
-    <app-attendance-details-table />  
-  </div>
-</div>
+  </mat-drawer-content>
+</mat-drawer-container>

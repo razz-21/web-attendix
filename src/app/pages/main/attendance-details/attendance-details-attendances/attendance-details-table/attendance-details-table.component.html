@@ -70,7 +70,7 @@
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: loadingRowColumns; when: isLoading"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns; when: isNotLoading"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns; when: isNotLoading" (click)="selectAttendance(row)"></tr>
 
     <tr class="mat-mdc-row details-table-empty-row" *matNoDataRow>
       <td class="mat-mdc-cell details-table-empty-cell" [attr.colspan]="displayedColumns.length">

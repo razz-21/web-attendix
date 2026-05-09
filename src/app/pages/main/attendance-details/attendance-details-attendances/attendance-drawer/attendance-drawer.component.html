@@ -1,0 +1,79 @@
+<div class="attendance-drawer">
+  <div class="attendance-drawer-header">
+    <div class="attendance-drawer-header-left">
+      <h1>{{ selectedAttendance()?.name }}</h1>
+    </div>
+    <div class="attendance-drawer-header-right">
+      <button mat-icon-button color="primary" type="button" (click)="closeDrawer()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="attendance-drawer-content">
+    <mat-list>
+      <mat-list-item role="listitem">
+        <div class="attendance-drawer-content-item">
+          <div class="attendance-drawer-content-item-left">
+            <app-avatar size="sm" />
+            <span>{{ selectedAttendance()?.name }}</span>
+          </div>
+          <div class="attendance-drawer-content-item-right">
+            <mat-button-toggle-group
+              class="attendance-record-type-toggle"
+              name="attendance-attendee-record-type"
+              aria-label="Attendance Attendee Record Type"
+            >
+              <mat-button-toggle value="present">Present</mat-button-toggle>
+              <mat-button-toggle value="late">Late</mat-button-toggle>
+              <mat-button-toggle value="excused">Excused</mat-button-toggle>
+              <mat-button-toggle value="absent">Absent</mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+        </div>
+      </mat-list-item>
+
+      <mat-list-item role="listitem">
+        <div class="attendance-drawer-content-item">
+          <div class="attendance-drawer-content-item-left">
+            <app-avatar size="sm" [avatarName]="'U'" />
+            <span>{{ selectedAttendance()?.name }}</span>
+          </div>
+          <div class="attendance-drawer-content-item-right">
+            <mat-button-toggle-group
+              class="attendance-record-type-toggle"
+              name="attendance-attendee-record-type"
+              aria-label="Attendance Attendee Record Type"
+            >
+              <mat-button-toggle value="present">Present</mat-button-toggle>
+              <mat-button-toggle value="late">Late</mat-button-toggle>
+              <mat-button-toggle value="excused">Excused</mat-button-toggle>
+              <mat-button-toggle value="absent">Absent</mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+        </div>
+      </mat-list-item>
+
+      <mat-list-item role="listitem">
+        <div class="attendance-drawer-content-item">
+          <div class="attendance-drawer-content-item-left">
+            <app-avatar size="sm" [avatarName]="'E'" />
+            <span>{{ selectedAttendance()?.name }}</span>
+          </div>
+          <div class="attendance-drawer-content-item-right">
+            <mat-button-toggle-group
+              class="attendance-record-type-toggle"
+              name="attendance-attendee-record-type"
+              aria-label="Attendance Attendee Record Type"
+            >
+              <mat-button-toggle value="present">Present</mat-button-toggle>
+              <mat-button-toggle value="late">Late</mat-button-toggle>
+              <mat-button-toggle value="excused">Excused</mat-button-toggle>
+              <mat-button-toggle value="absent">Absent</mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+        </div>
+      </mat-list-item>
+    </mat-list>
+  </div>
+</div>

@@ -17,6 +17,7 @@ type AttendanceState = {
   loading: boolean;
   loadingForm: boolean;
   deleteLoading: boolean;
+  selectedAttendance: GetAttendance | null;
   error: string | null;
 };
 
@@ -28,6 +29,7 @@ const initialState: AttendanceState = {
   loading: false,
   loadingForm: false,
   deleteLoading: false,
+  selectedAttendance: null,
   error: null,
 };
 
@@ -35,7 +37,7 @@ export const AttendanceStore = signalStore(
   { providedIn: 'root' },
   withEntities<AttendanceEntity>(),
   withState(initialState),
-  withComputed(({ entities, entityMap, filters }) => ({
+  withComputed(({ entities, entityMap, filters, selectedAttendance }) => ({
     records: computed(() => [...entities()].sort((a, b) =>
       new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     )),
@@ -46,6 +48,7 @@ export const AttendanceStore = signalStore(
           record.name.toLowerCase().includes(q)
       );
     }),
+    drawerOpen: computed(() => !!selectedAttendance()),
     recordsMap: entityMap,
     hasRecords: computed(() => !!entities().length),
   })),
@@ -126,6 +129,11 @@ export const AttendanceStore = signalStore(
     on(AttendanceEvents.deleteAttendanceFailure, (event) => [
       addEntity(event.payload.attendance, { selectId }),
       { deleteLoading: false, error: event.payload.error },
+    ]),
+
+    // Select Attendance
+    on(AttendanceEvents.selectAttendance, ({ payload }) => [
+      { selectedAttendance: payload.attendance },
     ]),
 
     // Reset
