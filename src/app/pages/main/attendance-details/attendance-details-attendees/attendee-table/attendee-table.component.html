@@ -93,15 +93,3 @@
     </tr>
   </table>
 </div>
-
-<div class="attendee-table-paginator-wrap">
-  <mat-paginator
-    [length]="pagination().total"
-    [pageIndex]="pagination().page - 1"
-    [pageSize]="pagination().limit"
-    [pageSizeOptions]="pageSizeOptions"
-    [disabled]="loading()"
-    (page)="paginateAttendees($event)"
-    showFirstLastButtons
-  />
-</div>

@@ -8,15 +8,15 @@ import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/materia
 import { Dispatcher, Events } from '@ngrx/signals/events';
 import { AttendanceEvents } from '@/app/store/attendance/attendance.events';
 import { AttendanceStore } from '@/app/store/attendance/attendance.store';
-import { GetAttendanceRecord } from '@/app/types/attendance/attendance.types';
+import { GetAttendance } from '@/app/types/attendance/attendance.types';
 import { map, pipe, tap } from 'rxjs';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 
-interface AttendanceRecordFormData {
-  record?: GetAttendanceRecord;
+interface AttendanceFormData {
+  record?: GetAttendance;
 }
 
-export interface AttendanceRecordFormModel {
+export interface AttendanceFormModel {
   name: string;
   attendance_date: string;
   start_time: string;
@@ -38,16 +38,16 @@ export interface AttendanceRecordFormModel {
     MatProgressSpinnerModule,
   ],
 })
-export class AttendanceRecordFormModalComponent {
+export class AttendanceFormModalComponent {
   
-  private readonly dialogRef = inject(MatDialogRef<AttendanceRecordFormModalComponent>);
-  private readonly data = inject<AttendanceRecordFormData>(MAT_DIALOG_DATA, { optional: true });
+  private readonly dialogRef = inject(MatDialogRef<AttendanceFormModalComponent>);
+  private readonly data = inject<AttendanceFormData>(MAT_DIALOG_DATA, { optional: true });
   private readonly dispatcher = inject(Dispatcher);
-  private readonly attendanceRecordsStore = inject(AttendanceStore);
+  private readonly attendanceStore = inject(AttendanceStore);
   private readonly events = inject(Events);
 
   public readonly isEditMode = !!this.data?.record;
-  public readonly loadingForm = computed(() => this.attendanceRecordsStore.loadingForm());
+  public readonly loadingForm = computed(() => this.attendanceStore.loadingForm());
 
   private formatDate(date: Date): string {
     return date.toISOString().split('T')[0];
@@ -65,7 +65,7 @@ export class AttendanceRecordFormModalComponent {
     }).replace(/\//g, '-');
   }
 
-  public readonly formData = signal<AttendanceRecordFormModel>({
+  public readonly formData = signal<AttendanceFormModel>({
     name: this.data?.record?.name ?? this.formatNameDate(new Date()),
     attendance_date: this.data?.record?.attendance_date ?? this.formatDate(new Date()),
     start_time: this.data?.record?.start_time ?? this.formatTime(new Date()),
@@ -90,7 +90,7 @@ export class AttendanceRecordFormModalComponent {
     submission: {
       action: async () => {
         const m = this.formData();
-        const attendance_id = this.attendanceRecordsStore.currentAttendanceId()!;
+        const attendance_id = this.attendanceStore.currentAttendanceId()!;
         const now = new Date().toISOString();
 
         if (this.isEditMode && this.data?.record) {
@@ -128,7 +128,8 @@ export class AttendanceRecordFormModalComponent {
   public readonly isEndTimeValid = computed(() => {
     const m = this.formData();
     if (!m.start_time || !m.end_time) return true;
-    return m.end_time > m.start_time;
+    if (m.end_time === m.start_time) return false;
+    return true;
   });
 
   public readonly isFormDisabled = computed(() =>
@@ -136,13 +137,13 @@ export class AttendanceRecordFormModalComponent {
   );
   
 
-  #closeOnCreateSuccess = rxMethod<GetAttendanceRecord>(
+  #closeOnCreateSuccess = rxMethod<GetAttendance>(
     pipe(tap(() => this.dialogRef.close()))
   )(this.events.on(AttendanceEvents.createAttendanceRecordSuccess).pipe(
     map(({ payload }) => payload)
   ));
 
-  #closeOnUpdateSuccess = rxMethod<GetAttendanceRecord>(
+  #closeOnUpdateSuccess = rxMethod<GetAttendance>(
     pipe(tap(() => this.dialogRef.close()))
   )(this.events.on(AttendanceEvents.updateAttendanceRecordSuccess).pipe(
     map(({ payload }) => payload)

@@ -1,4 +1,4 @@
-import { GetAttendanceRecord } from "@/app/types/attendance/attendance.types";
+import { GetAttendance } from "@/app/types/attendance/attendance.types";
 import { signalStore, withComputed, withState } from "@ngrx/signals";
 import { addEntity, prependEntity, removeAllEntities, removeEntity, SelectEntityId, setAllEntities, withEntities } from "@ngrx/signals/entities";
 import { Events, on, withEventHandlers, withReducer } from "@ngrx/signals/events";
@@ -9,7 +9,7 @@ import { debounceTime, distinctUntilChanged, exhaustMap, from, map, tap } from "
 import { mapResponse } from "@ngrx/operators";
 import { MatSnackBar } from "@angular/material/snack-bar";
 
-type AttendanceEntity = GetAttendanceRecord;
+type AttendanceEntity = GetAttendance;
 
 type AttendanceState = {
   filters: { q: string };
@@ -137,7 +137,7 @@ export const AttendanceStore = signalStore(
     ) => ({
       loadAttendanceRecords$: events.on(AttendanceEvents.loadAttendanceRecords).pipe(
         exhaustMap(({ payload }) =>
-          from(attendanceRecordsService.getAttendanceRecords(payload.attendance_id, store.filters().q)).pipe(
+          from(attendanceRecordsService.getAttendance(payload.attendance_id, store.filters().q)).pipe(
             mapResponse({
               next: (response) => AttendanceEvents.loadAttendanceRecordsSuccess(response),
               error: (error: unknown) => AttendanceEvents.loadAttendanceRecordsFailure(error instanceof Error ? error.message : "Failed to load attendance records"),
@@ -153,7 +153,7 @@ export const AttendanceStore = signalStore(
         distinctUntilChanged((prev, curr) => prev.payload.q === curr.payload.q),
         debounceTime(500),
         exhaustMap(() =>
-          from(attendanceRecordsService.getAttendanceRecords(store.currentAttendanceId()!, store.filters().q)).pipe(
+          from(attendanceRecordsService.getAttendance(store.currentAttendanceId()!, store.filters().q)).pipe(
             mapResponse({
               next: (response) => AttendanceEvents.searchAttendanceRecordsSuccess(response),
               error: (error: unknown) => AttendanceEvents.searchAttendanceRecordsFailure(error instanceof Error ? error.message : "Failed to search attendance records"),
@@ -167,7 +167,7 @@ export const AttendanceStore = signalStore(
 
       createAttendanceRecord$: events.on(AttendanceEvents.createAttendanceRecord).pipe(
         exhaustMap(({ payload }) =>
-          from(attendanceRecordsService.createAttendanceRecord(payload.attendance_id, payload.record)).pipe(
+          from(attendanceRecordsService.createAttendance(payload.attendance_id, payload.record)).pipe(
             mapResponse({
               next: (response) => AttendanceEvents.createAttendanceRecordSuccess(response),
               error: (error: unknown) => AttendanceEvents.createAttendanceRecordFailure(error instanceof Error ? error.message : "Failed to create attendance record"),
@@ -184,7 +184,7 @@ export const AttendanceStore = signalStore(
 
       updateAttendanceRecord$: events.on(AttendanceEvents.updateAttendanceRecord).pipe(
         exhaustMap(({ payload }) =>
-          from(attendanceRecordsService.updateAttendanceRecord(payload.attendance_id, payload.id, payload.data)).pipe(
+          from(attendanceRecordsService.updateAttendance(payload.attendance_id, payload.id, payload.data)).pipe(
             mapResponse({
               next: (response) => AttendanceEvents.updateAttendanceRecordSuccess(response),
               error: (error: unknown) => AttendanceEvents.updateAttendanceRecordFailure(error instanceof Error ? error.message : "Failed to update attendance record"),
@@ -202,7 +202,7 @@ export const AttendanceStore = signalStore(
 
       deleteAttendanceRecord$: events.on(AttendanceEvents.deleteAttendanceRecord).pipe(
         exhaustMap(({ payload }) =>
-          from(attendanceRecordsService.deleteAttendanceRecord(payload.attendance_id, payload.record.id)).pipe(
+          from(attendanceRecordsService.deleteAttendance(payload.attendance_id, payload.record.id)).pipe(
             mapResponse({
               next: () => AttendanceEvents.deleteAttendanceRecordSuccess({ record: payload.record }),
               error: (error: unknown) => AttendanceEvents.deleteAttendanceRecordFailure({ error: error instanceof Error ? error.message : "Failed to delete attendance record", record: payload.record }),

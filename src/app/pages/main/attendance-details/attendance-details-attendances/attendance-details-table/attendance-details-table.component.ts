@@ -12,9 +12,9 @@ import { FormsModule } from '@angular/forms';
 import { AttendanceStore } from '@/app/store/attendance/attendance.store';
 import { AttendanceEvents } from '@/app/store/attendance/attendance.events';
 import { Dispatcher } from '@ngrx/signals/events';
-import { GetAttendanceRecord } from '@/app/types/attendance/attendance.types';
+import { GetAttendance } from '@/app/types/attendance/attendance.types';
 import { ConfirmationDialogService } from '@/app/services/confirmation-dialog.service';
-import { EditAttendanceRecordModalComponent } from '../edit-attendance-form-modal/edit-attendance-form-modal.component';
+import { EditAttendanceModalComponent } from '../edit-attendance-form-modal/edit-attendance-form-modal.component';
 
 @Component({
   selector: 'app-attendance-details-table',
@@ -32,7 +32,7 @@ import { EditAttendanceRecordModalComponent } from '../edit-attendance-form-moda
     FormsModule,
   ],
 })
-export class AttendanceRecordTableComponent {
+export class AttendanceTableComponent {
   private readonly confirmationDialogService = inject(ConfirmationDialogService);
   private readonly attendanceRecordsStore = inject(AttendanceStore);
   private readonly dispatcher = inject(Dispatcher);
@@ -62,15 +62,15 @@ export class AttendanceRecordTableComponent {
     }));
   }
 
-  public openEditDetails(row: GetAttendanceRecord): void {
-    this.dialog.open(EditAttendanceRecordModalComponent, {
+  public openEditDetails(row: GetAttendance): void {
+    this.dialog.open(EditAttendanceModalComponent, {
       maxWidth: '620px',
       width: '100%',
       data: row,
     });
   }
 
-  public async deleteDetails(row: GetAttendanceRecord): Promise<void> {
+  public async deleteDetails(row: GetAttendance): Promise<void> {
     const result = await this.confirmationDialogService.confirm({
       title: 'Delete Attendance Record',
       message: `Are you sure you want to delete <strong>${row.name}</strong>?`,

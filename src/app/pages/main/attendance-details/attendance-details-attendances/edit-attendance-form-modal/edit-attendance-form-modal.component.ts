@@ -8,7 +8,7 @@ import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/materia
 import { Dispatcher, Events } from '@ngrx/signals/events';
 import { AttendanceEvents } from '@/app/store/attendance/attendance.events';
 import { AttendanceStore } from '@/app/store/attendance/attendance.store';
-import { GetAttendanceRecord } from '@/app/types/attendance/attendance.types';
+import { GetAttendance } from '@/app/types/attendance/attendance.types';
 import { map, pipe, tap } from 'rxjs';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 
@@ -27,9 +27,9 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
     MatProgressSpinnerModule,
   ],
 })
-export class EditAttendanceRecordModalComponent {
-  private readonly dialogRef = inject(MatDialogRef<EditAttendanceRecordModalComponent>);
-  public readonly record = inject<GetAttendanceRecord>(MAT_DIALOG_DATA);
+export class EditAttendanceModalComponent {
+  private readonly dialogRef = inject(MatDialogRef<EditAttendanceModalComponent>);
+  public readonly record = inject<GetAttendance>(MAT_DIALOG_DATA);
   private readonly dispatcher = inject(Dispatcher);
   private readonly attendanceRecordsStore = inject(AttendanceStore);
   private readonly events = inject(Events);
@@ -75,7 +75,8 @@ export class EditAttendanceRecordModalComponent {
   public readonly isEndTimeValid = computed(() => {
     const m = this.formData();
     if (!m.start_time || !m.end_time) return true;
-    return m.end_time > m.start_time;
+    if (m.end_time === m.start_time) return false;
+    return true;
   });
 
   public readonly isFormDisabled = computed(() =>
@@ -95,7 +96,7 @@ export class EditAttendanceRecordModalComponent {
     }
   }
 
-  #closeOnUpdateSuccess = rxMethod<GetAttendanceRecord>(
+  #closeOnUpdateSuccess = rxMethod<GetAttendance>(
     pipe(tap(() => this.dialogRef.close()))
   )(this.events.on(AttendanceEvents.updateAttendanceRecordSuccess).pipe(
     map(({ payload }) => payload)
