@@ -8,6 +8,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AttendeesService } from '@/app/services/attendees.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DEPARTMENTS } from '@/app/constants/departments.constant';
+import { YEAR_LEVELS } from '@/app/constants/year-levels.constant';
 import type { PostAttendee, GetAttendee, PatchAttendee } from '@/app/types/attendaces/attendees.types';
 
 export interface AttendeeFormData {
@@ -42,7 +43,7 @@ export class AttendeeFormComponent implements OnInit {
   public readonly model = signal<AttendeeFormModel>(emptyModel());
 
   public readonly departments = DEPARTMENTS;
-  public readonly yearLevels = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+  public readonly yearLevels = YEAR_LEVELS;
 
   public readonly loadingForm = signal(false);
 

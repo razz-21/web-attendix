@@ -22,6 +22,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogService } from '@/app/services/confirmation-dialog.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DEPARTMENTS } from '@/app/constants/departments.constant';
+import { AttendeeFormModalComponent } from '@/app/pages/main/attendance-details/attendance-details-attendees/attendee-form-modal/attendee-form-modal.component';
 
 @Component({
   selector: 'app-attendee-table',
@@ -118,35 +119,25 @@ export class AttendeeTableComponent {
   }
 
   public openCreate(): void {
-    (async () => {
-      const module = await import(
-        '@/app/pages/main/attendance-details/attendance-details-attendees/attendee-form-modal/attendee-form-modal.component'
-      );
-      const ref = this.dialog.open(module.AttendeeFormModalComponent, {
-        maxWidth: '720px',
-        width: '100%',
-        data: { attendanceId: this.attendanceId() },
-      });
-      ref.afterClosed().subscribe((res: GetAttendee | undefined) => {
-        if (res) this.loadAttendees();
-      });
-    })();
+    const ref = this.dialog.open(AttendeeFormModalComponent, {
+      maxWidth: '720px',
+      width: '100%',
+      data: { attendanceId: this.attendanceId() },
+    });
+    ref.afterClosed().subscribe((res: GetAttendee | undefined) => {
+      if (res) this.loadAttendees();
+    });
   }
 
   public openEdit(row: GetAttendee): void {
-    (async () => {
-      const module = await import(
-        '@/app/pages/main/attendance-details/attendance-details-attendees/attendee-form-modal/attendee-form-modal.component'
-      );
-      const ref = this.dialog.open(module.AttendeeFormModalComponent, {
-        maxWidth: '720px',
-        width: '100%',
-        data: { attendanceId: this.attendanceId(), attendee: row },
-      });
-      ref.afterClosed().subscribe((res: GetAttendee | undefined) => {
-        if (res) this.loadAttendees();
-      });
-    })();
+    const ref = this.dialog.open(AttendeeFormModalComponent, {
+      maxWidth: '720px',
+      width: '100%',
+      data: { attendanceId: this.attendanceId(), attendee: row },
+    });
+    ref.afterClosed().subscribe((res: GetAttendee | undefined) => {
+      if (res) this.loadAttendees();
+    });
   }
 
   public async deleteAttendee(row: GetAttendee): Promise<void> {
