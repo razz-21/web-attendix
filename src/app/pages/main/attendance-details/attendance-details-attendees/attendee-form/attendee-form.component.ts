@@ -10,6 +10,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DEPARTMENTS } from '@/app/constants/departments.constant';
 import { YEAR_LEVELS } from '@/app/constants/year-levels.constant';
 import type { PostAttendee, GetAttendee, PatchAttendee } from '@/app/types/attendaces/attendees.types';
+import { Dispatcher } from '@ngrx/signals/events';
+import { AttendanceAttendeeEvents } from '@/app/store/attendance-attendee/attendance-attendee.events';
 
 export interface AttendeeFormData {
   attendanceId: string;
@@ -37,7 +39,7 @@ export class AttendeeFormComponent implements OnInit {
   public readonly data = input.required<AttendeeFormData>();
   public readonly attendeeSaved = output<GetAttendee | undefined>();
   public readonly formCancelled = output<void>();
-  private readonly attendeesService = inject(AttendeesService);
+  private readonly dispatcher = inject(Dispatcher);
   private readonly snackBar = inject(MatSnackBar);
 
   public readonly model = signal<AttendeeFormModel>(emptyModel());
@@ -85,20 +87,20 @@ export class AttendeeFormComponent implements OnInit {
           } as PostAttendee;
 
           if (d.attendee) {
-            const updated = await this.attendeesService.updateAttendee(d.attendanceId, d.attendee.id, payload as PatchAttendee);
-            this.attendeeSaved.emit(updated);
-            this.snackBar.open('Attendee updated', 'Close', { duration: 4000 });
-            return undefined;
+            this.dispatcher.dispatch(AttendanceAttendeeEvents.updateAttendee({
+              attendance_id: d.attendanceId,
+              id: d.attendee.id,
+              data: payload as PatchAttendee,
+            }));
+          } else {
+            this.dispatcher.dispatch(AttendanceAttendeeEvents.createAttendee({
+              attendance_id: d.attendanceId,
+              attendee: payload as PostAttendee,
+            }));
           }
-
-          const created = await this.attendeesService.createAttendee(d.attendanceId, payload as PostAttendee);
-          this.attendeeSaved.emit(created);
-          this.snackBar.open('Attendee created', 'Close', { duration: 4000 });
           return undefined;
-        } catch (err: any) {
-          const errorMessage = err?.error?.error || err?.message || 'Failed to save attendee';
-          this.snackBar.open(errorMessage, 'Close', { duration: 6000 });
-          return undefined;
+        } catch (error) {
+          console.error('[AttendeeForm] error:', error);
         } finally {
           this.loadingForm.set(false);
         }

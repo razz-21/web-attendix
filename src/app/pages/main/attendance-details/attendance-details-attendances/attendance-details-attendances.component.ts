@@ -1,11 +1,10 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { Dispatcher } from '@ngrx/signals/events';
 import { AttendanceStore } from '@/app/store/attendance/attendance.store';
-import { AttendanceEvents } from '@/app/store/attendance/attendance.events';
 import { AttendanceTableComponent } from '../attendance-details-attendances/attendance-details-table/attendance-details-table.component';
 import { AttendanceFormModalComponent } from '../attendance-details-attendances/attendance-details-form-modal/attendance-details-form-modal.component';
 import type { GetAttendance } from '@/app/types/attendance/attendance.types';
@@ -18,7 +17,7 @@ import { EditAttendanceModalComponent } from '../attendance-details-attendances/
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatButtonModule, MatIconModule, AttendanceTableComponent],
 })
-export class AttendanceDetailsAttendancesComponent implements OnInit {
+export class AttendanceDetailsAttendancesComponent {
   private readonly dialog = inject(MatDialog);
   private readonly dispatcher = inject(Dispatcher);
   private readonly attendanceRecordsStore = inject(AttendanceStore);
@@ -26,12 +25,6 @@ export class AttendanceDetailsAttendancesComponent implements OnInit {
 
   private get attendanceId(): string {
     return this.route.parent?.snapshot.paramMap.get('id') ?? '';
-  }
-
-  public ngOnInit(): void {
-    this.dispatcher.dispatch(AttendanceEvents.loadAttendanceRecords({
-      attendance_id: this.attendanceId,
-    }));
   }
 
   public openAddRecord(): void {

@@ -56,7 +56,7 @@ export class EditAttendanceModalComponent {
         const attendance_id = this.attendanceRecordsStore.currentAttendanceId()!;
         const now = new Date().toISOString();
 
-        this.dispatcher.dispatch(AttendanceEvents.updateAttendanceRecord({
+        this.dispatcher.dispatch(AttendanceEvents.updateAttendance({
           attendance_id,
           id: this.record.id,
           data: {
@@ -98,7 +98,7 @@ export class EditAttendanceModalComponent {
 
   #closeOnUpdateSuccess = rxMethod<GetAttendance>(
     pipe(tap(() => this.dialogRef.close()))
-  )(this.events.on(AttendanceEvents.updateAttendanceRecordSuccess).pipe(
+  )(this.events.on(AttendanceEvents.updateAttendanceSuccess).pipe(
     map(({ payload }) => payload)
   ));
 

@@ -49,15 +49,15 @@ export class AttendanceTableComponent {
   protected readonly loadingRowColumns: string[] = ['loading'];
 
   public readonly loading = computed(() => this.attendanceRecordsStore.loading());
-  public readonly records = computed(() => this.attendanceRecordsStore.records());
+  public readonly filteredAttendance = computed(() => this.attendanceRecordsStore.filteredAttendance());
   public readonly filters = computed(() => this.attendanceRecordsStore.filters());
-  public readonly data = computed(() => [...this.records()]);
+  public readonly data = computed(() => this.filteredAttendance());
 
   public readonly isLoading = (_index: number, _row: any) => this.loading();
   public readonly isNotLoading = (_index: number, _row: any) => !this.loading();
 
   public searchDetails(): void {
-    this.dispatcher.dispatch(AttendanceEvents.searchAttendanceRecords({
+    this.dispatcher.dispatch(AttendanceEvents.searchAttendance({
       q: this.filters().q ?? '',
     }));
   }
@@ -79,9 +79,9 @@ export class AttendanceTableComponent {
     });
 
     if (result) {
-      this.dispatcher.dispatch(AttendanceEvents.deleteAttendanceRecord({
-        attendance_id: row.attendance_id,
-        record: row,
+      this.dispatcher.dispatch(AttendanceEvents.deleteAttendance({
+        attendance_id: row.attendance_id, 
+        attendance: row,
       }));
     }
   }

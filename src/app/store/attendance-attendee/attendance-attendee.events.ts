@@ -5,12 +5,12 @@ import { GetAttendee, PostAttendee, PatchAttendee } from '@/app/types/attendaces
 export const AttendanceAttendeeEvents = eventGroup({
   source: 'Attendance Attendee Page',
   events: {
-    loadAttendees: type<{ attendance_id: string; page?: number; limit?: number; q?: string }>(),
-    loadAttendeesSuccess: type<{ data: GetAttendee[]; page: number; limit: number; total: number }>(),
+    loadAttendees: type<{ attendance_id: string; q?: string }>(),
+    loadAttendeesSuccess: type<{ data: GetAttendee[]; total: number }>(),
     loadAttendeesFailure: type<string>(),
 
     searchAttendees: type<{ q: string }>(),
-    searchAttendeesSuccess: type<{ data: GetAttendee[]; page: number; limit: number; total: number }>(),
+    searchAttendeesSuccess: type<{ data: GetAttendee[]; total: number }>(),
     searchAttendeesFailure: type<string>(),
 
     createAttendee: type<{ attendance_id: string; attendee: PostAttendee }>(),

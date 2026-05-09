@@ -1,9 +1,15 @@
-import { Component, inject, computed } from "@angular/core";
+import { Component, inject, computed, signal } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
-import { MatDialog } from "@angular/material/dialog";
+import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { AttendeeTableComponent } from './attendee-table/attendee-table.component';
+import { AttendeeFormModalComponent } from './attendee-form-modal/attendee-form-modal.component';
 import { ActivatedRoute } from '@angular/router';
+import { AttendanceAttendeeEvents } from "@/app/store/attendance-attendee/attendance-attendee.events";
+import { GetAttendee } from "@/app/types/attendaces/attendees.types";
+import { rxMethod } from "@ngrx/signals/rxjs-interop";
+import { pipe, tap, map } from "rxjs";
+import { Events } from "@ngrx/signals/events";
 
 @Component({
   selector: 'app-attendance-details-attendees',
@@ -18,16 +24,23 @@ import { ActivatedRoute } from '@angular/router';
 export class AttendanceDetailsAttendeesComponent {
   private readonly dialog = inject(MatDialog);
   private readonly route = inject(ActivatedRoute);
-
+  private readonly events = inject(Events);
+  
+  private dialogRef = signal<MatDialogRef<AttendeeFormModalComponent> | null>(null);
+  
   // Get attendanceId from parent route params
   public readonly attendanceId = computed(() => {
     return this.route.parent?.snapshot.paramMap.get('id') ?? '';
   });
 
   public openCreate(): void {
-    (async () => {
-      const module = await import('@/app/pages/main/attendance-details/attendance-details-attendees/attendee-form-modal/attendee-form-modal.component');
-      this.dialog.open(module.AttendeeFormModalComponent, { maxWidth: '720px', width: '100%', data: { attendanceId: this.attendanceId() } });
-    })();
+    const ref = this.dialog.open(AttendeeFormModalComponent, { maxWidth: '720px', width: '100%', data: { attendanceId: this.attendanceId() } });
+    this.dialogRef.set(ref);
   }
+
+  #onCreateAttendeeSuccess = rxMethod<GetAttendee>(
+    pipe(tap(() => this.dialogRef()?.close()))
+  )(this.events.on(AttendanceAttendeeEvents.createAttendeeSuccess).pipe(
+    map(({ payload }) => payload)
+  ));
 }

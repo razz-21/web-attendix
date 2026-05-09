@@ -20,12 +20,8 @@ export const PatchAttendeeSchema = PostAttendeeSchema.partial();
 export const GetPaginatedAttendeesSchema = z.object({
   data: z.array(GetAttendeeSchema),
   total: z.number(),
-  page: z.number(),
-  limit: z.number(),
 });
 
 export const GetAttendeesQuerySchema = z.object({
-  page: z.number().optional(),
-  limit: z.number().optional(),
   q: z.string().optional(),
 });

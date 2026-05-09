@@ -5,7 +5,7 @@ import { Events, on, withEventHandlers, withReducer } from "@ngrx/signals/events
 import { AttendanceEvents } from "./attendance.events";
 import { computed, inject } from "@angular/core";
 import { AttendanceService } from "@/app/services/attendance.service";
-import { debounceTime, distinctUntilChanged, exhaustMap, from, map, tap } from "rxjs";
+import { exhaustMap, from, map, tap } from "rxjs";
 import { mapResponse } from "@ngrx/operators";
 import { MatSnackBar } from "@angular/material/snack-bar";
 
@@ -35,92 +35,96 @@ export const AttendanceStore = signalStore(
   { providedIn: 'root' },
   withEntities<AttendanceEntity>(),
   withState(initialState),
-  withComputed(({ entities, entityMap }) => ({
+  withComputed(({ entities, entityMap, filters }) => ({
     records: computed(() => [...entities()].sort((a, b) =>
       new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     )),
+    filteredAttendance: computed(() => {
+      const q = filters().q?.toLowerCase() ?? '';
+      return entities().filter(
+        (record) =>
+          record.name.toLowerCase().includes(q)
+      );
+    }),
     recordsMap: entityMap,
     hasRecords: computed(() => !!entities().length),
   })),
   withReducer(
     // Load
-    on(AttendanceEvents.loadAttendanceRecords, ({ payload }, state) => ({
+    on(AttendanceEvents.loadAttendance, ({ payload }, state) => ({
       ...state,
       loading: true,
       error: null,
       currentAttendanceId: payload.attendance_id,
     })),
-    on(AttendanceEvents.loadAttendanceRecordsSuccess, ({ payload }) => [
+    on(AttendanceEvents.loadAttendanceSuccess, ({ payload }) => [
       setAllEntities(payload ?? [], { selectId }),
       { loading: false, error: null },
     ]),
-    on(AttendanceEvents.loadAttendanceRecordsFailure, (event, state) => ({
+    on(AttendanceEvents.loadAttendanceFailure, (event, state) => ({
       ...state,
       loading: false,
       error: event.payload,
     })),
 
     // Search
-    on(AttendanceEvents.searchAttendanceRecords, ({ payload }, state) => ({
+    on(AttendanceEvents.searchAttendance, ({ payload }, state) => ({
       ...state,
-      loading: true,
       filters: { q: payload.q },
       error: null,
     })),
-    on(AttendanceEvents.searchAttendanceRecordsSuccess, ({ payload }) => [
-      setAllEntities(payload ?? [], { selectId }),
-      { loading: false, error: null },
+    on(AttendanceEvents.searchAttendanceSuccess, () => [
+      { error: null },
     ]),
-    on(AttendanceEvents.searchAttendanceRecordsFailure, (event, state) => ({
+    on(AttendanceEvents.searchAttendanceFailure, (event, state) => ({
       ...state,
-      loading: false,
       error: event.payload,
     })),
 
     // Create
-    on(AttendanceEvents.createAttendanceRecord, (_, state) => ({
+    on(AttendanceEvents.createAttendance, (_, state) => ({
       ...state,
       loadingForm: true,
       error: null,
     })),
-    on(AttendanceEvents.createAttendanceRecordSuccess, ({ payload }) => [
+    on(AttendanceEvents.createAttendanceSuccess, ({ payload }) => [
       prependEntity(payload, { selectId }),
       { loadingForm: false, error: null },
     ]),
-    on(AttendanceEvents.createAttendanceRecordFailure, (event, state) => ({
+    on(AttendanceEvents.createAttendanceFailure, (event, state) => ({
       ...state,
       loadingForm: false,
       error: event.payload,
     })),
 
     // Update
-    on(AttendanceEvents.updateAttendanceRecord, (_, state) => ({
+    on(AttendanceEvents.updateAttendance, (_, state) => ({
       ...state,
       loadingForm: true,
       error: null,
     })),
-    on(AttendanceEvents.updateAttendanceRecordSuccess, (_, state) => ({
+    on(AttendanceEvents.updateAttendanceSuccess, (_, state) => ({
       ...state,
       loadingForm: false,
       error: null,
     })),
-    on(AttendanceEvents.updateAttendanceRecordFailure, (event, state) => ({
+    on(AttendanceEvents.updateAttendanceFailure, (event, state) => ({
       ...state,
       loadingForm: false,
       error: event.payload,
     })),
 
     // Delete
-    on(AttendanceEvents.deleteAttendanceRecord, ({ payload }) => [
-      removeEntity(payload.record.id),
+    on(AttendanceEvents.deleteAttendance, ({ payload }) => [
+      removeEntity(payload.attendance.id),
       { deleteLoading: true, error: null },
     ]),
-    on(AttendanceEvents.deleteAttendanceRecordSuccess, ({ payload }) => [
-      removeEntity(payload.record.id),
+    on(AttendanceEvents.deleteAttendanceSuccess, ({ payload }) => [
+      removeEntity(payload.attendance.id),
       { deleteLoading: false, error: null },
     ]),
-    on(AttendanceEvents.deleteAttendanceRecordFailure, (event) => [
-      addEntity(event.payload.record, { selectId }),
+    on(AttendanceEvents.deleteAttendanceFailure, (event) => [
+      addEntity(event.payload.attendance, { selectId }),
       { deleteLoading: false, error: event.payload.error },
     ]),
 
@@ -135,85 +139,69 @@ export const AttendanceStore = signalStore(
       attendanceRecordsService = inject(AttendanceService),
       snackBar = inject(MatSnackBar)
     ) => ({
-      loadAttendanceRecords$: events.on(AttendanceEvents.loadAttendanceRecords).pipe(
+      loadAttendance$: events.on(AttendanceEvents.loadAttendance).pipe(
         exhaustMap(({ payload }) =>
           from(attendanceRecordsService.getAttendance(payload.attendance_id, store.filters().q)).pipe(
             mapResponse({
-              next: (response) => AttendanceEvents.loadAttendanceRecordsSuccess(response),
-              error: (error: unknown) => AttendanceEvents.loadAttendanceRecordsFailure(error instanceof Error ? error.message : "Failed to load attendance records"),
+              next: (response) => AttendanceEvents.loadAttendanceSuccess(response),
+              error: (error: unknown) => AttendanceEvents.loadAttendanceFailure(error instanceof Error ? error.message : "Failed to load attendance"),
             })
           )
         )
       ),
-      loadAttendanceRecordsFailure$: events.on(AttendanceEvents.loadAttendanceRecordsFailure).pipe(
+      loadAttendanceFailure$: events.on(AttendanceEvents.loadAttendanceFailure).pipe(
         map(({ payload }) => { snackBar.open(payload, "Close", { duration: 6000 }); })
       ),
 
-      searchAttendanceRecords$: events.on(AttendanceEvents.searchAttendanceRecords).pipe(
-        distinctUntilChanged((prev, curr) => prev.payload.q === curr.payload.q),
-        debounceTime(500),
-        exhaustMap(() =>
-          from(attendanceRecordsService.getAttendance(store.currentAttendanceId()!, store.filters().q)).pipe(
-            mapResponse({
-              next: (response) => AttendanceEvents.searchAttendanceRecordsSuccess(response),
-              error: (error: unknown) => AttendanceEvents.searchAttendanceRecordsFailure(error instanceof Error ? error.message : "Failed to search attendance records"),
-            })
-          )
-        )
-      ),
-      searchAttendanceRecordsFailure$: events.on(AttendanceEvents.searchAttendanceRecordsFailure).pipe(
-        map(({ payload }) => { snackBar.open(payload, "Close", { duration: 6000 }); })
-      ),
-
-      createAttendanceRecord$: events.on(AttendanceEvents.createAttendanceRecord).pipe(
+      createAttendance$: events.on(AttendanceEvents.createAttendance).pipe(
         exhaustMap(({ payload }) =>
-          from(attendanceRecordsService.createAttendance(payload.attendance_id, payload.record)).pipe(
+          from(attendanceRecordsService.createAttendance(payload.attendance_id, payload.attendance)).pipe(
             mapResponse({
-              next: (response) => AttendanceEvents.createAttendanceRecordSuccess(response),
-              error: (error: unknown) => AttendanceEvents.createAttendanceRecordFailure(error instanceof Error ? error.message : "Failed to create attendance record"),
+              next: (response) => AttendanceEvents.createAttendanceSuccess(response),
+              error: (error: unknown) => AttendanceEvents.createAttendanceFailure(error instanceof Error ? error.message : "Failed to create attendance"),
             })
           )
         )
       ),
-      createAttendanceRecordSuccess$: events.on(AttendanceEvents.createAttendanceRecordSuccess).pipe(
+      createAttendanceSuccess$: events.on(AttendanceEvents.createAttendanceSuccess).pipe(
         tap(() => { snackBar.open('Attendance record created successfully', 'Close', { duration: 5000 }); })
       ),
-      createAttendanceRecordFailure$: events.on(AttendanceEvents.createAttendanceRecordFailure).pipe(
+      createAttendanceFailure$: events.on(AttendanceEvents.createAttendanceFailure).pipe(
         map(({ payload }) => { snackBar.open(payload, "Close", { duration: 6000 }); })
       ),
 
-      updateAttendanceRecord$: events.on(AttendanceEvents.updateAttendanceRecord).pipe(
+      updateAttendance$: events.on(AttendanceEvents.updateAttendance).pipe(
         exhaustMap(({ payload }) =>
           from(attendanceRecordsService.updateAttendance(payload.attendance_id, payload.id, payload.data)).pipe(
             mapResponse({
-              next: (response) => AttendanceEvents.updateAttendanceRecordSuccess(response),
-              error: (error: unknown) => AttendanceEvents.updateAttendanceRecordFailure(error instanceof Error ? error.message : "Failed to update attendance record"),
+              next: (response) => AttendanceEvents.updateAttendanceSuccess(response),
+              error: (error: unknown) => AttendanceEvents.updateAttendanceFailure(error instanceof Error ? error.message : "Failed to update attendance"),
             })
           )
         )
       ),
-      updateAttendanceRecordSuccess$: events.on(AttendanceEvents.updateAttendanceRecordSuccess).pipe(
+      updateAttendanceSuccess$: events.on(AttendanceEvents.updateAttendanceSuccess).pipe(
         tap(() => { snackBar.open('Attendance record updated successfully', 'Close', { duration: 5000 }); }),
-        map(() => AttendanceEvents.loadAttendanceRecords({ attendance_id: store.currentAttendanceId()! }))
+        map(() => AttendanceEvents.loadAttendance({ attendance_id: store.currentAttendanceId()! }))
       ),
-      updateAttendanceRecordFailure$: events.on(AttendanceEvents.updateAttendanceRecordFailure).pipe(
+      updateAttendanceFailure$: events.on(AttendanceEvents.updateAttendanceFailure).pipe(
         map(({ payload }) => { snackBar.open(payload, "Close", { duration: 6000 }); })
       ),
 
-      deleteAttendanceRecord$: events.on(AttendanceEvents.deleteAttendanceRecord).pipe(
+      deleteAttendance$: events.on(AttendanceEvents.deleteAttendance).pipe(
         exhaustMap(({ payload }) =>
-          from(attendanceRecordsService.deleteAttendance(payload.attendance_id, payload.record.id)).pipe(
+          from(attendanceRecordsService.deleteAttendance(payload.attendance_id, payload.attendance.id)).pipe(
             mapResponse({
-              next: () => AttendanceEvents.deleteAttendanceRecordSuccess({ record: payload.record }),
-              error: (error: unknown) => AttendanceEvents.deleteAttendanceRecordFailure({ error: error instanceof Error ? error.message : "Failed to delete attendance record", record: payload.record }),
+              next: () => AttendanceEvents.deleteAttendanceSuccess({ attendance: payload.attendance }),
+              error: (error: unknown) => AttendanceEvents.deleteAttendanceFailure({ error: error instanceof Error ? error.message : "Failed to delete attendance", attendance: payload.attendance }),
             })
           )
         )
       ),
-      deleteAttendanceRecordSuccess$: events.on(AttendanceEvents.deleteAttendanceRecordSuccess).pipe(
+      deleteAttendanceSuccess$: events.on(AttendanceEvents.deleteAttendanceSuccess).pipe(
         tap(() => { snackBar.open('Attendance record deleted successfully', 'Close', { duration: 5000 }); })
       ),
-      deleteAttendanceRecordFailure$: events.on(AttendanceEvents.deleteAttendanceRecordFailure).pipe(
+      deleteAttendanceFailure$: events.on(AttendanceEvents.deleteAttendanceFailure).pipe(
         map(({ payload }) => { snackBar.open(payload.error, "Close", { duration: 6000 }); })
       ),
     })

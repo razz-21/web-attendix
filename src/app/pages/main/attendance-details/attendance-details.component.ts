@@ -18,6 +18,10 @@ import { LoadingSectionComponent } from "@/app/compponents/loading-section/loadi
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import { pipe, tap, map } from "rxjs";
+import { AttendanceAttendeeEvents } from "@/app/store/attendance-attendee/attendance-attendee.events";
+import { AttendanceEvents } from "@/app/store/attendance/attendance.events";
+import { AttendanceAttendeeStore } from "@/app/store/attendance-attendee/attendance-attendee.store";
+import { AttendanceStore } from "@/app/store/attendance/attendance.store";
 
 @Component({
   selector: 'app-attendance-details',
@@ -43,6 +47,8 @@ export class AttendanceDetailsComponent implements OnInit {
   private readonly events = inject(Events);
   private readonly attendanceDetailsStore = inject(AttendanceDetailsStore);
   private readonly confirmationDialogService = inject(ConfirmationDialogService);
+  private readonly attendanceAttendeeStore = inject(AttendanceAttendeeStore); // Inject to reflect the attendance attendees state
+  private readonly attendanceStore = inject(AttendanceStore); // Inject to reflect the attendance state
 
   private attendanceId = computed(() => this.route.snapshot.paramMap.get('id'));
   
@@ -62,6 +68,8 @@ export class AttendanceDetailsComponent implements OnInit {
     const id = this.attendanceId();
     if (id) {
       this.dispatcher.dispatch(AttendanceDetailsEvents.loadAttendanceDetails({ id }));
+      this.dispatcher.dispatch(AttendanceEvents.loadAttendance({ attendance_id: id }));
+      this.dispatcher.dispatch(AttendanceAttendeeEvents.loadAttendees({ attendance_id: id }));
     }
   }
 

@@ -5,7 +5,7 @@ import { Events, on, withEventHandlers, withReducer } from "@ngrx/signals/events
 import { AttendanceAttendeeEvents } from "./attendance-attendee.events";
 import { computed, inject } from "@angular/core";
 import { AttendeesService } from "@/app/services/attendees.service";
-import { debounceTime, distinctUntilChanged, exhaustMap, from, map, tap } from "rxjs";
+import { exhaustMap, from, map, tap } from "rxjs";
 import { mapResponse } from "@ngrx/operators";
 import { MatSnackBar } from "@angular/material/snack-bar";
 
@@ -14,7 +14,6 @@ type AttendeeEntity = GetAttendee;
 type AttendanceAttendeeState = {
   filters: { q?: string };
   currentAttendanceId: string | null;
-  pagination: { page: number; limit: number; total: number };
   loading: boolean;
   loadingForm: boolean;
   deleteLoading: boolean;
@@ -26,7 +25,6 @@ const selectId: SelectEntityId<AttendeeEntity> = (attendee) => attendee.id;
 const initialState: AttendanceAttendeeState = {
   filters: { q: undefined },
   currentAttendanceId: null,
-  pagination: { page: 1, limit: 10, total: 0 },
   loading: false,
   loadingForm: false,
   deleteLoading: false,
@@ -37,8 +35,16 @@ export const AttendanceAttendeeStore = signalStore(
   { providedIn: 'root' },
   withEntities<AttendeeEntity>(),
   withState(initialState),
-  withComputed(({ entities, entityMap }) => ({
+  withComputed(({ entities, entityMap, filters }) => ({
     attendees: computed(() => [...entities()]),
+    filteredAttendees: computed(() => {
+      const q = filters().q?.toLowerCase() ?? '';
+      return entities().filter(
+        (attendee) =>
+          attendee.name.toLowerCase().includes(q) ||
+          (attendee.rfid ?? '').toLowerCase().includes(q)
+      );
+    }),
     attendeesMap: entityMap,
     hasAttendees: computed(() => !!entities().length),
   })),
@@ -49,22 +55,12 @@ export const AttendanceAttendeeStore = signalStore(
       loading: true,
       error: null,
       currentAttendanceId: payload.attendance_id,
-      pagination: {
-        page: payload.page ?? 1,
-        limit: payload.limit ?? 10,
-        total: state.pagination.total,
-      },
     })),
     on(AttendanceAttendeeEvents.loadAttendeesSuccess, ({ payload }) => [
       setAllEntities(payload.data ?? [], { selectId }),
       {
         loading: false,
         error: null,
-        pagination: {
-          page: payload.page,
-          limit: payload.limit,
-          total: payload.total,
-        },
       },
     ]),
     on(AttendanceAttendeeEvents.loadAttendeesFailure, (event, state) => ({
@@ -76,26 +72,16 @@ export const AttendanceAttendeeStore = signalStore(
     // Search
     on(AttendanceAttendeeEvents.searchAttendees, ({ payload }, state) => ({
       ...state,
-      loading: true,
       filters: { q: payload.q },
       error: null,
-      pagination: { ...state.pagination, page: 1 },
     })),
-    on(AttendanceAttendeeEvents.searchAttendeesSuccess, ({ payload }) => [
-      setAllEntities(payload.data ?? [], { selectId }),
+    on(AttendanceAttendeeEvents.searchAttendeesSuccess, () => [
       {
-        loading: false,
         error: null,
-        pagination: {
-          page: payload.page,
-          limit: payload.limit,
-          total: payload.total,
-        },
       },
     ]),
     on(AttendanceAttendeeEvents.searchAttendeesFailure, (event, state) => ({
       ...state,
-      loading: false,
       error: event.payload,
     })),
 
@@ -146,16 +132,6 @@ export const AttendanceAttendeeStore = signalStore(
       { deleteLoading: false, error: event.payload.error },
     ]),
 
-    // Paginate
-    on(AttendanceAttendeeEvents.paginate, ({ payload }, state) => ({
-      ...state,
-      pagination: {
-        page: payload.page,
-        limit: payload.limit,
-        total: state.pagination.total,
-      },
-    })),
-
     // Reset
     on(AttendanceAttendeeEvents.resetStore, () => [removeAllEntities(), initialState]),
   ),
@@ -170,15 +146,11 @@ export const AttendanceAttendeeStore = signalStore(
       loadAttendees$: events.on(AttendanceAttendeeEvents.loadAttendees).pipe(
         exhaustMap(({ payload }) =>
           from(attendeesService.getAttendeesByAttendance(payload.attendance_id, {
-            page: payload.page ?? 1,
-            limit: payload.limit ?? 10,
             q: payload.q,
           })).pipe(
             mapResponse({
               next: (response) => AttendanceAttendeeEvents.loadAttendeesSuccess({
                 data: response.data ?? [],
-                page: response.page ?? 1,
-                limit: response.limit ?? 10,
                 total: response.total ?? 0,
               }),
               error: (error: unknown) => AttendanceAttendeeEvents.loadAttendeesFailure(error instanceof Error ? error.message : "Failed to load attendees"),
@@ -187,31 +159,6 @@ export const AttendanceAttendeeStore = signalStore(
         )
       ),
       loadAttendeesFailure$: events.on(AttendanceAttendeeEvents.loadAttendeesFailure).pipe(
-        map(({ payload }) => { snackBar.open(payload, "Close", { duration: 6000 }); })
-      ),
-
-      searchAttendees$: events.on(AttendanceAttendeeEvents.searchAttendees).pipe(
-        distinctUntilChanged((prev, curr) => prev.payload.q === curr.payload.q),
-        debounceTime(500),
-        exhaustMap(() =>
-          from(attendeesService.getAttendeesByAttendance(store.currentAttendanceId()!, {
-            page: 1,
-            limit: store.pagination().limit,
-            q: store.filters().q,
-          })).pipe(
-            mapResponse({
-              next: (response) => AttendanceAttendeeEvents.searchAttendeesSuccess({
-                data: response.data ?? [],
-                page: response.page ?? 1,
-                limit: response.limit ?? 10,
-                total: response.total ?? 0,
-              }),
-              error: (error: unknown) => AttendanceAttendeeEvents.searchAttendeesFailure(error instanceof Error ? error.message : "Failed to search attendees"),
-            })
-          )
-        )
-      ),
-      searchAttendeesFailure$: events.on(AttendanceAttendeeEvents.searchAttendeesFailure).pipe(
         map(({ payload }) => { snackBar.open(payload, "Close", { duration: 6000 }); })
       ),
 

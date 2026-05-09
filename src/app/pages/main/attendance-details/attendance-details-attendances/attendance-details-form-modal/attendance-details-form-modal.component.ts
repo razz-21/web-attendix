@@ -94,7 +94,7 @@ export class AttendanceFormModalComponent {
         const now = new Date().toISOString();
 
         if (this.isEditMode && this.data?.record) {
-          this.dispatcher.dispatch(AttendanceEvents.updateAttendanceRecord({
+          this.dispatcher.dispatch(AttendanceEvents.updateAttendance({
             attendance_id,
             id: this.data.record.id,
             data: {
@@ -106,9 +106,9 @@ export class AttendanceFormModalComponent {
             },
           }));
         } else {
-          this.dispatcher.dispatch(AttendanceEvents.createAttendanceRecord({
+          this.dispatcher.dispatch(AttendanceEvents.createAttendance({
             attendance_id,
-            record: {
+            attendance: {
               id: crypto.randomUUID() as string,
               name: m.name.trim(),
               attendance_date: m.attendance_date.trim(),
@@ -139,13 +139,13 @@ export class AttendanceFormModalComponent {
 
   #closeOnCreateSuccess = rxMethod<GetAttendance>(
     pipe(tap(() => this.dialogRef.close()))
-  )(this.events.on(AttendanceEvents.createAttendanceRecordSuccess).pipe(
+  )(this.events.on(AttendanceEvents.createAttendanceSuccess).pipe(
     map(({ payload }) => payload)
   ));
 
   #closeOnUpdateSuccess = rxMethod<GetAttendance>(
     pipe(tap(() => this.dialogRef.close()))
-  )(this.events.on(AttendanceEvents.updateAttendanceRecordSuccess).pipe(
+  )(this.events.on(AttendanceEvents.updateAttendanceSuccess).pipe(
     map(({ payload }) => payload)
   ));
 
