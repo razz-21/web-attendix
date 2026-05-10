@@ -30,4 +30,16 @@ export class AuthService {
   public async updatePassword(id: string, payload: PatchPassword): Promise<{ success: boolean, messsage: string }> {
     return lastValueFrom(this.http.patch<{ success: boolean, messsage: string }>(`${environment.apiBaseUrl}/api/v1/me/password`, payload));
   }
+
+  public forgotPassword(email: string): Promise<{ message: string }> {
+    return lastValueFrom(this.http.post<{ message: string }>(`${environment.apiBaseUrl}/api/v1/auth/forgot-password`, { email }));
+  }
+
+  public verifyForgotPasswordToken(token: string): Promise<{ message: string }> {
+    return lastValueFrom(this.http.post<{ message: string }>(`${environment.apiBaseUrl}/api/v1/auth/forgot-password/verify`, { token }));
+  }
+
+  public resetPassword(token: string, password: string): Promise<{ message: string }> {
+    return lastValueFrom(this.http.post<{ message: string }>(`${environment.apiBaseUrl}/api/v1/auth/password`, { token, password }));
+  }
 }
