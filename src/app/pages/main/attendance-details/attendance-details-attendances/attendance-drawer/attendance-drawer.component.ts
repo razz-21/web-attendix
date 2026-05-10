@@ -7,20 +7,80 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { AvatarComponent } from '@/app/compponents/avatar/avatar.component';
+import { AttendanceAttendeeStore } from '@/app/store/attendance-attendee/attendance-attendee.store';
+import { AttendanceRecordStore } from '@/app/store/attendance-record/attendance-record.store';
+import { AttendanceRecordStatus, GetAttendanceRecord } from '@/app/types/attendance-record/attendance-record.types';
+import { GetAttendee } from '@/app/types/attendaces/attendees.types';
+import { AttendanceRecordEvents } from '@/app/store/attendance-record/attendance-record.events';
+import { AttendanceDetailsStore } from '@/app/store/attendance-details/attendance-details.store';
+import { LoadingSectionComponent } from '@/app/compponents/loading-section/loading-section.component';
+import { EmptySectionComponent } from '@/app/compponents/empty-section/empty-section.component';
+import { DatePipe } from '@angular/common';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-attendance-drawer',
   templateUrl: './attendance-drawer.component.html',
   styleUrl: './attendance-drawer.component.scss',
-  imports: [MatButtonModule, MatIconModule, MatListModule, MatButtonToggleModule, AvatarComponent],
+  imports: [
+    MatButtonModule,
+    MatIconModule,
+    MatListModule,
+    MatButtonToggleModule,
+    MatTooltipModule,
+    AvatarComponent,
+    LoadingSectionComponent,
+    EmptySectionComponent,
+    DatePipe
+  ],
 })
 export class AttendanceDrawerComponent {
   private readonly dispatcher = inject(Dispatcher);
+  private readonly attendanceDetailsStore = inject(AttendanceDetailsStore);
   private readonly attendanceStore = inject(AttendanceStore);
+  private readonly attendanceAttendeesStore = inject(AttendanceAttendeeStore);
+  private readonly attendanceRecordStore = inject(AttendanceRecordStore);
 
-  public readonly drawerOpen = computed(() => this.attendanceStore.drawerOpen());
+  public attendances_id = computed(() => this.attendanceDetailsStore.attendanceDetails()?.id ?? '');
 
-  public readonly selectedAttendance = computed(() => this.attendanceStore.selectedAttendance());
+  public drawerOpen = computed(() => this.attendanceStore.drawerOpen());
+
+  public selectedAttendance = computed(() => this.attendanceStore.selectedAttendance());
+
+  public attendees = computed(() => this.attendanceAttendeesStore.attendees());
+
+  public attendessRecords = computed(() => this.attendanceRecordStore.attendeesAttendanceRecords(this.attendees() ?? [], this.selectedAttendance()?.id ?? ''));
+
+  public loadingRecords = computed(() => this.attendanceRecordStore.loading());
+
+  public updateAttendanceRecord(status: AttendanceRecordStatus, attendeeRecord: { attendee: GetAttendee; attendanceRecord: GetAttendanceRecord | undefined }): void { 
+    if (attendeeRecord.attendanceRecord) {
+      this.dispatcher.dispatch(AttendanceRecordEvents.updateAttendanceRecord({
+        attendances_id: this.selectedAttendance()?.id ?? '',
+        id: attendeeRecord.attendanceRecord.id,
+        payload: {
+          status,
+        },
+      }));
+
+      return;
+    }
+
+    this.dispatcher.dispatch(AttendanceRecordEvents.createAttendanceRecord({
+      attendances_id: this.selectedAttendance()?.id ?? '',
+      payload: {
+        id: crypto.randomUUID(),
+        attendances_id: this.attendances_id(),
+        attendance_id: this.selectedAttendance()?.id ?? '',
+        attendee_id: attendeeRecord.attendee.id,
+        status,
+        reason_type: null,
+        reason: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    }));
+  }
 
   public closeDrawer(): void {
     this.dispatcher.dispatch(AttendanceEvents.selectAttendance({ attendance: null }));

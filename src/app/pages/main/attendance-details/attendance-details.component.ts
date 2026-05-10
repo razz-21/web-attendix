@@ -22,6 +22,8 @@ import { AttendanceAttendeeEvents } from "@/app/store/attendance-attendee/attend
 import { AttendanceEvents } from "@/app/store/attendance/attendance.events";
 import { AttendanceAttendeeStore } from "@/app/store/attendance-attendee/attendance-attendee.store";
 import { AttendanceStore } from "@/app/store/attendance/attendance.store";
+import { AttendanceRecordStore } from "@/app/store/attendance-record/attendance-record.store";
+import { AttendanceRecordEvents } from "@/app/store/attendance-record/attendance-record.events";
 
 @Component({
   selector: 'app-attendance-details',
@@ -49,6 +51,7 @@ export class AttendanceDetailsComponent implements OnInit {
   private readonly confirmationDialogService = inject(ConfirmationDialogService);
   private readonly attendanceAttendeeStore = inject(AttendanceAttendeeStore); // Inject to reflect the attendance attendees state
   private readonly attendanceStore = inject(AttendanceStore); // Inject to reflect the attendance state
+  private readonly attendanceRecordStore = inject(AttendanceRecordStore); // Inject to reflect the attendance record state
 
   private attendanceId = computed(() => this.route.snapshot.paramMap.get('id'));
   
@@ -70,6 +73,7 @@ export class AttendanceDetailsComponent implements OnInit {
       this.dispatcher.dispatch(AttendanceDetailsEvents.loadAttendanceDetails({ id }));
       this.dispatcher.dispatch(AttendanceEvents.loadAttendance({ attendance_id: id }));
       this.dispatcher.dispatch(AttendanceAttendeeEvents.loadAttendees({ attendance_id: id }));
+      this.dispatcher.dispatch(AttendanceRecordEvents.loadAttendanceRecords({ attendances_id: id }));
     }
   }
 

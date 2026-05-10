@@ -1,5 +1,5 @@
 import { signalStore, withComputed, withState } from "@ngrx/signals";
-import { addEntity, removeEntity, setAllEntities, withEntities, SelectEntityId, prependEntity, updateEntity } from "@ngrx/signals/entities";
+import { addEntity, removeEntity, setAllEntities, withEntities, SelectEntityId, prependEntity } from "@ngrx/signals/entities";
 import { Events, on, withEventHandlers, withReducer } from "@ngrx/signals/events";
 import { AttendancesEvents } from "./attendances.events";
 import { computed, inject } from "@angular/core";

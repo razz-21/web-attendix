@@ -36,10 +36,11 @@ export const AttendanceAttendeeStore = signalStore(
   withEntities<AttendeeEntity>(),
   withState(initialState),
   withComputed(({ entities, entityMap, filters }) => ({
-    attendees: computed(() => [...entities()]),
+    attendees: computed(() => [...entities()].sort((a, b) => a.name.localeCompare(b.name))),
     filteredAttendees: computed(() => {
       const q = filters().q?.toLowerCase() ?? '';
-      return entities().filter(
+      const sortedAttendees = [...entities()].sort((a, b) => a.name.localeCompare(b.name));
+      return sortedAttendees.filter(
         (attendee) =>
           attendee.name.toLowerCase().includes(q) ||
           (attendee.rfid ?? '').toLowerCase().includes(q)
