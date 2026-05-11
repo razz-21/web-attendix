@@ -1,0 +1,32 @@
+<div class="user-details-workspace-form-container">
+  <h1 class="mat-title-large">Update workspace</h1>
+  <p>Select a workspace below to assign this user to a workspace.</p>
+  <form class="user-details-workspace-form" [formRoot]="userDetailsWorkspaceForm">
+    <div class="user-details-workspace-form__fields">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Workspace</mat-label>
+        <mat-select [formField]="userDetailsWorkspaceForm.workspace_id">
+          <mat-option value="">— No workspace —</mat-option>
+          @for (workspace of workspaces(); track workspace.id) {
+          <mat-option [value]="workspace.id">{{ workspace.name }}</mat-option>
+          }
+        </mat-select>
+        <mat-hint>Select a workspace to assign this user.</mat-hint>
+      </mat-form-field>
+    </div>
+
+    <div class="user-details-workspace-form__actions">
+      <button type="button" matButton="tonal" color="primary" class="full-width" (click)="cancel()">
+        Cancel
+      </button>
+      <button type="submit" matButton="filled" color="primary" class="full-width"
+        [disabled]="isValueIsTheSameWithCurrentValue() || updateLoading() || workspacesLoading()">
+        @if (updateLoading()) {
+        <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+        Save changes
+        }
+      </button>
+    </div>
+  </form>
+</div>
