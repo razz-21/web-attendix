@@ -1,0 +1,45 @@
+<section class="excused-modal">
+  <section class="excused-modal__header">
+    <h3>Excused Reason</h3>
+    <p>Fill out the fields below. All fields are required.</p>
+  </section>
+
+  <section class="excused-modal__form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Reason Type *</mat-label>
+      <mat-select [(ngModel)]="formData().reason_type" (ngModelChange)="formData.update(m => ({ ...m, reason_type: $event }))">
+        @for (type of reasonTypes; track type.value) {
+          <mat-option [value]="type.value">{{ type.label }}</mat-option>
+        }
+      </mat-select>
+      @if (!formData().reason_type) {
+        <mat-hint>Reason type is required</mat-hint>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Reason *</mat-label>
+      <textarea
+        matInput
+        rows="3"
+        [(ngModel)]="formData().reason"
+        (ngModelChange)="formData.update(m => ({ ...m, reason: $event }))"
+        placeholder="Enter reason..."
+      ></textarea>
+      @if (!formData().reason.trim()) {
+        <mat-hint>Reason is required</mat-hint>
+      }
+    </mat-form-field>
+  </section>
+
+  <section class="excused-modal__actions">
+    <button matButton="tonal" color="primary" type="button" (click)="closeDialog()">Cancel</button>
+    <button matButton="filled" color="primary" type="button" [disabled]="!isFormValid() || loadingForm()" (click)="save()">
+      @if (loadingForm()) {
+        <mat-spinner diameter="18"></mat-spinner>
+      } @else {
+        <span>Save</span>
+      }
+    </button>
+  </section>
+</section>

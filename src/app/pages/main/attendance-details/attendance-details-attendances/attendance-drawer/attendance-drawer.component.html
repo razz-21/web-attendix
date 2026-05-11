@@ -49,6 +49,7 @@
                   [disabled]="attendeeRecord.attendanceRecord?.status !== 'excused'"
                   matTooltip="Enter reason for excused"
                   matTooltipPosition="above"
+                  (click)="openExcusedModal(attendeeRecord)"
                 >
                   <mat-icon>person_check</mat-icon>
                 </button>

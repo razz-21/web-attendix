@@ -17,6 +17,8 @@ import { LoadingSectionComponent } from '@/app/compponents/loading-section/loadi
 import { EmptySectionComponent } from '@/app/compponents/empty-section/empty-section.component';
 import { DatePipe } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog } from '@angular/material/dialog';
+import { ExcusedReasonModalComponent } from './excused-reason-modal/excused-reason-modal.component';
 
 @Component({
   selector: 'app-attendance-drawer',
@@ -40,6 +42,7 @@ export class AttendanceDrawerComponent {
   private readonly attendanceStore = inject(AttendanceStore);
   private readonly attendanceAttendeesStore = inject(AttendanceAttendeeStore);
   private readonly attendanceRecordStore = inject(AttendanceRecordStore);
+  private readonly dialog = inject(MatDialog);
 
   public attendances_id = computed(() => this.attendanceDetailsStore.attendanceDetails()?.id ?? '');
 
@@ -80,6 +83,18 @@ export class AttendanceDrawerComponent {
         updated_at: new Date().toISOString(),
       },
     }));
+  }
+
+  public openExcusedModal(attendeeRecord: { attendee: GetAttendee; attendanceRecord: GetAttendanceRecord | undefined }): void {
+    if (!attendeeRecord.attendanceRecord) return;
+    this.dialog.open(ExcusedReasonModalComponent, {
+      maxWidth: '500px',
+      width: '100%',
+      data: {
+        attendances_id: this.selectedAttendance()?.id ?? '',
+        record: attendeeRecord.attendanceRecord,
+      },
+    });
   }
 
   public closeDrawer(): void {
