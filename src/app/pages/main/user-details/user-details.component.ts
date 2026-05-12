@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, Injectable, OnInit } from "@angular/core";
+import { Component, computed, effect, inject, Injectable, OnInit, signal } from "@angular/core";
 import { MatListModule } from "@angular/material/list";
 import {MatRippleModule} from '@angular/material/core';
 import { MatIconModule } from "@angular/material/icon";
@@ -17,7 +17,9 @@ import { UserDetailsDepartmentFormComponent } from "./user-details-department-fo
 import { UserDetailsRoleFormComponent } from "./user-details-role-form/user-details-role-form.component";
 import { UserDetailsPasswordFormComponent } from "./user-details-password-form/user-details-password-form.component";
 import { UserDetailsStatusFormComponent } from "./user-details-status-form/user-details-status-form.component";
+import { UserDetailsWorkspaceFormComponent } from "./user-details-workspace-form/user-details-workspace-form.component";
 import { ConfirmationDialogService } from "@/app/services/confirmation-dialog.service";
+import { WorkspacesService } from "@/app/services/workspaces.service";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import { pipe, tap, map } from "rxjs";
 
@@ -43,9 +45,25 @@ export class UserDetailsComponent implements OnInit {
   private readonly events = inject(Events);
   private readonly userDetailsStore = inject(UserDetailsStore);
   private readonly confirmationDialogService = inject(ConfirmationDialogService);
+  private readonly workspacesService = inject(WorkspacesService);
 
   public readonly loading = computed(() => this.userDetailsStore.loading());
-  public readonly user = computed(() => this.userDetailsStore.user());  
+  public readonly user = computed(() => this.userDetailsStore.user());
+  public readonly currentWorkspaceName = signal<string | null>(null);
+  public readonly workspaceLoading = signal(false);
+
+  readonly #loadWorkspaceName = effect(() => {
+    const workspaceId = this.user()?.workspace_id;
+    if (!workspaceId) {
+      this.currentWorkspaceName.set(null);
+      return;
+    }
+    this.workspaceLoading.set(true);
+    this.workspacesService.getWorkspaceById(workspaceId)
+      .then(ws => this.currentWorkspaceName.set(ws.name))
+      .catch(() => this.currentWorkspaceName.set(workspaceId))
+      .finally(() => this.workspaceLoading.set(false));
+  });
 
   public ngOnInit(): void {
     const id = this.route.snapshot.params['id'];
@@ -92,6 +110,15 @@ export class UserDetailsComponent implements OnInit {
 
   public openStatusForm(): void {
     this.dialog.open(UserDetailsStatusFormComponent, {
+      width: '100%',
+      maxWidth: '580px',
+      height: 'auto',
+      autoFocus: 'first-tabbable',
+    });
+  }
+
+  public openWorkspaceForm(): void {
+    this.dialog.open(UserDetailsWorkspaceFormComponent, {
       width: '100%',
       maxWidth: '580px',
       height: 'auto',

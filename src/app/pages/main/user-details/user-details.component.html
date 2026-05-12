@@ -117,6 +117,25 @@
               </div>
             </div>
           </mat-list-item>
+  
+          <mat-list-item matRipple (click)="openWorkspaceForm()">
+            <div class="user-info-content">
+              <div class="user-info-left-content">
+                <mat-icon>workspaces</mat-icon>
+                <span>Workspace</span>
+              </div>
+              <div class="user-info-right-content">
+                @if (workspaceLoading()) {
+                  <mat-progress-spinner mode="indeterminate" diameter="16"></mat-progress-spinner>
+                } @else if (currentWorkspaceName()) {
+                  <mat-icon [style.color]="'var(--mat-sys-tertiary)'">check_circle</mat-icon>
+                  <span>{{ currentWorkspaceName() }}</span>
+                } @else {
+                  <span class="no-value">No workspace assigned</span>
+                }
+              </div>
+            </div>
+          </mat-list-item>
         </mat-list>
   
         <div class="user-details-section">
