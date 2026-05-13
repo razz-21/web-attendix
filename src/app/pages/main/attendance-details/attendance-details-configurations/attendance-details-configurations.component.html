@@ -1,1 +1,91 @@
-<h1>Configurations</h1>
+<div class="configurations-page">
+  <div class="configurations-card">
+    <h2 class="configurations-card-title">Attendance Settings</h2>
+
+    <div class="configurations-card-content">
+      <mat-form-field class="full-width">
+        <mat-label>Late Threshold (minutes)</mat-label>
+
+        <input
+          matInput
+          type="number"
+          min="0"
+          [ngModel]="formData().late_threshold"
+          (ngModelChange)="formData.update(data => ({ ...data, late_threshold: $event }))"
+        />
+
+        <mat-hint> Number of minutes after start time before marked as late </mat-hint>
+      </mat-form-field>
+    </div>
+
+    <div class="configurations-card-actions">
+      <button matButton="filled" color="primary" (click)="saveAttendanceSettings()">
+        @if (attendanceLoading) {
+          <mat-spinner diameter="18"></mat-spinner>
+        } @else {
+          Save
+        }
+      </button>
+    </div>
+  </div>
+
+  <div class="configurations-card">
+    <h2 class="configurations-card-title">Point System</h2>
+
+    <div class="configurations-card-content">
+      <mat-form-field class="full-width">
+        <mat-label>Present Points</mat-label>
+
+        <input
+          matInput
+          type="number"
+          [ngModel]="formData().present_point"
+          (ngModelChange)="formData.update(data => ({ ...data, present_point: $event }))"
+        />
+      </mat-form-field>
+
+      <mat-form-field class="full-width">
+        <mat-label>Late Points</mat-label>
+
+        <input
+          matInput
+          type="number"
+          [ngModel]="formData().late_point"
+          (ngModelChange)="formData.update(data => ({ ...data, late_point: $event }))"
+        />
+      </mat-form-field>
+
+      <mat-form-field class="full-width">
+        <mat-label>Absent Points</mat-label>
+
+        <input
+          matInput
+          type="number"
+          [ngModel]="formData().absent_point"
+          (ngModelChange)="formData.update(data => ({ ...data, absent_point: $event }))"
+        />
+      </mat-form-field>
+
+      <mat-form-field class="full-width">
+        <mat-label>Excused Points</mat-label>
+
+        <input
+          matInput
+          type="number"
+          [ngModel]="formData().excused_point"
+          (ngModelChange)="formData.update(data => ({ ...data, excused_point: $event }))"
+        />
+      </mat-form-field>
+    </div>
+
+    <div class="configurations-card-actions">
+      <button matButton="filled" color="primary" (click)="savePointSystem()">
+        @if (pointLoading) {
+          <mat-spinner diameter="18"></mat-spinner>
+        } @else {
+          Save
+        }
+      </button>
+    </div>
+  </div>
+</div>
