@@ -4,6 +4,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { AttendeeTableComponent } from './attendee-table/attendee-table.component';
 import { AttendeeFormModalComponent } from './attendee-form-modal/attendee-form-modal.component';
+import { ImportAttendeesFormModalComponent } from './import-attendees-form-modal/import-attendees-form-modal.component';
 import { ActivatedRoute } from '@angular/router';
 import { AttendanceAttendeeEvents } from "@/app/store/attendance-attendee/attendance-attendee.events";
 import { GetAttendee } from "@/app/types/attendaces/attendees.types";
@@ -27,6 +28,7 @@ export class AttendanceDetailsAttendeesComponent {
   private readonly events = inject(Events);
   
   private dialogRef = signal<MatDialogRef<AttendeeFormModalComponent> | null>(null);
+  private importDialogRef = signal<MatDialogRef<ImportAttendeesFormModalComponent> | null>(null);
   
   // Get attendanceId from parent route params
   public readonly attendanceId = computed(() => {
@@ -38,9 +40,20 @@ export class AttendanceDetailsAttendeesComponent {
     this.dialogRef.set(ref);
   }
 
+  public openImport(): void {
+    const ref = this.dialog.open(ImportAttendeesFormModalComponent, { maxWidth: '600px', width: '100%', data: { attendanceId: this.attendanceId() } });
+    this.importDialogRef.set(ref);
+  }
+
   #onCreateAttendeeSuccess = rxMethod<GetAttendee>(
     pipe(tap(() => this.dialogRef()?.close()))
   )(this.events.on(AttendanceAttendeeEvents.createAttendeeSuccess).pipe(
+    map(({ payload }) => payload)
+  ));
+
+  #onImportAttendeesSuccess = rxMethod<{ count: number; message: string }>(
+    pipe(tap(() => this.importDialogRef()?.close()))
+  )(this.events.on(AttendanceAttendeeEvents.importAttendeesSuccess).pipe(
     map(({ payload }) => payload)
   ));
 }

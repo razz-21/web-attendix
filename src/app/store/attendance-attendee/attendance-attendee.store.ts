@@ -135,6 +135,23 @@ export const AttendanceAttendeeStore = signalStore(
 
     // Reset
     on(AttendanceAttendeeEvents.resetStore, () => [removeAllEntities(), initialState]),
+
+    // Import
+    on(AttendanceAttendeeEvents.importAttendees, (event, state) => ({
+      ...state,
+      loadingForm: true,
+      error: null,
+    })),
+    on(AttendanceAttendeeEvents.importAttendeesSuccess, (event, state) => ({
+      ...state,
+      loadingForm: false,
+      error: null,
+    })),
+    on(AttendanceAttendeeEvents.importAttendeesFailure, (event, state) => ({
+      ...state,
+      loadingForm: false,
+      error: event.payload,
+    })),
   ),
 
   withEventHandlers(
@@ -217,6 +234,24 @@ export const AttendanceAttendeeStore = signalStore(
       ),
       deleteAttendeeFailure$: events.on(AttendanceAttendeeEvents.deleteAttendeeFailure).pipe(
         map(({ payload }) => { snackBar.open(payload.error, "Close", { duration: 6000 }); })
+      ),
+
+      importAttendees$: events.on(AttendanceAttendeeEvents.importAttendees).pipe(
+        exhaustMap(({ payload }) =>
+          from(attendeesService.importAttendeesFromGroup(payload.attendance_id, { group_id: payload.group_id })).pipe(
+            mapResponse({
+              next: (response) => AttendanceAttendeeEvents.importAttendeesSuccess(response),
+              error: (error: unknown) => AttendanceAttendeeEvents.importAttendeesFailure(error instanceof Error ? error.message : "Failed to import attendees"),
+            })
+          )
+        )
+      ),
+      importAttendeesSuccess$: events.on(AttendanceAttendeeEvents.importAttendeesSuccess).pipe(
+        tap(({ payload }) => { snackBar.open(payload.message, 'Close', { duration: 5000 }); }),
+        map(() => AttendanceAttendeeEvents.loadAttendees({ attendance_id: store.currentAttendanceId()! }))
+      ),
+      importAttendeesFailure$: events.on(AttendanceAttendeeEvents.importAttendeesFailure).pipe(
+        map(({ payload }) => { snackBar.open(payload, "Close", { duration: 6000 }); })
       ),
     })
   ),
