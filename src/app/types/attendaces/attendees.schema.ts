@@ -25,3 +25,12 @@ export const GetPaginatedAttendeesSchema = z.object({
 export const GetAttendeesQuerySchema = z.object({
   q: z.string().optional(),
 });
+
+export const ImportGroupBodySchema = z.object({
+  group_id: z.string().uuid(),
+});
+
+export const ImportGroupResponseSchema = z.object({
+  count: z.number(),
+  message: z.string(),
+});

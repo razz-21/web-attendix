@@ -27,6 +27,10 @@ export const AttendanceAttendeeEvents = eventGroup({
 
     paginate: type<{ page: number; limit: number }>(),
 
+    importAttendees: type<{ attendance_id: string; group_id: string }>(),
+    importAttendeesSuccess: type<{ count: number; message: string }>(),
+    importAttendeesFailure: type<string>(),
+
     resetStore: type<void>(),
   },
 });
