@@ -1,0 +1,46 @@
+<section class="qrcode-modal">
+  <section class="qrcode-modal__header">
+    <h3>QR Code</h3>
+    <p>Scan this QR code to view the attendance record details.</p>
+  </section>
+
+  <section class="qrcode-modal__body">
+    <div class="qrcode-modal__info">
+      <div class="qrcode-modal__info-row">
+        <span class="qrcode-modal__info-label">Attendance Name</span>
+        <span class="qrcode-modal__info-value">{{ attendanceName() || '—' }}</span>
+      </div>
+      <div class="qrcode-modal__info-row">
+        <span class="qrcode-modal__info-label">Record Name</span>
+        <span class="qrcode-modal__info-value">{{ record.name || '—' }}</span>
+      </div>
+      <div class="qrcode-modal__info-row">
+        <span class="qrcode-modal__info-label">Start Time</span>
+        <span class="qrcode-modal__info-value">{{ record.start_time ? ('1970-01-01T' + record.start_time | date: 'hh:mm a') : '—' }}</span>
+      </div>
+      <div class="qrcode-modal__info-row">
+        <span class="qrcode-modal__info-label">End Time</span>
+        <span class="qrcode-modal__info-value">{{ record.end_time ? ('1970-01-01T' + record.end_time | date: 'hh:mm a') : '—' }}</span>
+      </div>
+      <div class="qrcode-modal__info-row">
+        <span class="qrcode-modal__info-label">Created At</span>
+        <span class="qrcode-modal__info-value">{{ record.created_at ? (record.created_at | date: 'MMM dd, yyyy hh:mm a') : '—' }}</span>
+      </div>
+    </div>
+
+    @if (qrError()) {
+      <div class="qrcode-modal__error">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ qrError() }}</span>
+      </div>
+    } @else {
+      <div class="qrcode-modal__qr-wrap">
+        <div class="qrcode-modal__qr" [innerHTML]="qrCodeSvg()"></div>
+      </div>
+    }
+  </section>
+
+  <section class="qrcode-modal__actions">
+    <button matButton="filled" color="primary" type="button" (click)="closeDialog()">Close</button>
+  </section>
+</section>

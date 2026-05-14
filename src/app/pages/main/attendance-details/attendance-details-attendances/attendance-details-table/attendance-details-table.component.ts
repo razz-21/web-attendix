@@ -15,6 +15,7 @@ import { Dispatcher } from '@ngrx/signals/events';
 import { GetAttendance } from '@/app/types/attendance/attendance.types';
 import { ConfirmationDialogService } from '@/app/services/confirmation-dialog.service';
 import { EditAttendanceModalComponent } from '../edit-attendance-form-modal/edit-attendance-form-modal.component';
+import { AttendanceQrcodeModalComponent } from '../attendance-qrcode-modal/attendance-qrcode-modal.component';
 
 @Component({
   selector: 'app-attendance-details-table',
@@ -69,6 +70,14 @@ export class AttendanceTableComponent {
   public openEditDetails(row: GetAttendance): void {
     this.dialog.open(EditAttendanceModalComponent, {
       maxWidth: '620px',
+      width: '100%',
+      data: row,
+    });
+  }
+
+  public openQrCode(row: GetAttendance): void {
+    this.dialog.open(AttendanceQrcodeModalComponent, {
+      maxWidth: '520px',
       width: '100%',
       data: row,
     });
