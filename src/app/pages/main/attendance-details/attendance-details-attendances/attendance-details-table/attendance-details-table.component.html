@@ -39,6 +39,16 @@
         <button
           matIconButton
           type="button"
+          (click)="$event.stopPropagation(); openQrCode(row)"
+          aria-label="QR Code"
+          matTooltip="QR Code"
+          matTooltipPosition="above"
+        >
+          <mat-icon>qr_code_2</mat-icon>
+        </button>
+        <button
+          matIconButton
+          type="button"
           (click)="$event.stopPropagation(); openEditDetails(row)"
           aria-label="Edit details"
           matTooltip="Edit details"
