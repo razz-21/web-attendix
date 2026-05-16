@@ -7,6 +7,7 @@ export const AUTH_REQUEST_ACCOUNT_SUCCESS_PATH = `${AUTH_BASE_PATH}/request-acco
 // MAIN ROUTES
 export const MAIN_BASE_PATH = '/main';
 export const MAIN_DASHBOARD_PATH = `${MAIN_BASE_PATH}/dashboard`;
+export const MAIN_HOME_PATH = `${MAIN_BASE_PATH}/home`;
 export const MAIN_PROFILE_PATH = `${MAIN_BASE_PATH}/profile`;
 export const MAIN_SETTINGS_PATH = `${MAIN_BASE_PATH}/settings`;
 export const MAIN_ATTENDANCES_PATH = `${MAIN_BASE_PATH}/attendances`;

@@ -2,7 +2,7 @@ import { Component, inject } from "@angular/core";
 import { MatListModule } from "@angular/material/list";
 import { MatIconModule } from "@angular/material/icon";
 import { RouterLink, RouterLinkActive } from "@angular/router";
-import { MAIN_ATTENDANCES_PATH, MAIN_DASHBOARD_PATH, MAIN_GROUPS_PATH, MAIN_PROFILE_PATH, MAIN_SETTINGS_PATH, MAIN_USERS_PATH, MAIN_WORKSPACES_PATH } from "@/app/constants/route.constant";
+import { MAIN_ATTENDANCES_PATH, MAIN_DASHBOARD_PATH, MAIN_GROUPS_PATH, MAIN_HOME_PATH, MAIN_PROFILE_PATH, MAIN_SETTINGS_PATH, MAIN_USERS_PATH, MAIN_WORKSPACES_PATH } from "@/app/constants/route.constant";
 import { Dispatcher } from "@ngrx/signals/events";
 import { AuthEvents } from "@/app/store/auth/auth.events";
 
@@ -16,10 +16,15 @@ export class MainSidebarComponent {
   private readonly dispatcher = inject(Dispatcher);
 
   public readonly routes = [
+    // {
+    //   path: MAIN_DASHBOARD_PATH,
+    //   label: 'Dashboard',
+    //   icon: 'dashboard'
+    // },
     {
-      path: MAIN_DASHBOARD_PATH,
-      label: 'Dashboard',
-      icon: 'dashboard'
+      path: MAIN_HOME_PATH,
+      label: 'Home',
+      icon: 'home'
     },
     {
       path: MAIN_ATTENDANCES_PATH,

@@ -55,12 +55,12 @@
       class="records-table"
       role="grid"
     >
-      <ng-container matColumnDef="attendee" sticky>
+      <ng-container matColumnDef="attendee">
         <th mat-header-cell *matHeaderCellDef scope="col">Attendee</th>
         <td mat-cell *matCellDef="let attendee">{{ attendee.name }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="total" sticky>
+      <ng-container matColumnDef="total">
         <th mat-header-cell *matHeaderCellDef scope="col" class="records-table__summary-header">Total</th>
         <td mat-cell *matCellDef="let attendee" class="records-table__summary-cell">
           <span class="records-summary-value records-summary-value--total">

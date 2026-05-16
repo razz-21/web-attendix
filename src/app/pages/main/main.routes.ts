@@ -11,15 +11,20 @@ import { UserDetailsComponent } from "./user-details/user-details.component";
 import { WorkspacesComponent } from "./workspaces/workspaces.component";
 import { WorkspaceDetailsComponent } from "./workspace-details/workspace-details.component";
 import { AttendanceDetailsComponent } from "./attendance-details/attendance-details.component";
+import { HomeComponent } from "./home/home.component";
 
 export const mainRoutes: Routes = [
   {
     path: 'main',
     component: MainComponent,
     children: [
+      // {
+      //   path: 'dashboard',
+      //   component: DashboardComponent
+      // },
       {
-        path: 'dashboard',
-        component: DashboardComponent
+        path: 'home',
+        component: HomeComponent
       },
       {
         path: 'attendances',
