@@ -1,5 +1,5 @@
 import { GetAttendanceRecord } from "@/app/types/attendance-record/attendance-record.types";
-import { signalStore, withComputed, withMethods, withState } from "@ngrx/signals";
+import { patchState, signalStore, withComputed, withMethods, withState } from "@ngrx/signals";
 import { Events, on, withEventHandlers, withReducer } from "@ngrx/signals/events";
 import { AttendanceRecordEvents } from "./attendance-record.events";
 import { withEntities, setAllEntities, prependEntity, addEntity, setEntity } from "@ngrx/signals/entities";
@@ -12,7 +12,10 @@ import { GetAttendee } from "@/app/types/attendaces/attendees.types";
 
 type AttendanceRecordEntity = GetAttendanceRecord;
 
+export type AttendanceRecordViewMode = 'status' | 'points';
+
 type AttendanceRecordState = {
+  viewMode: AttendanceRecordViewMode;
   loading: boolean;
   createLoading: boolean;
   updateLoading: boolean;
@@ -20,6 +23,7 @@ type AttendanceRecordState = {
 };
 
 const initialState: AttendanceRecordState = {
+  viewMode: 'status',
   loading: false,
   createLoading: false,
   updateLoading: false,
@@ -34,13 +38,21 @@ export const AttendanceRecordStore = signalStore(
     attendanceRecords: entities,
     attendanceRecordsMap: entityMap,
   })),
-  withMethods(({ entities }) => ({
-    attendanceRecordsByAttendanceId: (attendanceId: string) => entities().filter((record) => record.attendance_id === attendanceId),
+  withMethods((store) => ({
+    setViewMode(viewMode: AttendanceRecordViewMode): void {
+      patchState(store, { viewMode });
+    },
+    attendanceRecordsByAttendanceId: (attendanceId: string) =>
+      store.entities().filter((record) => record.attendance_id === attendanceId),
     attendeesAttendanceRecords: (attendees: GetAttendee[], attendanceId: string) => {
-      const attendanceRecords = entities().filter((record) => record.attendance_id === attendanceId);
+      const attendanceRecords = store
+        .entities()
+        .filter((record) => record.attendance_id === attendanceId);
 
       return attendees.map((attendee) => {
-        const attendanceRecord = attendanceRecords.find((record) => record.attendee_id === attendee.id);
+        const attendanceRecord = attendanceRecords.find(
+          (record) => record.attendee_id === attendee.id,
+        );
         return {
           attendee: attendee,
           attendanceRecord,

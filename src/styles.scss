@@ -116,6 +116,30 @@ tbody .mat-mdc-row {
   padding: 14px 16px;
 }
 
+// Attendance records status dropdown (panel renders in CDK overlay)
+.records-status-select-panel {
+  .mat-mdc-option {
+    min-height: 2.75rem;
+    padding-inline: 0.75rem;
+  }
+
+  .mat-mdc-option .mdc-list-item__primary-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+    text-overflow: unset;
+    white-space: nowrap;
+    width: 100%;
+  }
+
+  .records-status-chip {
+    flex: 1 1 auto;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
 // Status values as bordered pills (add class to the cell contents)
 .app-table-status-pill {
   display: inline-flex;
