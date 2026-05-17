@@ -97,6 +97,6 @@ export class WorkspaceDetailsComponent {
   }
 
   public viewGroup(group: GetGroup): void {
-    this.router.navigate(['/groups', group.id]);
+    this.router.navigate(['/main/groups', group.id, 'members']);
   }
 }

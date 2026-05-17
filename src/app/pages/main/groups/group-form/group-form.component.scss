@@ -19,6 +19,12 @@
   gap: 1rem;
 }
 
+.group-form__checkbox {
+  display: flex;
+  align-items: center;
+  margin-top: -0.5rem;
+}
+
 .group-form__actions {
   display: flex;
   justify-content: flex-end;

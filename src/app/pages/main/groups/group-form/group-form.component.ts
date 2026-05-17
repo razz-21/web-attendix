@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { PostGroupSchema } from '@/app/types/groups/groups.schema';
 import type { PostGroup } from '@/app/types/groups/groups.type';
 import { Dispatcher } from '@ngrx/signals/events';
@@ -14,11 +15,13 @@ import { AuthStore } from '@/app/store/auth/auth.store';
 export interface GroupFormModel {
   name: string;
   description: string;
+  shareToWorkspace: boolean;
 }
 
 const emptyModel = (): GroupFormModel => ({
   name: '',
   description: '',
+  shareToWorkspace: true,
 });
 
 @Component({
@@ -33,6 +36,7 @@ const emptyModel = (): GroupFormModel => ({
     MatInputModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    MatCheckboxModule,
   ],
 })
 export class GroupFormComponent {
@@ -43,6 +47,7 @@ export class GroupFormComponent {
   public readonly model = signal<GroupFormModel>(emptyModel());
   public readonly groupCancelled = output<void>();
   public readonly loadingForm = computed(() => this.groupsStore.loadingForm());
+  public readonly user = computed(() => this.authStore.user());
 
   public readonly groupForm = form(this.model, (root) => {
     required(root.name);
@@ -55,8 +60,8 @@ export class GroupFormComponent {
           id: crypto.randomUUID() as string,
           name: m.name.trim(),
           description: m.description.trim() || undefined,
-          workspace_id: crypto.randomUUID() as string,
-          created_by: this.authStore.user()?.id ?? crypto.randomUUID(),
+          workspace_id: (m.shareToWorkspace && this.user()?.workspace_id) ? this.user()?.workspace_id : undefined,
+          created_by: this.user()?.id,
           created_at: now,
         };
         PostGroupSchema.parse(payload);
