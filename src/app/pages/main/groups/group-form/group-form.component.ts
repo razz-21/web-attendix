@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { PostGroupSchema } from '@/app/types/groups/groups.schema';
 import type { PostGroup } from '@/app/types/groups/groups.type';
 import { Dispatcher } from '@ngrx/signals/events';
@@ -14,11 +15,13 @@ import { AuthStore } from '@/app/store/auth/auth.store';
 export interface GroupFormModel {
   name: string;
   description: string;
+  share_to_workspace: boolean;
 }
 
 const emptyModel = (): GroupFormModel => ({
   name: '',
   description: '',
+  share_to_workspace: false,
 });
 
 @Component({
@@ -33,12 +36,16 @@ const emptyModel = (): GroupFormModel => ({
     MatInputModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    MatCheckboxModule,
   ],
 })
 export class GroupFormComponent {
   private readonly dispatcher = inject(Dispatcher);
   private readonly groupsStore = inject(GroupsStore);
   private readonly authStore = inject(AuthStore); 
+
+  public readonly user = computed(() => this.authStore.user());
+  public readonly hasWorkspace = computed(() => !!this.user()?.workspace_id);
 
   public readonly model = signal<GroupFormModel>(emptyModel());
   public readonly groupCancelled = output<void>();
@@ -51,12 +58,13 @@ export class GroupFormComponent {
       action: async () => {
         const m = this.model();
         const now = new Date().toISOString();
+        const u = this.user();
         const payload: PostGroup = {
           id: crypto.randomUUID() as string,
           name: m.name.trim(),
           description: m.description.trim() || undefined,
-          workspace_id: crypto.randomUUID() as string,
-          created_by: this.authStore.user()?.id ?? crypto.randomUUID(),
+          workspace_id: (m.share_to_workspace && u?.workspace_id) ? u.workspace_id : undefined,
+          created_by: u?.id ?? crypto.randomUUID(),
           created_at: now,
         };
         PostGroupSchema.parse(payload);
@@ -68,5 +76,9 @@ export class GroupFormComponent {
 
   public cancel(): void {
     this.groupCancelled.emit();
+  }
+
+  public toggleShareToWorkspace(checked: boolean): void {
+    this.model.update(m => ({ ...m, share_to_workspace: checked }));
   }
 }
