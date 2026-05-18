@@ -123,6 +123,12 @@ export class AttendancesComponent implements OnInit {
       schedule_days: formData.scheduleDays.map(day => SCHEDULE_DAY_MAP[day] as AttendanceScheduleDays[number]),
       description: formData.description,
       late_threshold: formData.lateThreshold,
+      configurations: {
+        present_point: 1,
+        late_point: 0.5,
+        absent_point: 0,
+        excused_point: 0.75,
+      },
       created_by: this.currentUserId,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
