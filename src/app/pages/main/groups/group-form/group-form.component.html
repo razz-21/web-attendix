@@ -19,6 +19,13 @@
       <textarea matInput [formField]="groupForm.description" rows="3" autocomplete="off"></textarea>
     </mat-form-field>
 
+    @if (user()?.workspace_id) {
+      <div class="group-form__checkbox">
+        <mat-checkbox [formField]="groupForm.shareToWorkspace" color="primary">
+          Share this to Workspace
+        </mat-checkbox>
+      </div>
+    }
   </div>
 
   <div class="group-form__actions">

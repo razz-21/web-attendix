@@ -16,6 +16,7 @@ import { UpdateWorkspaceDetailsDialogFormComponent } from "./update-workspace-de
 import { MAIN_WORKSPACES_PATH } from "@/app/constants/route.constant";
 import { AddWorkspaceUserComponent } from "./add-workspace-user/add-workspace-user.component";
 import { GetUser } from "@/app/types/users/users.type";
+import { GetGroup } from "@/app/types/groups/groups.type";
 
 @Component({
   selector: 'app-workspace-details',
@@ -51,11 +52,17 @@ export class WorkspaceDetailsComponent {
 
   public totalUsers = computed(() => this.users().length);
 
+  public groups = computed(() => this.workspaceDetailsStore.groups());
+  public loadingGroups = computed(() => this.workspaceDetailsStore.loadingGroups());
+  public emptyGroups = computed(() => this.groups().length === 0);
+  public totalGroups = computed(() => this.groups().length);
+
   public ngOnInit(): void {
     const id = this.route.snapshot.params['id'];
     if (id) {
       this.dispatcher.dispatch(WorkspaceDetailsEvents.loadWorkspaceDetails({ id }));
       this.dispatcher.dispatch(WorkspaceDetailsEvents.loadWorkspaceUsers({ id }));
+      this.dispatcher.dispatch(WorkspaceDetailsEvents.loadWorkspaceGroups({ id }));
     }
   }
 
@@ -87,5 +94,9 @@ export class WorkspaceDetailsComponent {
 
   public navigateBack(): void {
     this.router.navigate([MAIN_WORKSPACES_PATH]);
+  }
+
+  public viewGroup(group: GetGroup): void {
+    this.router.navigate(['/main/groups', group.id, 'members']);
   }
 }

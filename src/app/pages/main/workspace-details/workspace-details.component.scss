@@ -46,6 +46,26 @@
   gap: 0.5rem;
 }
 
+.workspace-details-group-icon {
+  color: var(--mat-sys-primary);
+  margin-right: 8px;
+}
+
+.workspace-details-group-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.workspace-details-group-name {
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+}
+
+.workspace-details-group-description {
+  font-size: 0.85rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
 .workspace-details-page-invite-section {
   border: 1px dashed var(--mat-sys-primary);
   background-color: var(--mat-sys-surface-container-low);

@@ -4,8 +4,8 @@ export const GroupSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
   description: z.string().optional(),
-  workspace_id: z.string().uuid(),
-  created_by: z.string().uuid(),
+  workspace_id: z.string().uuid().optional().nullable(),
+  created_by: z.string().uuid().optional().nullable(),
   created_at: z.string(),
   updated_at: z.string(),
 });
