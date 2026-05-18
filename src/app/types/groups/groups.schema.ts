@@ -10,7 +10,14 @@ export const GroupSchema = z.object({
   updated_at: z.string(),
 });
 
-export const GetGroupSchema = GroupSchema;
+export const GetGroupSchema = GroupSchema.extend({
+  creator: z.object({
+    id: z.string().uuid(),
+    firstname: z.string(),
+    lastname: z.string(),
+    avatar: z.string().optional().nullable(),
+  }).optional(),
+});
 export const GetPaginatedGroupParamsSchema = z.object({
   page: z.number().optional(),
   limit: z.number().optional(),

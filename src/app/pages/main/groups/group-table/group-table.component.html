@@ -31,6 +31,26 @@
       <td mat-cell *matCellDef="let row">{{ row.description ?? '—' }}</td>
     </ng-container>
 
+    <ng-container matColumnDef="createdBy">
+      <th mat-header-cell *matHeaderCellDef scope="col">Created By</th>
+      <td mat-cell *matCellDef="let row">
+        @if (row.creator) {
+          <div class="creator-cell">
+            @if (row.creator.avatar) {
+              <img [src]="row.creator.avatar" alt="Creator avatar" class="creator-avatar" />
+            } @else {
+              <div class="creator-avatar-fallback">
+                {{ getInitials(row.creator.firstname, row.creator.lastname) }}
+              </div>
+            }
+            <span class="creator-name">{{ row.creator.firstname }} {{ row.creator.lastname }}</span>
+          </div>
+        } @else {
+          —
+        }
+      </td>
+    </ng-container>
+
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef scope="col" class="app-table-actions-header">Actions</th>
       <td mat-cell *matCellDef="let row" class="app-table-actions-cell">
