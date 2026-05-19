@@ -26,7 +26,10 @@
           (change)="toggleShareToWorkspace($event.checked)"
           color="primary"
         >
-          Share this to Workspace
+          <div class="share-workspace-toggle__label-wrapper">
+            <span class="share-workspace-toggle__label-text">Share this to Workspace</span>
+            <span class="share-workspace-toggle__hint">This group will be shared with users in your workspace.</span>
+          </div>
         </mat-checkbox>
       </div>
     }
