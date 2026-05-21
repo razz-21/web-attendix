@@ -1,1 +1,80 @@
-Home
+<div class="home-page">
+  <div class="home-welcome">
+    <h1>Welcome, {{ user()?.firstname }} {{ user()?.lastname }}!</h1>
+    <p>Here's a quick overview of your attendance data.</p>
+  </div>
+
+  <div class="home-search">
+    <mat-form-field appearance="outline" class="home-search__field">
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>Search attendances</mat-label>
+      <input matInput [(ngModel)]="searchQuery" (ngModelChange)="searchAttendances()" />
+    </mat-form-field>
+
+    @if (searchResults().length > 0) {
+      <div class="home-search__dropdown">
+        @for (item of searchResults(); track item.id) {
+          <div class="home-search__item" (click)="goToAttendance(item)">
+            <span>{{ item.name }}</span>
+            <span class="home-search__code">{{ item.code }}</span>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  @if (loading()) {
+    <p>Loading...</p>
+  } @else {
+    <section class="home-section">
+      <h2 class="home-section__title">Suggested Groups</h2>
+      @if (suggestedGroups().length === 0) {
+        <p class="home-empty">No groups found.</p>
+      } @else {
+        <div class="home-groups">
+          @for (group of suggestedGroups(); track group.id) {
+            <div class="home-group-card" (click)="goToGroup(group)">
+              <mat-icon>group</mat-icon>
+              <div>
+                <p class="home-group-card__name">{{ group.name }}</p>
+                <p class="home-group-card__desc">{{ group.description ?? '—' }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="home-section">
+      <h2 class="home-section__title">Recent Attendances</h2>
+      @if (recentAttendances().length === 0) {
+        <p class="home-empty">No recent attendances.</p>
+      } @else {
+        <table mat-table [dataSource]="recentAttendances()" class="home-table">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+          </ng-container>
+          <ng-container matColumnDef="code">
+            <th mat-header-cell *matHeaderCellDef>Code</th>
+            <td mat-cell *matCellDef="let row">{{ row.code }}</td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let row">{{ row.status }}</td>
+          </ng-container>
+          <ng-container matColumnDef="updated_at">
+            <th mat-header-cell *matHeaderCellDef>Updated</th>
+            <td mat-cell *matCellDef="let row">{{ row.updated_at | date: 'MMM dd, yyyy' }}</td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: tableColumns"
+            (click)="goToAttendance(row)"
+          ></tr>
+        </table>
+      }
+    </section>
+  }
+</div>
