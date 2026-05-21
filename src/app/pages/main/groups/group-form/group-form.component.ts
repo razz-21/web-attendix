@@ -15,12 +15,14 @@ import { AuthStore } from '@/app/store/auth/auth.store';
 export interface GroupFormModel {
   name: string;
   description: string;
+  share_to_workspace: boolean;
   shareToWorkspace: boolean;
 }
 
 const emptyModel = (): GroupFormModel => ({
   name: '',
   description: '',
+  share_to_workspace: false,
   shareToWorkspace: true,
 });
 
@@ -44,10 +46,12 @@ export class GroupFormComponent {
   private readonly groupsStore = inject(GroupsStore);
   private readonly authStore = inject(AuthStore); 
 
+  public readonly user = computed(() => this.authStore.user());
+  public readonly hasWorkspace = computed(() => !!this.user()?.workspace_id);
+
   public readonly model = signal<GroupFormModel>(emptyModel());
   public readonly groupCancelled = output<void>();
   public readonly loadingForm = computed(() => this.groupsStore.loadingForm());
-  public readonly user = computed(() => this.authStore.user());
 
   public readonly groupForm = form(this.model, (root) => {
     required(root.name);
@@ -56,12 +60,13 @@ export class GroupFormComponent {
       action: async () => {
         const m = this.model();
         const now = new Date().toISOString();
+        const u = this.user();
         const payload: PostGroup = {
           id: crypto.randomUUID() as string,
           name: m.name.trim(),
           description: m.description.trim() || undefined,
-          workspace_id: (m.shareToWorkspace && this.user()?.workspace_id) ? this.user()?.workspace_id : undefined,
-          created_by: this.user()?.id,
+          workspace_id: (m.share_to_workspace && u?.workspace_id) ? u.workspace_id : undefined,
+          created_by: u?.id ?? crypto.randomUUID(),
           created_at: now,
         };
         PostGroupSchema.parse(payload);
@@ -73,5 +78,9 @@ export class GroupFormComponent {
 
   public cancel(): void {
     this.groupCancelled.emit();
+  }
+
+  public toggleShareToWorkspace(checked: boolean): void {
+    this.model.update(m => ({ ...m, share_to_workspace: checked }));
   }
 }
