@@ -1,11 +1,11 @@
 import { z } from "zod";
 
 export const GroupSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuidv4(),
   name: z.string(),
   description: z.string().optional(),
-  workspace_id: z.string().uuid().optional(),
-  created_by: z.string().uuid().optional(),
+  workspace_id: z.uuidv4().optional().nullable(),
+  created_by: z.uuidv4().optional(),
   created_at: z.string(),
   updated_at: z.string(),
 });
