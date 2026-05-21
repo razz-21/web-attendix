@@ -10,6 +10,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { AttendanceStore } from '@/app/store/attendance/attendance.store';
+import { AttendanceDetailsStore } from '@/app/store/attendance-details/attendance-details.store';
 import { AttendanceEvents } from '@/app/store/attendance/attendance.events';
 import { Dispatcher } from '@ngrx/signals/events';
 import { GetAttendance } from '@/app/types/attendance/attendance.types';
@@ -36,6 +37,7 @@ import { AttendanceQrcodeModalComponent } from '../attendance-qrcode-modal/atten
 export class AttendanceTableComponent {
   private readonly confirmationDialogService = inject(ConfirmationDialogService);
   private readonly attendanceRecordsStore = inject(AttendanceStore);
+  private readonly attendanceDetailsStore = inject(AttendanceDetailsStore);
   private readonly dispatcher = inject(Dispatcher);
   private readonly dialog = inject(MatDialog);
 
@@ -53,6 +55,7 @@ export class AttendanceTableComponent {
   public readonly filteredAttendance = computed(() => this.attendanceRecordsStore.filteredAttendance());
   public readonly filters = computed(() => this.attendanceRecordsStore.filters());
   public readonly data = computed(() => this.filteredAttendance());
+  public readonly isArchived = computed(() => this.attendanceDetailsStore.attendanceDetails()?.status === 'archived');
 
   public readonly isLoading = (_index: number, _row: any) => this.loading();
   public readonly isNotLoading = (_index: number, _row: any) => !this.loading();

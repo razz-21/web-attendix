@@ -2,6 +2,7 @@ import { MAIN_ATTENDANCES_PATH } from "@/app/constants/route.constant";
 import { TitleCasePipe } from "@angular/common";
 import { Component, inject, OnInit } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
+import { MatBadgeModule } from "@angular/material/badge";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
@@ -32,6 +33,7 @@ import { AttendanceRecordEvents } from "@/app/store/attendance-record/attendance
   imports: [
     TitleCasePipe,
     MatButtonModule,
+    MatBadgeModule,
     MatIconModule,
     MatTooltipModule,
     RouterLink,
@@ -58,6 +60,8 @@ export class AttendanceDetailsComponent implements OnInit {
   public attendanceDetails = computed(() => this.attendanceDetailsStore.attendanceDetails());
 
   public loading = computed(() => this.attendanceDetailsStore.loading());
+
+  public isArchived = computed(() => this.attendanceDetails()?.status === 'archived');
 
   public readonly tabs = [
     { label: "attendances", route: "attendances" },
@@ -142,6 +146,22 @@ export class AttendanceDetailsComponent implements OnInit {
 
     if (confirmed) {
       this.dispatcher.dispatch(AttendanceDetailsEvents.deleteAttendanceDetails({ id: attendance.id }));
+    }
+  }
+
+  public async reactivateAttendance(): Promise<void> {
+    const attendance = this.attendanceDetails();
+    if (!attendance || attendance.status !== 'archived') return;
+
+    const confirmed = await this.confirmationDialogService.confirm({
+      title: 'Reactivate Attendance',
+      message: `Are you sure you want to reactivate <strong>${attendance.name}</strong>? Users will be able to add records and attendees again.`,
+      positiveButtonText: 'Reactivate',
+      negativeButtonText: 'Cancel'
+    });
+
+    if (confirmed) {
+      this.dispatcher.dispatch(AttendanceDetailsEvents.updateAttendanceDetails({ id: attendance.id, payload: { status: 'active' } }));
     }
   }
 

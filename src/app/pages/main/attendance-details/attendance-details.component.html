@@ -10,7 +10,9 @@
           </button>
         </div>
         <div class="attendance-details-page-header-title">
-          <h1>{{ attendanceDetails()?.name }}</h1>
+          <div class="attendance-details-page-header-title-heading">
+            <h1>{{ attendanceDetails()?.name }}</h1>
+          </div>
           <p>{{ attendanceDetails()?.description }}</p>
           <div class="attendance-details-page-header-title-days">
             @for (day of attendanceDetails()?.schedule_days; track day) {
@@ -22,6 +24,7 @@
   
       <div class="attendance-details-page-header-right">
         <div class="attendance-details-page-header-right-actions">
+        @if (!isArchived()) {
           <button mat-icon-button color="primary" type="button" matTooltip="Edit Attendance" matTooltipPosition="above" (click)="openEditAttendance()">
             <mat-icon>edit</mat-icon>
           </button>
@@ -31,6 +34,15 @@
           <button mat-icon-button color="primary" type="button" matTooltip="Archive Attendance" matTooltipPosition="above">
             <mat-icon>archive</mat-icon>
           </button>
+        }
+        @if (isArchived()) {
+          <div style="display: flex; align-items: center; gap: 0.75rem; margin-right: 1rem;">
+            <button mat-icon-button color="accent" type="button" matTooltip="Reactivate Attendance" matTooltipPosition="above" (click)="reactivateAttendance()">
+              <mat-icon>restore</mat-icon>
+            </button>
+          </div>
+          <span class="archived-badge" [matBadge]="'Archived'" matBadgeColor="warn" matBadgeSize="large" style="margin-right: 3.5rem; transform: scale(1.3) translateY(-4px);"></span>
+        }
         </div>
 
         <div class="attendance-details-page-header-right-code">

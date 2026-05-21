@@ -15,9 +15,11 @@
         </div>
     
         <div class="attendance-details-attendances-page-header-right">
-          <button matButton="filled" color="primary" type="button" (click)="openAddRecord()">
-            Add Attendance Record
-          </button>
+          @if (!isArchived()) {
+            <button matButton="filled" color="primary" type="button" (click)="openAddRecord()">
+              Add Attendance Record
+            </button>
+          }
         </div>
       </div>
     

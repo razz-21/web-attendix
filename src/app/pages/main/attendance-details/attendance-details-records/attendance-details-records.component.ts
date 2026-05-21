@@ -148,6 +148,10 @@ export class AttendanceDetailsRecordsComponent {
       this.attendanceRecordStore.loading(),
   );
 
+  protected readonly isArchived = computed(
+    () => this.attendanceDetailsStore.attendanceDetails()?.status === 'archived',
+  );
+
   protected readonly saving = computed(
     () =>
       this.attendanceRecordStore.createLoading() ||
@@ -272,6 +276,10 @@ export class AttendanceDetailsRecordsComponent {
     attendee: GetAttendee,
     attendance: GetAttendance,
   ): void {
+    if (this.isArchived()) {
+      return;
+    }
+
     const record = this.getRecord(attendee.id, attendance.id);
     const attendancesId = this.attendancesId();
 

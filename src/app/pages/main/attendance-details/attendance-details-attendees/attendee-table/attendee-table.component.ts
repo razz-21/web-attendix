@@ -21,6 +21,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DEPARTMENTS } from '@/app/constants/departments.constant';
 import { AttendeeFormModalComponent } from '@/app/pages/main/attendance-details/attendance-details-attendees/attendee-form-modal/attendee-form-modal.component';
 import { AttendanceAttendeeStore } from '@/app/store/attendance-attendee/attendance-attendee.store';
+import { AttendanceDetailsStore } from '@/app/store/attendance-details/attendance-details.store';
 import { Dispatcher } from '@ngrx/signals/events';
 import { AttendanceAttendeeEvents } from '@/app/store/attendance-attendee/attendance-attendee.events';
 
@@ -44,6 +45,7 @@ export class AttendeeTableComponent {
   private readonly dialog = inject(MatDialog);
   private readonly dispatcher = inject(Dispatcher);
   private readonly attendanceAttendeeStore = inject(AttendanceAttendeeStore);
+  private readonly attendanceDetailsStore = inject(AttendanceDetailsStore);
   private readonly confirmationDialogService = inject(ConfirmationDialogService);
 
   public readonly attendanceId = input.required<string>();
@@ -56,6 +58,8 @@ export class AttendeeTableComponent {
   public readonly filters = signal<{ q?: string }>({ q: undefined });
 
   public readonly data = computed(() => this.attendanceAttendeeStore.filteredAttendees());
+
+  public readonly isArchived = computed(() => this.attendanceDetailsStore.attendanceDetails()?.status === 'archived');
 
   public readonly departments = DEPARTMENTS;
 

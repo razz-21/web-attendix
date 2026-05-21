@@ -96,7 +96,7 @@
                 hideSingleSelectionIndicator
                 disableOptionCentering
                 [value]="getRecordStatus(attendee.id, attendance.id)"
-                [disabled]="saving()"
+                [disabled]="saving() || isArchived()"
                 [aria-label]="'Status for ' + attendee.name + ' on ' + attendance.name"
                 (selectionChange)="onStatusChange($event.value, attendee, attendance)"
                 (click)="$event.stopPropagation()"
@@ -122,7 +122,7 @@
                 <button
                   type="button"
                   class="records-status-reason-btn"
-                  [disabled]="saving()"
+                  [disabled]="saving() || isArchived()"
                   aria-label="Edit excused reason for {{ attendee.name }}"
                   (click)="$event.stopPropagation(); openExcusedModal(getRecord(attendee.id, attendance.id)!)"
                 >

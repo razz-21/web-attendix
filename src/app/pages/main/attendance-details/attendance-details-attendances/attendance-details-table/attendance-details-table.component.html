@@ -46,26 +46,28 @@
         >
           <mat-icon>qr_code_2</mat-icon>
         </button>
-        <button
-          matIconButton
-          type="button"
-          (click)="$event.stopPropagation(); openEditDetails(row)"
-          aria-label="Edit details"
-          matTooltip="Edit details"
-          matTooltipPosition="above"
-        >
-          <mat-icon>edit</mat-icon>
-        </button>
-        <button
-          matIconButton
-          type="button"
-          (click)="$event.stopPropagation(); deleteDetails(row)"
-          aria-label="Delete details"
-          matTooltip="Delete details"
-          matTooltipPosition="above"
-        >
-          <mat-icon>delete</mat-icon>
-        </button>
+        @if (!isArchived()) {
+          <button
+            matIconButton
+            type="button"
+            (click)="$event.stopPropagation(); openEditDetails(row)"
+            aria-label="Edit details"
+            matTooltip="Edit details"
+            matTooltipPosition="above"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            matIconButton
+            type="button"
+            (click)="$event.stopPropagation(); deleteDetails(row)"
+            aria-label="Delete details"
+            matTooltip="Delete details"
+            matTooltipPosition="above"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        }
       </td>
     </ng-container>
 
