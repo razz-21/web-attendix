@@ -12,6 +12,7 @@ import { WorkspacesComponent } from "./workspaces/workspaces.component";
 import { WorkspaceDetailsComponent } from "./workspace-details/workspace-details.component";
 import { AttendanceDetailsComponent } from "./attendance-details/attendance-details.component";
 import { HomeComponent } from "./home/home.component";
+import { roleGuard } from '@/app/guards/role.guard';
 
 export const mainRoutes: Routes = [
   {
@@ -28,43 +29,53 @@ export const mainRoutes: Routes = [
       },
       {
         path: 'attendances',
-        component: AttendancesComponent
+        component: AttendancesComponent,
+        canActivate: [roleGuard(['admin', 'user'])]
       },
       {
         path: 'attendances/:id',
-        loadChildren: () => import('./attendance-details/attendance-details.module').then(m => m.AttendanceDetailsModule)
+        loadChildren: () => import('./attendance-details/attendance-details.module').then(m => m.AttendanceDetailsModule),
+        canActivate: [roleGuard(['admin', 'user'])]
       },
       {
         path: 'groups',
-        component: GroupsComponent
+        component: GroupsComponent,
+        canActivate: [roleGuard(['admin', 'user'])]
       },
       {
         path: 'users',
-        component: UsersComponent
+        component: UsersComponent,
+        canActivate: [roleGuard(['admin'])]
       },
       {
         path: 'groups/:id/members', 
-        component: GroupMemberComponent 
+        component: GroupMemberComponent,
+        canActivate: [roleGuard(['admin', 'user'])]
       },
       {
         path: 'users/:id',
-        component: UserDetailsComponent
+        component: UserDetailsComponent,
+        canActivate: [roleGuard(['admin'])]
       },
       {
         path: 'profile',
-        component: ProfileComponent
+        component: ProfileComponent,
+        canActivate: [roleGuard(['admin', 'user'])]
       },
       {
         path: 'settings',
-        component: SettingsComponent
+        component: SettingsComponent,
+        canActivate: [roleGuard(['admin'])]
       },
       {
         path: 'workspaces',
         component: WorkspacesComponent,
+        canActivate: [roleGuard(['admin'])]
       },
       {
         path: 'workspaces/:id',
-        component: WorkspaceDetailsComponent
+        component: WorkspaceDetailsComponent,
+        canActivate: [roleGuard(['admin'])]
       }
     ]
   }
