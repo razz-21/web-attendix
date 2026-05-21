@@ -13,6 +13,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import { AttendanceTableComponent } from '../attendance-details-attendances/attendance-details-table/attendance-details-table.component';
 import { AttendanceFormModalComponent } from '../attendance-details-attendances/attendance-details-form-modal/attendance-details-form-modal.component';
@@ -21,6 +22,7 @@ import { EditAttendanceModalComponent } from '../attendance-details-attendances/
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { AttendanceStore } from '@/app/store/attendance/attendance.store';
 import { AttendanceEvents } from '@/app/store/attendance/attendance.events';
+import { AttendanceDetailsStore } from '@/app/store/attendance-details/attendance-details.store';
 import { Dispatcher } from '@ngrx/signals/events';
 import { AttendanceDrawerComponent } from './attendance-drawer/attendance-drawer.component';
 
@@ -29,7 +31,7 @@ import { AttendanceDrawerComponent } from './attendance-drawer/attendance-drawer
   templateUrl: './attendance-details-attendances.component.html',
   styleUrls: ['./attendance-details-attendances.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatIconModule, MatSidenavModule, AttendanceTableComponent, AttendanceDrawerComponent],
+  imports: [MatButtonModule, MatIconModule, MatTooltipModule, MatSidenavModule, AttendanceTableComponent, AttendanceDrawerComponent],
 })
 export class AttendanceDetailsAttendancesComponent {
   private readonly drawerHost: Signal<ElementRef<HTMLElement> | undefined> = viewChild(
@@ -40,11 +42,13 @@ export class AttendanceDetailsAttendancesComponent {
   private readonly dialog = inject(MatDialog);
   private readonly dispatcher = inject(Dispatcher);
   private readonly attendanceStore = inject(AttendanceStore);
+  private readonly attendanceDetailsStore = inject(AttendanceDetailsStore);
   
   /** After opening, ignores the opener's bubbled click; then enables closing on outside click. */
   private readonly outsideClickArmed = signal(false);
 
   public readonly drawerOpen = computed(() => this.attendanceStore.drawerOpen());
+  public readonly isArchived = computed(() => this.attendanceDetailsStore.attendanceDetails()?.status === 'archived');
 
   constructor() {
     effect((onCleanup) => {

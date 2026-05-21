@@ -5,13 +5,15 @@
     </div>
 
     <div class="attendees-page-header-actions" style="display: flex; gap: 0.5rem;">
-      <button mat-stroked-button color="primary" type="button" (click)="openImport()">
-        <mat-icon>group_add</mat-icon>
-        Import from Group
-      </button>
-      <button mat-flat-button color="primary" type="button" (click)="openCreate()">
-        Add Attendee
-      </button>
+      @if (!isArchived()) {
+        <button mat-stroked-button color="primary" type="button" (click)="openImport()">
+          <mat-icon>group_add</mat-icon>
+          Import from Group
+        </button>
+        <button mat-flat-button color="primary" type="button" (click)="openCreate()">
+          Add Attendee
+        </button>
+      }
     </div>
   </div>
 
