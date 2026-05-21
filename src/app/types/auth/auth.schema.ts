@@ -29,3 +29,14 @@ export const AuthErrorResponseSchema = z.object({
   status_code: z.number(),
   message: z.string(),
 });
+
+export const PostRequestAccountSchema = UserSchema.pick({
+  id: true,
+  rfid: true,
+  firstname: true,
+  lastname: true,
+  email: true,
+  department: true,
+  username: true,
+  password: true,
+});

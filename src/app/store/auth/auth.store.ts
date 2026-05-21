@@ -11,7 +11,7 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { getHttpErrorMessage } from "@/app/utils/get-http-error-message";
 import { AuthErrorResponse } from "@/app/types/auth/auth.types";
 import { Router } from "@angular/router";
-import { AUTH_BASE_PATH } from "@/app/constants/route.constant";
+import { AUTH_BASE_PATH, AUTH_REQUEST_ACCOUNT_SUCCESS_PATH } from "@/app/constants/route.constant";
 import { ConfirmationDialogService } from "@/app/services/confirmation-dialog.service";
 
 interface AuthState {
@@ -25,6 +25,8 @@ interface AuthState {
   updateProfileError: AuthErrorResponse | null;
   updatePasswordLoading: boolean;
   updatePasswordError: AuthErrorResponse | null;
+  requestAccountLoading: boolean;
+  requestAccountError: AuthErrorResponse | null;
 }
 
 const initialState: AuthState = {
@@ -38,6 +40,8 @@ const initialState: AuthState = {
   updateProfileError: null,
   updatePasswordLoading: false,
   updatePasswordError: null,
+  requestAccountLoading: false,
+  requestAccountError: null,
 };
 
 export const AuthStore = signalStore(
@@ -112,6 +116,24 @@ export const AuthStore = signalStore(
       ...state,
       updatePasswordLoading: false,
       updatePasswordError: event.payload,
+    })),
+
+    // Request account
+    on(AuthEvents.requestAccount, (_, state) => ({
+      ...state,
+      requestAccountLoading: true,
+      requestAccountError: null,
+    })),
+    on(AuthEvents.requestAccountSuccess, ({ payload }, state) => ({
+      ...state,
+      user: payload.user,
+      requestAccountLoading: false,
+      requestAccountError: null,
+    })),
+    on(AuthEvents.requestAccountFailure, (event, state) => ({
+      ...state,
+      requestAccountLoading: false,
+      requestAccountError: event.payload,
     })),
 
     // Miscellaneous
@@ -239,6 +261,33 @@ export const AuthStore = signalStore(
           snackBar.open(payload.message, "Close", { duration: 6000 });
         })
       ),
+
+      // Request account
+      requestAccount$: events.on(AuthEvents.requestAccount).pipe(
+        exhaustMap(({ payload }) => from(authService.requestAccount(payload.payload)).pipe(
+          mapResponse({
+            next: (response) => AuthEvents.requestAccountSuccess({ user: response }),
+            error: (error: unknown) => {
+              const errorResponse = error as HttpErrorResponse;
+              const message = getHttpErrorMessage(errorResponse);
+              return AuthEvents.requestAccountFailure({
+                status_code: errorResponse.status,
+                message,
+              });
+            },
+          })
+        ))
+      ),
+      requestAccountSuccess$: events.on(AuthEvents.requestAccountSuccess).pipe(
+        tap(() => {
+          router.navigate([AUTH_REQUEST_ACCOUNT_SUCCESS_PATH]);
+        })
+      ),
+      requestAccountFailure$: events.on(AuthEvents.requestAccountFailure).pipe(
+        tap(({ payload }) => {
+          snackBar.open(payload.message, "Close", { duration: 6000 });
+        })
+      )
     })
   )
 );

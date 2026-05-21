@@ -1,4 +1,4 @@
-import { AuthErrorResponse, EmailLogin, EmailLoginResponse, PatchPassword } from "@/app/types/auth/auth.types";
+import { AuthErrorResponse, EmailLogin, EmailLoginResponse, PatchPassword, PostRequestAccount } from "@/app/types/auth/auth.types";
 import { GetUser, PatchUser } from "@/app/types/users/users.type";
 import { type } from "@ngrx/signals";
 import { eventGroup } from "@ngrx/signals/events";
@@ -21,6 +21,10 @@ export const AuthEvents = eventGroup({
     updatePassword: type<{ payload: PatchPassword }>(),
     updatePasswordSuccess: type<{ success: boolean }>(),
     updatePasswordFailure: type<AuthErrorResponse>(),
+
+    requestAccount: type<{ payload: PostRequestAccount }>(),
+    requestAccountSuccess: type<{ user: GetUser }>(),
+    requestAccountFailure: type<AuthErrorResponse>(),
 
     setUser: type<{ user: GetUser }>(),
   },
