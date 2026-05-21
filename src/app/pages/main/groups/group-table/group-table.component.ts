@@ -42,9 +42,16 @@ export class GroupTableComponent {
  protected readonly displayedColumns: string[] = [
     'name',
     'description',
+    'createdBy',
     'actions',
   ];
   protected readonly loadingRowColumns: string[] = ['loading'];
+
+  public getInitials(firstname?: string, lastname?: string): string {
+    const firstInitial = firstname?.charAt(0) || '';
+    const lastInitial = lastname?.charAt(0) || '';
+    return `${firstInitial}${lastInitial}`.toUpperCase() || '?';
+  }
 
   public readonly loading = computed(() => this.groupsStore.loading());
   public readonly pagination = computed(() => this.groupsStore.pagination());

@@ -34,6 +34,13 @@
       </div>
     }
 
+    @if (user()?.workspace_id) {
+      <div class="group-form__checkbox">
+        <mat-checkbox [formField]="groupForm.shareToWorkspace" color="primary">
+          Share this to Workspace
+        </mat-checkbox>
+      </div>
+    }
   </div>
 
   <div class="group-form__actions">

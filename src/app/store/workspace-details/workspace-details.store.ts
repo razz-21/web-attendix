@@ -12,13 +12,17 @@ import { ConfirmationDialogService } from "@/app/services/confirmation-dialog.se
 import { Router } from "@angular/router";
 import { MAIN_WORKSPACES_PATH } from "@/app/constants/route.constant";
 import { UsersService } from "@/app/services/users.service";
+import { GroupsService } from "@/app/services/groups.service";
+import { GetGroup } from "@/app/types/groups/groups.type";
 
 type WorkspaceDetailsState = {
   workspace: GetWorkspace | null;
   users: GetUser[];
-  searchedUsers: GetPaginatedUsers
+  searchedUsers: GetPaginatedUsers;
+  groups: GetGroup[];
   loading: boolean;
   loadingUsers: boolean;
+  loadingGroups: boolean;
   updateLoading: boolean;
   deleteLoading: boolean;
   deletingWorkspaceUserLoading: boolean;
@@ -36,8 +40,10 @@ const initialState: WorkspaceDetailsState = {
     page: 1,
     limit: 15,
   },
+  groups: [],
   loading: false,
   loadingUsers: false,
+  loadingGroups: false,
   updateLoading: false,
   deleteLoading: false,
   deletingWorkspaceUserLoading: false,
@@ -81,6 +87,23 @@ export const WorkspaceDetailsStore = signalStore(
     on(WorkspaceDetailsEvents.loadWorkspaceUsersFailure, (event, state) => ({
       ...state,
       loadingUsers: false,
+      error: event.payload,
+    })),
+
+    on(WorkspaceDetailsEvents.loadWorkspaceGroups, (_, state) => ({
+      ...state,
+      loadingGroups: true,
+      error: null,
+    })),
+    on(WorkspaceDetailsEvents.loadWorkspaceGroupsSuccess, ({ payload }, state) => ({
+      ...state,
+      groups: payload.groups,
+      loadingGroups: false,
+      error: null,
+    })),
+    on(WorkspaceDetailsEvents.loadWorkspaceGroupsFailure, (event, state) => ({
+      ...state,
+      loadingGroups: false,
       error: event.payload,
     })),
 
@@ -181,6 +204,7 @@ export const WorkspaceDetailsStore = signalStore(
       router = inject(Router),
       workspaceDetailsService = inject(WorkspacesService),
       usersService = inject(UsersService),
+      groupsService = inject(GroupsService),
       confirmationDialogService = inject(ConfirmationDialogService),
     ) => ({
       loadWorkspaceDetails$: events.on(WorkspaceDetailsEvents.loadWorkspaceDetails).pipe(
@@ -206,6 +230,20 @@ export const WorkspaceDetailsStore = signalStore(
         ))
       ),
       loadWorkspaceUsersFailure$: events.on(WorkspaceDetailsEvents.loadWorkspaceUsersFailure).pipe(
+        map(({ payload }) => {
+          snackBar.open(payload, "Close", { duration: 6000 });
+        })
+      ),
+
+      loadWorkspaceGroups$: events.on(WorkspaceDetailsEvents.loadWorkspaceGroups).pipe(
+        exhaustMap(({ payload }) => from(groupsService.getPaginatedGroups(1, 100, '', payload.id)).pipe(
+          mapResponse({
+            next: (response) => WorkspaceDetailsEvents.loadWorkspaceGroupsSuccess({ groups: response.data }),
+            error: (error: unknown) => WorkspaceDetailsEvents.loadWorkspaceGroupsFailure(error instanceof Error ? error.message : 'Failed to load workspace groups'),
+          })
+        ))
+      ),
+      loadWorkspaceGroupsFailure$: events.on(WorkspaceDetailsEvents.loadWorkspaceGroupsFailure).pipe(
         map(({ payload }) => {
           snackBar.open(payload, "Close", { duration: 6000 });
         })

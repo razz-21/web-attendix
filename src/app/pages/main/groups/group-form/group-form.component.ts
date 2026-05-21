@@ -16,12 +16,14 @@ export interface GroupFormModel {
   name: string;
   description: string;
   share_to_workspace: boolean;
+  shareToWorkspace: boolean;
 }
 
 const emptyModel = (): GroupFormModel => ({
   name: '',
   description: '',
   share_to_workspace: false,
+  shareToWorkspace: true,
 });
 
 @Component({
