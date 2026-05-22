@@ -60,4 +60,10 @@ export class WorkspacesService {
       })
     )
   }
+
+  public async selectWorkspace(workspaceId: string): Promise<void> {
+    return lastValueFrom(
+      this.http.patch<void>(`${this.workspacesApi}/select`, { workspace_id: workspaceId })
+    );
+  }
 }

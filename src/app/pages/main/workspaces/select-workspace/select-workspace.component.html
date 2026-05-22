@@ -1,0 +1,26 @@
+<div class="select-workspace-page">
+  @if (workspaces().length > 0) {
+    <h1>Welcome, {{ user()?.firstname }} {{ user()?.lastname }}!</h1>
+    <p>Please select your workspace to continue. Your workspace determines the groups, attendances, and resources available to your account.</p>
+
+    <div class="workspace-list">
+      @for (workspace of workspaces(); track workspace.id) {
+        <div
+          class="workspace-card"
+          [class.selected]="selectedWorkspaceId() === workspace.id"
+          (click)="selectWorkspace(workspace.id)"
+        >
+          <h3>{{ workspace.name }}</h3>
+          <p>{{ workspace.description ?? '—' }}</p>
+        </div>
+      }
+    </div>
+
+    <div class="workspace-actions">
+      <button mat-stroked-button (click)="skip()">Skip</button>
+      <button mat-flat-button color="primary" [disabled]="!selectedWorkspaceId() || loading()" (click)="confirm()">
+        Continue
+      </button>
+    </div>
+  }
+</div>
