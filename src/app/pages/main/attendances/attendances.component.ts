@@ -13,6 +13,7 @@ import { AttendancesStore } from '@/app/store/attendances/attendances.store';
 import { AttendancesEvents } from '@/app/store/attendances/attendances.events';
 import { AuthService } from '@/app/services/auth.service';
 import { ConfirmationDialogService } from '@/app/services/confirmation-dialog.service';
+import { AuthStore } from '@/app/store/auth/auth.store';
 import { SCHEDULE_DAY_MAP } from '@/app/constants/schedule-days.constant';
 import { AttendanceScheduleDays, PostAttendance, GetAttendance, AttendanceStatus } from '@/app/types/attendaces/attendances.types';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -38,6 +39,7 @@ export class AttendancesComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly confirmationDialogService = inject(ConfirmationDialogService);
   private readonly attendancesStore = inject(AttendancesStore);
+  private readonly authStore = inject(AuthStore);
 
   public readonly statusFilter = model<AttendanceStatus>('active');
 
@@ -55,6 +57,7 @@ export class AttendancesComponent implements OnInit {
       description: attendance.description ?? '',
       lateThreshold: attendance.late_threshold,
       createdAt: attendance.created_at,
+      createdBy: attendance.created_by.id,
     }))
   );
 

@@ -8,6 +8,7 @@ import { LoadingSectionComponent } from "@/app/compponents/loading-section/loadi
 import { AttendanceStatus } from '@/app/types/attendaces/attendances.types';
 import { MAIN_ATTENDANCE_DETAILS_PATH } from '@/app/constants/route.constant';
 import { Router } from '@angular/router';
+import { AuthStore } from '@/app/store/auth/auth.store';
 
 export interface Attendance {
   id: string;
@@ -18,6 +19,7 @@ export interface Attendance {
   description: string;
   lateThreshold: number;
   createdAt: string;
+  createdBy: string;
 }
 
 @Component({
@@ -36,6 +38,7 @@ export interface Attendance {
 })
 export class AttendanceTableComponent {
   private readonly router = inject(Router);
+  private readonly authStore = inject(AuthStore);
 
   public readonly attendances = input<Attendance[]>([]);
   public readonly loading = input<boolean>(false);
@@ -44,6 +47,13 @@ export class AttendanceTableComponent {
   public readonly attendanceSetAsActive = output<string>();
 
   public readonly hasAttendances = computed(() => this.attendances().length > 0);
+  public readonly currentUser = computed(() => this.authStore.user());
+
+  public canManage(attendance: Attendance): boolean {
+    const user = this.currentUser();
+    if (!user) return false;
+    return attendance.createdBy === user.id;
+  }
 
   public onEditAttendance(attendance: Attendance): void {
     if (attendance.status === 'archived') {
