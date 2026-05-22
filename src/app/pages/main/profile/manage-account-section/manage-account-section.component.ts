@@ -16,6 +16,8 @@ import { AuthEvents } from "@/app/store/auth/auth.events";
 import { PatchPassword } from "@/app/types/auth/auth.types";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import { map, pipe, tap } from "rxjs";
+import { WorkspacesService } from "@/app/services/workspaces.service";
+import { OnInit } from "@angular/core";
 
 interface PasswordModel {
   currentPassword: string;
@@ -40,10 +42,26 @@ interface PasswordModel {
     TextTransformToReadablePipe
   ]
 })
-export class ManageAccountSectionComponent {
+export class ManageAccountSectionComponent implements OnInit {
   private readonly authStore = inject(AuthStore);
   private readonly dispatcher = inject(Dispatcher);
   private readonly events = inject(Events);
+  private readonly workspacesService = inject(WorkspacesService);
+
+  public readonly workspaceName = signal<string | null | undefined>(undefined);
+
+  ngOnInit(): void {
+    const workspaceId = this.authStore.user()?.workspace_id;
+    if (workspaceId) {
+      this.workspacesService.getWorkspaceById(workspaceId).then((workspace) => {
+        this.workspaceName.set(workspace.name);
+      }).catch(() => {
+        this.workspaceName.set('Unknown Workspace');
+      });
+    } else {
+      this.workspaceName.set(null);
+    }
+  }
 
   private readonly emptyPasswordModel = (): PasswordModel => ({
     currentPassword: '',
