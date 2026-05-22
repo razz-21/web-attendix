@@ -4,7 +4,7 @@
     <span class="mat-title-medium">WebAttendix</span>
   </div>
   <mat-nav-list>
-    @for (route of allRoutes; track route.path) {
+    @for (route of routes(); track route.path) {
       <a mat-list-item class="main-sidebar-item" [routerLink]="route.path" [routerLinkActive]="'main-sidebar-item--active'">
         <mat-icon matListItemIcon size="small">{{ route.icon }}</mat-icon>
         <span matListItemTitle>{{ route.label }}</span>

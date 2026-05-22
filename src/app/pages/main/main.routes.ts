@@ -13,11 +13,13 @@ import { WorkspaceDetailsComponent } from "./workspace-details/workspace-details
 import { AttendanceDetailsComponent } from "./attendance-details/attendance-details.component";
 import { HomeComponent } from "./home/home.component";
 import { roleGuard } from '@/app/guards/role.guard';
+import { workspaceGuard } from "@/app/guards/workspace.guard";
 
 export const mainRoutes: Routes = [
   {
     path: 'main',
     component: MainComponent,
+    canActivate: [workspaceGuard],
     children: [
       // {
       //   path: 'dashboard',
