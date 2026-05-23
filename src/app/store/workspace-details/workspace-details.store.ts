@@ -194,6 +194,8 @@ export const WorkspaceDetailsStore = signalStore(
       deleteLoading: false,
       error: event.payload,
     })),
+
+    on(WorkspaceDetailsEvents.resetStore, () => ({ ...initialState })),
   ),
 
   withEventHandlers(

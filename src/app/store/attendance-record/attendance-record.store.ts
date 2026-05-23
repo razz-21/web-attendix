@@ -2,7 +2,7 @@ import { GetAttendanceRecord } from "@/app/types/attendance-record/attendance-re
 import { patchState, signalStore, withComputed, withMethods, withState } from "@ngrx/signals";
 import { Events, on, withEventHandlers, withReducer } from "@ngrx/signals/events";
 import { AttendanceRecordEvents } from "./attendance-record.events";
-import { withEntities, setAllEntities, prependEntity, addEntity, setEntity } from "@ngrx/signals/entities";
+import { withEntities, setAllEntities, prependEntity, removeAllEntities, setEntity } from "@ngrx/signals/entities";
 import { exhaustMap, from, map } from "rxjs";
 import { inject } from "@angular/core";
 import { AttendanceRecordService } from "@/app/services/attendance-record.service";
@@ -110,6 +110,8 @@ export const AttendanceRecordStore = signalStore(
       updateLoading: false,
       error: event.payload,
     })),
+
+    on(AttendanceRecordEvents.resetStore, () => [removeAllEntities(), initialState]),
   ),
   withEventHandlers(
     (

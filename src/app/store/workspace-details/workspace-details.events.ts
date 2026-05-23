@@ -38,5 +38,7 @@ export const WorkspaceDetailsEvents = eventGroup({
     updateWorkspace: type<{ id: string; workspace: PatchWorkspace }>(),
     updateWorkspaceSuccess: type<{ workspace: GetWorkspace }>(),
     updateWorkspaceFailure: type<string>(),
+
+    resetStore: type<void>(),
   },
 });

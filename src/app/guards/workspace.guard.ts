@@ -5,7 +5,7 @@ import { AuthStore } from '@/app/store/auth/auth.store';
 export const workspaceGuard: CanActivateFn = () => {
   const authStore = inject(AuthStore);
   const router = inject(Router);
-  const user = authStore.user();
+  const user = authStore.user(); 
 
   if (!user) {
     router.navigate(['/auth/login']);

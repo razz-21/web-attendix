@@ -7,6 +7,7 @@ import { inject } from "@angular/core";
 import { exhaustMap, from, map, tap } from "rxjs";
 import { mapResponse } from "@ngrx/operators";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { removeAllEntities } from "@ngrx/signals/entities";
 
 type AttendanceDetailsState = {
   attendanceDetails: GetAttendance | null;
@@ -75,6 +76,8 @@ export const AttendanceDetailsStore = signalStore(
       deleteLoading: false,
       error: event.payload,
     })),
+
+    on(AttendanceDetailsEvents.resetStore, () => ({ ...initialState })),
   ),
   withEventHandlers(
     (

@@ -90,7 +90,6 @@ export class AttendancesComponent implements OnInit {
     try {
       const user = await this.authService.getMe();
       this.currentUserId = user.id;
-      // Load attendances from store
       this.dispatcher.dispatch(AttendancesEvents.loadAttendances());
     } catch (error) {
       console.error('Failed to load user:', error);

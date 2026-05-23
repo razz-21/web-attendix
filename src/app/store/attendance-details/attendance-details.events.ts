@@ -16,5 +16,7 @@ export const AttendanceDetailsEvents = eventGroup({
     deleteAttendanceDetails: type<{ id: string }>(),
     deleteAttendanceDetailsSuccess: type<void>(),
     deleteAttendanceDetailsFailure: type<string>(),
+
+    resetStore: type<void>(),
   },
 });

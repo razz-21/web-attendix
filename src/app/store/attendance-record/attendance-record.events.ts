@@ -16,5 +16,7 @@ export const AttendanceRecordEvents = eventGroup({
     updateAttendanceRecord: type<{ attendances_id: string; id: string; payload: PatchAttendanceRecord }>(),
     updateAttendanceRecordSuccess: type<GetAttendanceRecord>(),
     updateAttendanceRecordFailure: type<string>(),
+
+    resetStore: type<void>(),
   },
 });

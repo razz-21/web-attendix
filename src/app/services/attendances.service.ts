@@ -17,23 +17,11 @@ export class AttendancesService {
     if (params.q) queryParams.set('q', params.q);
     if (params.status) queryParams.set('status', params.status);
     
-    const cacheKey = queryParams.toString();
-    
-    // Return cached promise if exists
-    if (this.attendancesCache.has(cacheKey)) {
-      return this.attendancesCache.get(cacheKey)!;
-    }
-    
-    const promise = lastValueFrom(
+    return lastValueFrom(
       this.http.get<GetAttendance[]>(
-        `${this.attendancesApi}?${cacheKey}`
-      ).pipe(
-        shareReplay(1) // Cache the HTTP response for concurrent requests
+        `${this.attendancesApi}?${queryParams.toString()}`
       )
     );
-    
-    this.attendancesCache.set(cacheKey, promise);
-    return promise;
   }
 
   public getAttendanceById(id: string): Promise<GetAttendance> {

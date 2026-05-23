@@ -6,7 +6,6 @@ export const AttendancesEvents = eventGroup({
   source: 'Attendances Page',
   events: {
     loadAttendances: type<void>(),
-    loadAttendancesFromCache: type<void>(),
     loadAttendancesSuccess: type<GetAttendance[]>(),
     loadAttendancesFailure: type<string>(),
 
@@ -37,5 +36,7 @@ export const AttendancesEvents = eventGroup({
     deleteAttendance: type<GetAttendance>(),
     deleteAttendanceSuccess: type<GetAttendance>(),
     deleteAttendanceFailure: type<{ error: string, attendance: GetAttendance }>(),
+
+    resetStore: type<void>(),
   },
 });

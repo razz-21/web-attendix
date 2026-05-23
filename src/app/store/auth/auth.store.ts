@@ -170,7 +170,6 @@ export const AuthStore = signalStore(
       ),
       emailLoginFailure$: events.on(AuthEvents.emailLoginFailure).pipe(
         tap(({ payload }) => {
-          console.log(payload);
           if (payload.status_code !== 401) {
             snackBar.open(payload.message, "Close", { duration: 6000 });
           }
@@ -248,7 +247,7 @@ export const AuthStore = signalStore(
               const message = getHttpErrorMessage(errorResponse);
               return AuthEvents.logoutFailure({ message });
             },
-          })
+          }),
         ))))
       ),
       logoutSuccess$: events.on(AuthEvents.logoutSuccess).pipe(
