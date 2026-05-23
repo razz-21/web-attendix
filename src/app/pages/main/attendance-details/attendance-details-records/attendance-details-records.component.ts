@@ -1,11 +1,5 @@
 import { DatePipe, NgClass } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal, } from '@angular/core';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -19,21 +13,16 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDialog } from '@angular/material/dialog';
 import { Dispatcher } from '@ngrx/signals/events';
 import { AttendanceAttendeeStore } from '@/app/store/attendance-attendee/attendance-attendee.store';
-import {
-  AttendanceRecordStore,
-  AttendanceRecordViewMode,
-} from '@/app/store/attendance-record/attendance-record.store';
+import { AttendanceRecordStore, AttendanceRecordViewMode, } from '@/app/store/attendance-record/attendance-record.store';
 import { AttendanceStore } from '@/app/store/attendance/attendance.store';
 import { AttendanceDetailsStore } from '@/app/store/attendance-details/attendance-details.store';
 import { AttendanceRecordEvents } from '@/app/store/attendance-record/attendance-record.events';
-import {
-  AttendanceRecordStatus,
-  GetAttendanceRecord,
-} from '@/app/types/attendance-record/attendance-record.types';
+import { AttendanceRecordStatus, GetAttendanceRecord } from '@/app/types/attendance-record/attendance-record.types';
 import { AttendanceConfigurations } from '@/app/types/attendaces/attendances.types';
 import { GetAttendee } from '@/app/types/attendaces/attendees.types';
 import { GetAttendance } from '@/app/types/attendance/attendance.types';
 import { ExcusedReasonModalComponent } from '../attendance-details-attendances/attendance-drawer/excused-reason-modal/excused-reason-modal.component';
+import { AttendancesService } from '@/app/services/attendances.service';
 
 const STATUS_LABELS: Record<AttendanceRecordStatus, string> = {
   present: 'Present',
@@ -93,6 +82,7 @@ export class AttendanceDetailsRecordsComponent {
   private readonly attendanceDetailsStore = inject(AttendanceDetailsStore);
   private readonly dispatcher = inject(Dispatcher);
   private readonly dialog = inject(MatDialog);
+  private readonly attendancesService = inject(AttendancesService);
 
   protected readonly statusLabels = STATUS_LABELS;
   protected readonly statusOptions = STATUS_OPTIONS;
@@ -335,4 +325,42 @@ export class AttendanceDetailsRecordsComponent {
       },
     });
   }
+  
+  protected exportCsv(): void {
+    const isPoints = this.viewMode() === 'points';
+
+    const headers = ['Attendee', 'Total', 'Avg'];
+    for (const attendance of this.attendances()) {
+      headers.push(attendance.attendance_date);
+    }
+
+    const rows = [];
+    for (const attendee of this.attendees()) {
+      const total = this.formatPoints(this.getAttendeeTotalPoints(attendee.id));
+      const avg = this.formatAttendancePercent(this.getAttendeeAverageAttendance(attendee.id));
+
+      const row = [attendee.name, total, avg];
+
+      for (const attendance of this.attendances()) {
+        if (isPoints) {
+          const points = this.formatPoints(this.getRecordPointsValue(attendee.id, attendance.id));
+          row.push(points);
+        } else {
+          const status = this.getRecordStatus(attendee.id, attendance.id) ?? '';
+          row.push(status);
+        }
+      }
+
+      rows.push(row.join(','));
+    }
+
+    const csv = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'attendance-records.csv';
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
+
 }
