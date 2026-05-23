@@ -37,6 +37,12 @@
     }
     </div>
 
+    <div class="records-header-actions">
+    <button mat-stroked-button type="button" (click)="exportCsv()">
+      <mat-icon>download</mat-icon>
+      Export CSV
+    </button>
+
     <mat-button-toggle-group
       class="records-view-toggle"
       [value]="viewMode()"
