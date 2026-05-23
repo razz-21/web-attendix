@@ -8,6 +8,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
+import { sortScheduleDays } from '@/app/constants/schedule-days.constant';
+
 const SCHEDULE_DAYS = [
   'Monday',
   'Tuesday',
@@ -122,7 +124,7 @@ export class AttendanceFormComponent {
     const updated = current.includes(day)
       ? current.filter(d => d !== day)
       : [...current, day];
-    this.model.update(m => ({ ...m, scheduleDays: updated }));
+    this.model.update(m => ({ ...m, scheduleDays: sortScheduleDays(updated) }));
   }
 
   public isScheduleDaySelected(day: string): boolean {
