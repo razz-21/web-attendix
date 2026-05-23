@@ -23,6 +23,19 @@
 </form>
 
 <div class="title">
+  Workspace
+</div>
+<mat-form-field class="full-width">
+  <mat-label>Workspace</mat-label>
+  <input
+    matInput
+    [value]="workspaceName() === undefined ? 'Loading...' : (workspaceName() || 'No Workspace Selected')"
+    disabled
+  />
+  <mat-hint>To change the workspace, please contact the administrator.</mat-hint>
+</mat-form-field>
+
+<div class="title">
   Password
 </div>
 <form class="password-form" [formRoot]="passwordForm">
