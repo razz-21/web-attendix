@@ -58,6 +58,14 @@ export class AttendanceDetailsAnalysisComponent implements AfterViewInit, OnDest
     const sessions = this.attendanceStore.records(); 
     const attendanceIds = [...new Set(records.map(r => r.attendance_id))];
 
+    attendanceIds.sort((a, b) => {
+      const sessionA = sessions.find(s => s.id === a);
+      const sessionB = sessions.find(s => s.id === b);
+      const dateA = sessionA?.attendance_date ?? '';
+      const dateB = sessionB?.attendance_date ?? '';
+      return dateA.localeCompare(dateB);
+    });
+
     const labels = attendanceIds.map(id => {
       const session = sessions.find(s => s.id === id);
       if (!session?.attendance_date) return `Session`;
