@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, inject, signal, computed } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -35,15 +36,37 @@ export class ImportAttendeesFormComponent implements OnInit {
     group_id: ['', [Validators.required]],
   });
 
+  private readonly selectedGroupId = toSignal(this.form.controls.group_id.valueChanges, {
+    initialValue: this.form.controls.group_id.value,
+  });
+
+  public readonly selectedGroup = computed(() => {
+    return this.groups().find((g) => g.id === this.selectedGroupId());
+  });
+
   public async ngOnInit(): Promise<void> {
     try {
       this.isLoadingGroups.set(true);
-      const response = await this.groupsService.getPaginatedGroups(1, 1000);
-      this.groups.set(response.data || []);
+      await this.refreshGroups();
     } catch (error) {
       console.error('Failed to load groups', error);
     } finally {
       this.isLoadingGroups.set(false);
+    }
+  }
+
+  public onDropdownOpened(isOpen: boolean): void {
+    if (isOpen) {
+      this.refreshGroups();
+    }
+  }
+
+  private async refreshGroups(): Promise<void> {
+    try {
+      const response = await this.groupsService.getPaginatedGroups(1, 1000);
+      this.groups.set(response.data || []);
+    } catch (error) {
+      console.error('Failed to refresh groups', error);
     }
   }
 
