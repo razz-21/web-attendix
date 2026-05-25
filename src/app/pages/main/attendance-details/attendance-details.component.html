@@ -15,7 +15,7 @@
           </div>
           <p>{{ attendanceDetails()?.description }}</p>
           <div class="attendance-details-page-header-title-days">
-            @for (day of attendanceDetails()?.schedule_days; track day) {
+            @for (day of sortedScheduleDays(); track day) {
               <span>{{ day | titlecase }}</span>
             }
           </div>

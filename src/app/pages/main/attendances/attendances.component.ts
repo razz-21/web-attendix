@@ -14,7 +14,7 @@ import { AttendancesEvents } from '@/app/store/attendances/attendances.events';
 import { AuthService } from '@/app/services/auth.service';
 import { ConfirmationDialogService } from '@/app/services/confirmation-dialog.service';
 import { AuthStore } from '@/app/store/auth/auth.store';
-import { SCHEDULE_DAY_MAP } from '@/app/constants/schedule-days.constant';
+import { SCHEDULE_DAY_MAP, sortScheduleDays } from '@/app/constants/schedule-days.constant';
 import { AttendanceScheduleDays, PostAttendance, GetAttendance, AttendanceStatus } from '@/app/types/attendaces/attendances.types';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -140,7 +140,8 @@ export class AttendancesComponent implements OnInit {
   }
 
   private backendDaysToFrontendDays(days: string[]): string[] {
-    return days.map(day => SCHEDULE_DAY_MAP[day] || day);
+    const frontendDays = days.map(day => SCHEDULE_DAY_MAP[day] || day);
+    return sortScheduleDays(frontendDays);
   }
 
   public async onArchiveAttendance(attendanceId: string): Promise<void> {

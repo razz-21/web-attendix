@@ -11,7 +11,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { Dispatcher, Events } from "@ngrx/signals/events";
 import { computed } from "@angular/core";
 import { AttendanceFormModalComponent } from "../attendances/attendance-form-modal/attendance-form-modal.component";
-import { SCHEDULE_DAY_MAP } from "@/app/constants/schedule-days.constant";
+import { SCHEDULE_DAY_MAP, sortScheduleDays } from "@/app/constants/schedule-days.constant";
 import { AttendanceScheduleDays } from "@/app/types/attendaces/attendances.types";
 import { AttendanceDetailsStore } from "@/app/store/attendance-details/attendance-details.store";
 import { AttendanceDetailsEvents } from "@/app/store/attendance-details/attendance-details.events";
@@ -59,6 +59,11 @@ export class AttendanceDetailsComponent implements OnInit {
   
   public attendanceDetails = computed(() => this.attendanceDetailsStore.attendanceDetails());
 
+  public sortedScheduleDays = computed(() => {
+    const days = this.attendanceDetails()?.schedule_days || [];
+    return sortScheduleDays([...days]);
+  });
+
   public loading = computed(() => this.attendanceDetailsStore.loading());
 
   public isArchived = computed(() => this.attendanceDetails()?.status === 'archived');
@@ -98,10 +103,10 @@ export class AttendanceDetailsComponent implements OnInit {
     if (!attendance) return;
 
     // Convert backend schedule days to frontend representation
-    const frontendDays = attendance.schedule_days.map(d => {
+    const frontendDays = sortScheduleDays(attendance.schedule_days.map(d => {
       const entry = Object.entries(SCHEDULE_DAY_MAP).find(([, value]) => value === d);
       return entry ? entry[0] : d;
-    });
+    }));
 
     const initialData = {
       name: attendance.name,
