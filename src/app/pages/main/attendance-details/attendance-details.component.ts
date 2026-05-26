@@ -154,6 +154,22 @@ export class AttendanceDetailsComponent implements OnInit {
     }
   }
 
+  public async archiveAttendance(): Promise<void> {
+    const attendance = this.attendanceDetails();
+    if (!attendance || attendance.status === 'archived') return;
+
+    const confirmed = await this.confirmationDialogService.confirm({
+      title: 'Archive Attendance',
+      message: `Are you sure you want to archive <strong>${attendance.name}</strong>? This attendance will move to the archived list and will not be visible to the users.`,
+      positiveButtonText: 'Archive',
+      negativeButtonText: 'Cancel'
+    });
+
+    if (confirmed) {
+      this.dispatcher.dispatch(AttendanceDetailsEvents.updateAttendanceDetails({ id: attendance.id, payload: { status: 'archived' } }));
+    }
+  }
+
   public async reactivateAttendance(): Promise<void> {
     const attendance = this.attendanceDetails();
     if (!attendance || attendance.status !== 'archived') return;
