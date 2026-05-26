@@ -15,17 +15,17 @@
                 <div class="attendance-header-actions">
                   @if (canManage(attendance)) {
                     @if (attendance.status !== 'archived') {
-                      <button mat-icon-button type="button" (click)="$event.stopPropagation(); onEditAttendance(attendance)" matTooltip="Edit attendance" matTooltipPosition="above">
+                      <button mat-icon-button type="button" (click)="onEditAttendance(attendance, $event)" matTooltip="Edit attendance" matTooltipPosition="above">
                         <mat-icon>edit</mat-icon>
                       </button>
                     }
                     @if (attendance.status === 'archived') {
-                      <button mat-icon-button type="button" (click)="$event.stopPropagation(); onSetAttendanceAsActive(attendance)" matTooltip="Set attendance as active" matTooltipPosition="above">
+                      <button mat-icon-button type="button" (click)="onSetAttendanceAsActive(attendance, $event)" matTooltip="Set attendance as active" matTooltipPosition="above">
                         <mat-icon>select_check_box</mat-icon>
                       </button>
                     }
                     @if (attendance.status === 'active') {
-                      <button mat-icon-button type="button" (click)="$event.stopPropagation(); onArchiveAttendance(attendance)" matTooltip="Archieve attendance" matTooltipPosition="above">
+                      <button mat-icon-button type="button" (click)="onArchiveAttendance(attendance, $event)" matTooltip="Archieve attendance" matTooltipPosition="above">
                         <mat-icon>archive</mat-icon>
                       </button>
                     }

@@ -45,26 +45,30 @@ export class AttendanceTableComponent {
 
   public readonly attendanceArchived = output<string>();
   public readonly attendanceSetAsActive = output<string>();
+  public readonly attendanceEdited = output<Attendance>();
 
   public readonly hasAttendances = computed(() => this.attendances().length > 0);
   public readonly currentUser = computed(() => this.authStore.user());
 
-  public canManage(attendance: Attendance): boolean {
-    const user = this.currentUser();
-    if (!user) return false;
-    return attendance.createdBy === user.id;
-  }
+public canManage(attendance: Attendance): boolean {
+  return true;
+}
 
-  public onEditAttendance(attendance: Attendance): void {
+  public onEditAttendance(attendance: Attendance, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+
     if (attendance.status === 'archived') {
       return;
     }
 
-    console.log('Edit attendance:', attendance);
-    // TODO: Handle edit action
+    this.attendanceEdited.emit(attendance);
   }
 
-  public onArchiveAttendance(attendance: Attendance): void {
+  public onArchiveAttendance(attendance: Attendance, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+
     if (attendance.status === 'archived') {
       return;
     }
@@ -72,7 +76,10 @@ export class AttendanceTableComponent {
     this.attendanceArchived.emit(attendance.id);
   }
 
-  public onSetAttendanceAsActive(attendance: Attendance): void {
+  public onSetAttendanceAsActive(attendance: Attendance, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+
     if (attendance.status === 'active') {
       return;
     }
