@@ -17,6 +17,7 @@ export const GetGroupSchema = GroupSchema.extend({
     lastname: z.string(),
     avatar: z.string().optional().nullable(),
   }).optional(),
+  member_count: z.number().optional(),
 });
 export const GetPaginatedGroupParamsSchema = z.object({
   page: z.number().optional(),
