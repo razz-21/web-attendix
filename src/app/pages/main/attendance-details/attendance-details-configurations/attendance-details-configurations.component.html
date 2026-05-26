@@ -11,7 +11,7 @@
           type="number"
           min="0"
           [ngModel]="formData().late_threshold"
-          (ngModelChange)="formData.update(data => ({ ...data, late_threshold: $event }))"
+          (ngModelChange)="formData.update(data => ({ ...data, late_threshold: $event !== null && $event < 0 ? 0 : $event }))"
         />
 
         <mat-hint> Number of minutes after start time before marked as late </mat-hint>
@@ -39,8 +39,9 @@
         <input
           matInput
           type="number"
+          min="0"
           [ngModel]="formData().present_point"
-          (ngModelChange)="formData.update(data => ({ ...data, present_point: $event }))"
+          (ngModelChange)="formData.update(data => ({ ...data, present_point: $event !== null && $event < 0 ? 0 : $event }))"
         />
       </mat-form-field>
 
@@ -50,8 +51,9 @@
         <input
           matInput
           type="number"
+          min="0"
           [ngModel]="formData().late_point"
-          (ngModelChange)="formData.update(data => ({ ...data, late_point: $event }))"
+          (ngModelChange)="formData.update(data => ({ ...data, late_point: $event !== null && $event < 0 ? 0 : $event }))"
         />
       </mat-form-field>
 
@@ -61,8 +63,9 @@
         <input
           matInput
           type="number"
+          min="0"
           [ngModel]="formData().absent_point"
-          (ngModelChange)="formData.update(data => ({ ...data, absent_point: $event }))"
+          (ngModelChange)="formData.update(data => ({ ...data, absent_point: $event !== null && $event < 0 ? 0 : $event }))"
         />
       </mat-form-field>
 
@@ -72,8 +75,9 @@
         <input
           matInput
           type="number"
+          min="0"
           [ngModel]="formData().excused_point"
-          (ngModelChange)="formData.update(data => ({ ...data, excused_point: $event }))"
+          (ngModelChange)="formData.update(data => ({ ...data, excused_point: $event !== null && $event < 0 ? 0 : $event }))"
         />
       </mat-form-field>
     </div>
