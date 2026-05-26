@@ -15,7 +15,7 @@ import { AuthService } from '@/app/services/auth.service';
 import { ConfirmationDialogService } from '@/app/services/confirmation-dialog.service';
 import { AuthStore } from '@/app/store/auth/auth.store';
 import { SCHEDULE_DAY_MAP, sortScheduleDays } from '@/app/constants/schedule-days.constant';
-import { AttendanceScheduleDays, PostAttendance, GetAttendance, AttendanceStatus } from '@/app/types/attendaces/attendances.types';
+import { AttendanceScheduleDays, PostAttendance, GetAttendance, AttendanceStatus, PatchAttendance } from '@/app/types/attendaces/attendances.types';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
@@ -109,6 +109,53 @@ export class AttendancesComponent implements OnInit {
         this.submitAttendance(data);
       }
     });
+  }
+
+  public onEditAttendance(attendanceData: any): void {
+    const attendanceId = attendanceData.id;
+    const attendance = this.attendancesStore.attendancesMap()[attendanceId];
+    if (!attendance) return;
+
+    const initialData: AttendanceFormModel = {
+      name: attendance.name,
+      code: attendance.code,
+      description: attendance.description || '',
+      lateThreshold: attendance.late_threshold,
+      status: attendance.status === 'archived' ? 'Archived' : 'Active',
+      scheduleDays: this.backendDaysToFrontendDays(attendance.schedule_days) as any
+    };
+
+    const dialogRef = this.dialog.open(AttendanceFormModalComponent, {
+      maxWidth: '620px',
+      width: '100%',
+      height: 'auto',
+      autoFocus: 'first-tabbable',
+      data: { initialData },
+    });
+
+    dialogRef.afterClosed().subscribe((data: AttendanceFormModel | undefined) => {
+      if (data && this.currentUserId) {
+        this.submitEditedAttendance(attendanceId, data);
+      }
+    });
+  }
+
+  private submitEditedAttendance(id: string, formData: AttendanceFormModel): void {
+    if (!this.currentUserId) {
+      console.error('User ID not available');
+      return;
+    }
+
+    const updateData: Partial<PatchAttendance> = {
+      name: formData.name,
+      code: formData.code,
+      schedule_days: formData.scheduleDays.map(day => SCHEDULE_DAY_MAP[day] as AttendanceScheduleDays[number]),
+      description: formData.description,
+      late_threshold: formData.lateThreshold,
+      updated_at: new Date().toISOString(),
+    };
+
+    this.dispatcher.dispatch(AttendancesEvents.updateAttendance({ id, data: updateData }));
   }
 
   private submitAttendance(formData: AttendanceFormModel): void {
