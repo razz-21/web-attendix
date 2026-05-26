@@ -1,0 +1,30 @@
+[1mdiff --git a/src/app/pages/main/attendance-details/attendance-details-attendances/attendance-details-table/attendance-details-table.component.scss b/src/app/pages/main/attendance-details/attendance-details-attendances/attendance-details-table/attendance-details-table.component.scss[m
+[1mindex 7407d92..bee5bbc 100644[m
+[1m--- a/src/app/pages/main/attendance-details/attendance-details-attendances/attendance-details-table/attendance-details-table.component.scss[m
+[1m+++ b/src/app/pages/main/attendance-details/attendance-details-attendances/attendance-details-table/attendance-details-table.component.scss[m
+[36m@@ -7,6 +7,10 @@[m
+ [m
+ .details-table-wrap {[m
+   overflow-x: auto;[m
+[32m+[m[32m  td{[m
+[32m+[m[32m    cursor: pointer;[m
+[32m+[m[41m    [m
+[32m+[m[32m  }[m
+ }[m
+ [m
+ .details-table {[m
+[1mdiff --git a/src/app/pages/main/attendance-details/attendance-details-attendees/attendee-table/attendee-table.component.scss b/src/app/pages/main/attendance-details/attendance-details-attendees/attendee-table/attendee-table.component.scss[m
+[1mindex 5f35833..61e9ad8 100644[m
+[1m--- a/src/app/pages/main/attendance-details/attendance-details-attendees/attendee-table/attendee-table.component.scss[m
+[1m+++ b/src/app/pages/main/attendance-details/attendance-details-attendees/attendee-table/attendee-table.component.scss[m
+[36m@@ -29,6 +29,10 @@[m
+ .attendee-table-wrap {[m
+   width: 100%;[m
+   overflow-x: auto;[m
+[32m+[m[32m  td{[m
+[32m+[m[32m    cursor: pointer;[m
+[32m+[m[41m    [m
+[32m+[m[32m  }[m
+ }[m
+ [m
+ .attendee-table {[m
