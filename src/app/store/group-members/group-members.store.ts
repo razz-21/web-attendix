@@ -93,9 +93,9 @@ export const GroupMembersStore = signalStore(
 
     // Create
     on(GroupMembersEvents.createGroupMember, (_, state) => ({ ...state, loadingForm: true, error: null })),
-    on(GroupMembersEvents.createGroupMemberSuccess, ({ payload }) => [
+    on(GroupMembersEvents.createGroupMemberSuccess, ({ payload }, state) => [
       prependEntity(payload, { selectId }),
-      { loadingForm: false, error: null },
+      { loadingForm: false, error: null, pagination: { ...state.pagination, total: state.pagination.total + 1 } },
     ]),
     on(GroupMembersEvents.createGroupMemberFailure, (event, state) => ({ ...state, loadingForm: false, error: event.payload })),
 
@@ -117,9 +117,9 @@ export const GroupMembersStore = signalStore(
     on(GroupMembersEvents.importGroupMembersFailure, (event, state) => ({ ...state, loadingForm: false, error: event.payload })),
 
     // Delete
-    on(GroupMembersEvents.deleteGroupMember, ({ payload }) => [
+    on(GroupMembersEvents.deleteGroupMember, ({ payload }, state) => [
       removeEntity(payload.member.id),
-      { deleteLoading: true, currentDeleteMember: payload.member, error: null },
+      { deleteLoading: true, currentDeleteMember: payload.member, error: null, pagination: { ...state.pagination, total: state.pagination.total - 1 } },
     ]),
     on(GroupMembersEvents.deleteGroupMemberSuccess, ({ payload }) => [
       removeEntity(payload.member.id),
