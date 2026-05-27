@@ -9,7 +9,11 @@
             <mat-card-header>
               <div class="attendance-card-header-content">
                 <div class="attendance-header-info">
-                  <mat-card-title class="attendance-card-title">{{ attendance.name }}</mat-card-title>
+                  <mat-card-title class="attendance-card-title" matTooltip="{{ attendance.name }}" matTooltipPosition="above">
+                    <span>
+                      {{ attendance.name }}
+                    </span>
+                  </mat-card-title>
                   <mat-card-subtitle>
                     <div class="attendance-code">{{ attendance.code }}</div>
                     @if (attendance.isSharedWithMe) {

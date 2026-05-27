@@ -3,7 +3,6 @@
     @for (user of visibleUsers(); track user.id; let index = $index) {
       <div
         class="stacked-avatar-group__item"
-        [style.z-index]="visibleUsers().length - index"
         [matTooltip]="displayName(user)"
         matTooltipPosition="above"
       >
