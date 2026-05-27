@@ -5,6 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { DatePipe } from '@angular/common';
 import { AuthStore } from '@/app/store/auth/auth.store';
 import { DashboardService } from '@/app/services/dashboard.service';
@@ -21,6 +22,7 @@ import { GetGroup } from '@/app/types/groups/groups.type';
     MatInputModule,
     MatIconModule,
     MatTableModule,
+    MatAutocompleteModule,
     DatePipe,
   ],
 })
@@ -74,5 +76,14 @@ export class HomeComponent implements OnInit {
 
   public goToAttendance(attendance: GetAttendance): void {
     this.router.navigate(['/main/attendances', attendance.id]);
+  }
+
+  public onSelectAttendance(event: any): void {
+    const selected = this.searchResults().find(item => item.name === event.option.value);
+    if (selected) {
+      this.goToAttendance(selected);
+    }
+    this.searchQuery = '';
+    this.searchResults.set([]);
   }
 }
