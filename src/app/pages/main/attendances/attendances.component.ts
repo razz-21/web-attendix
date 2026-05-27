@@ -41,7 +41,7 @@ export class AttendancesComponent implements OnInit {
   private readonly attendancesStore = inject(AttendancesStore);
   private readonly authStore = inject(AuthStore);
 
-  public readonly statusFilter = model<AttendanceStatus>('active');
+  public readonly statusFilter = model<AttendanceStatus>(this.attendancesStore.filters().status ?? 'active');
 
   public readonly searchQuery = model<string>('');
 
@@ -70,6 +70,10 @@ export class AttendancesComponent implements OnInit {
   public readonly loading = computed(() => this.attendancesStore.loading());
 
   public ngOnInit(): void {
+    // Sync the local UI filter signal with the persisted store filter state.
+    // This ensures the filter dropdown reflects the correct status when navigating
+    // back from an attendance details view (e.g., after viewing an archived post).
+    this.statusFilter.set(this.attendancesStore.filters().status ?? 'active');
     this.loadUserAndAttendances();
   }
 
@@ -96,7 +100,18 @@ export class AttendancesComponent implements OnInit {
     try {
       const user = await this.authService.getMe();
       this.currentUserId = user.id;
-      this.dispatcher.dispatch(AttendancesEvents.loadAttendances());
+
+      if (this.attendancesStore.hasAttendances()) {
+        // Entities are already cached in the root-scoped store (e.g., returning from
+        // an attendance details view). `loadAttendances` is guarded to skip when
+        // entities exist, so we explicitly re-fetch using the persisted filter to
+        // keep the list in sync with the UI filter state.
+        this.dispatcher.dispatch(
+          AttendancesEvents.filterAttendances({ status: this.attendancesStore.filters().status ?? 'active' })
+        );
+      } else {
+        this.dispatcher.dispatch(AttendancesEvents.loadAttendances());
+      }
     } catch (error) {
       console.error('Failed to load user:', error);
     }
