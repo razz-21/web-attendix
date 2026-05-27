@@ -254,7 +254,6 @@ export const AttendancesStore = signalStore(
       ),
 
       filterAttendances$: events.on(AttendancesEvents.filterAttendances).pipe(
-        distinctUntilChanged((prev, curr) => prev.payload.status === curr.payload.status),
         exhaustMap(({ payload }) =>
           from(attendancesService.getAttendances({ ...store.filters(), status: payload.status })).pipe(
             mapResponse({
