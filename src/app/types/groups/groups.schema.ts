@@ -5,6 +5,7 @@ export const GroupSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
   workspace_id: z.uuidv4().optional().nullable(),
+  count_members: z.number(),
   created_by: z.uuidv4().optional(),
   created_at: z.string(),
   updated_at: z.string(),
@@ -17,7 +18,6 @@ export const GetGroupSchema = GroupSchema.extend({
     lastname: z.string(),
     avatar: z.string().optional().nullable(),
   }).optional(),
-  member_count: z.number().optional(),
 });
 export const GetPaginatedGroupParamsSchema = z.object({
   page: z.number().optional(),
@@ -31,6 +31,6 @@ export const GetPaginatedGroupsSchema = z.object({
   page: z.number(),
   limit: z.number(),
 });
-export const PostGroupSchema = GroupSchema.omit({ updated_at: true });
+export const PostGroupSchema = GroupSchema.omit({ updated_at: true, count_members: true });
 export const PatchGroupSchema = PostGroupSchema.partial();
 export const DeleteGroupSchema = z.object({ id: z.string() });

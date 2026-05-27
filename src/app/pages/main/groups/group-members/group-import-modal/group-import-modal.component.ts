@@ -3,10 +3,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Dispatcher } from '@ngrx/signals/events';
+import { Dispatcher, Events } from '@ngrx/signals/events';
 import { GroupMembersEvents } from '@/app/store/group-members/group-members.events';
 import { GroupMembersStore } from '@/app/store/group-members/group-members.store';
-import { PostGroupMember } from '@/app/types/group-members/group-members.type';
+import { GetGroupMember, GroupMember, PostGroupMember } from '@/app/types/group-members/group-members.type';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { pipe, tap, map } from 'rxjs';
 
 @Component({
   selector: 'app-group-import-modal',
@@ -24,6 +26,7 @@ export class GroupImportModalComponent {
   private readonly dialogRef = inject(MatDialogRef<GroupImportModalComponent>);
   private readonly data = inject<{ group_id: string }>(MAT_DIALOG_DATA);
   private readonly dispatcher = inject(Dispatcher);
+  private readonly events = inject(Events);
   private readonly groupMembersStore = inject(GroupMembersStore);
 
   public readonly fileInput = viewChild<ElementRef<HTMLInputElement>>('fileInput');
@@ -85,14 +88,75 @@ export class GroupImportModalComponent {
     const reader = new FileReader();
     reader.onload = (event) => {
       const text = (event.target?.result as string) ?? '';
-      const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+      const parseCsvRows = (input: string): string[][] => {
+        const rows: string[][] = [];
+        let row: string[] = [];
+        let cell = '';
+        let inQuotes = false;
 
-      if (lines.length < 2) {
+        for (let i = 0; i < input.length; i++) {
+          const char = input[i];
+
+          if (inQuotes) {
+            if (char === '"') {
+              // Escaped quote inside a quoted value: ""
+              if (input[i + 1] === '"') {
+                cell += '"';
+                i++;
+              } else {
+                inQuotes = false;
+              }
+            } else {
+              cell += char;
+            }
+            continue;
+          }
+
+          if (char === '"') {
+            inQuotes = true;
+            continue;
+          }
+
+          if (char === ',') {
+            row.push(cell.trim());
+            cell = '';
+            continue;
+          }
+
+          if (char === '\r') {
+            continue; // ignore CR (to support \r\n)
+          }
+
+          if (char === '\n') {
+            row.push(cell.trim());
+            cell = '';
+
+            // Push row even if empty; we'll filter later.
+            rows.push(row);
+            row = [];
+            continue;
+          }
+
+          cell += char;
+        }
+
+        // Flush last cell/row (handles files without a trailing newline).
+        if (cell.length > 0 || row.length > 0) {
+          row.push(cell.trim());
+          rows.push(row);
+        }
+
+        return rows;
+      };
+
+      const rows = parseCsvRows(text).filter(r => r.some(c => c.length > 0));
+
+      if (rows.length < 2) {
         alert('CSV file must have at least one data row.');
         return;
       }
 
-      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      const headers = rows[0].map(h => h.replace(/^\uFEFF/, '').trim().toLowerCase());
       const get = (key: string) => headers.indexOf(key);
 
       const studentIdIndex = get('rfid');
@@ -106,9 +170,10 @@ export class GroupImportModalComponent {
         return;
       }
 
-      const members: PostGroupMember[] = lines.slice(1).map(line => {
-        const cols = line.split(',').map(c => c.trim());
+      const members: GroupMember[] = rows.slice(1).map(row => {
+        const cols = row.map(c => c.trim());
         return {
+          id: crypto.randomUUID(),
           rfid: cols[studentIdIndex] ?? '',
           name: cols[nameIndex] ?? '',
           department: departmentIndex !== -1 ? cols[departmentIndex] || undefined : undefined,
@@ -116,6 +181,8 @@ export class GroupImportModalComponent {
           year_level: yearLevelIndex !== -1 ? cols[yearLevelIndex] || undefined : undefined,
           group_type: 'student' as const,
           group_id: this.group_id(),
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         };
       }).filter(m => m.rfid !== '' && m.name !== '');
 
@@ -148,4 +215,12 @@ export class GroupImportModalComponent {
     a.click();
     URL.revokeObjectURL(url);
   }
+
+  #onImportGroupMembersSuccess = rxMethod<GetGroupMember[]>(
+    pipe(
+      tap((members) => {
+        this.dialogRef.close(members);
+      })
+    )
+  )(this.events.on(GroupMembersEvents.importGroupMembersSuccess).pipe(map(({ payload }) => payload)));
 }

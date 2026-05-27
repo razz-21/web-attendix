@@ -21,6 +21,7 @@ export const AttendanceSchema = z.object({
   late_threshold: z.number(),
   configurations: AttendanceConfigurationsSchema.optional().nullable(),
   status: AttendanceStatusSchema,
+  shared_with: z.array(z.uuidv4()).default([]),
   created_by: z.uuidv4(),
   created_at: z.iso.datetime(),
   updated_at: z.iso.datetime(),

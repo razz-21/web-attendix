@@ -178,6 +178,7 @@ export class AttendancesComponent implements OnInit {
         absent_point: 0,
         excused_point: 0.75,
       },
+      shared_with: [],
       created_by: this.currentUserId,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
