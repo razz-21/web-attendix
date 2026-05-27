@@ -24,7 +24,17 @@
   
       <div class="attendance-details-page-header-right">
         <div class="attendance-details-page-header-right-actions">
-        @if (!isArchived()) {
+        @if (!isArchived() && sharedParticipants().length) {
+          <app-stacked-avatar-group
+            [users]="sharedParticipants()"
+            size="xs"
+            ariaLabel="Attendance creator and shared users"
+          />
+        }
+        @if (!isArchived() && isCreator()) {
+          <button mat-icon-button color="primary" type="button" matTooltip="Share with others" matTooltipPosition="above" (click)="openShareAttendance()">
+            <mat-icon>group_add</mat-icon>
+          </button>
           <button mat-icon-button color="primary" type="button" matTooltip="Edit Attendance" matTooltipPosition="above" (click)="openEditAttendance()">
             <mat-icon>edit</mat-icon>
           </button>

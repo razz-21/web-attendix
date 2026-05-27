@@ -47,8 +47,10 @@ export class AttendancesComponent implements OnInit {
 
   private currentUserId: string | null = null;
 
-  public readonly attendances = computed(() =>
-    this.attendancesStore.attendances().map(attendance => ({
+  public readonly attendances = computed(() => {
+    const userId = this.authStore.user()?.id;
+
+    return this.attendancesStore.attendances().map((attendance) => ({
       id: attendance.id,
       name: attendance.name,
       code: attendance.code,
@@ -58,8 +60,12 @@ export class AttendancesComponent implements OnInit {
       lateThreshold: attendance.late_threshold,
       createdAt: attendance.created_at,
       createdBy: attendance.created_by.id,
-    }))
-  );
+      isSharedWithMe:
+        !!userId &&
+        attendance.created_by.id !== userId &&
+        (attendance.shared_with ?? []).includes(userId),
+    }));
+  });
 
   public readonly loading = computed(() => this.attendancesStore.loading());
 

@@ -54,15 +54,11 @@ export const AttendancesStore = signalStore(
   })),
   withReducer(
     // Load Attendances
-    on(AttendancesEvents.loadAttendances, (_, state) =>
-      state.ids.length > 0
-        ? state
-        : {
-            ...state,
-            loading: true,
-            error: null,
-          }
-    ),
+    on(AttendancesEvents.loadAttendances, (_, state) => ({
+      ...state,
+      loading: true,
+      error: null,
+    })),
     on(AttendancesEvents.loadAttendancesSuccess, ({ payload }) => [
       setAllEntities(payload ?? []),
       {
@@ -219,7 +215,6 @@ export const AttendancesStore = signalStore(
       snackBar = inject(MatSnackBar)
     ) => ({
       loadAttendances$: events.on(AttendancesEvents.loadAttendances).pipe(
-        filter(() => !store.hasAttendances()),
         exhaustMap(() =>
           from(attendancesService.getAttendances(store.filters())).pipe(
             mapResponse({

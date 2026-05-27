@@ -20,6 +20,7 @@ export interface Attendance {
   lateThreshold: number;
   createdAt: string;
   createdBy: string;
+  isSharedWithMe?: boolean;
 }
 
 @Component({
@@ -50,9 +51,11 @@ export class AttendanceTableComponent {
   public readonly hasAttendances = computed(() => this.attendances().length > 0);
   public readonly currentUser = computed(() => this.authStore.user());
 
-public canManage(attendance: Attendance): boolean {
-  return true;
-}
+  public canManage(attendance: Attendance): boolean {
+    const userId = this.currentUser()?.id;
+    if (!userId) return false;
+    return attendance.createdBy === userId;
+  }
 
   public onEditAttendance(attendance: Attendance, event: Event): void {
     event.preventDefault();

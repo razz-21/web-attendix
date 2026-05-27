@@ -29,6 +29,7 @@ export const AttendanceSchema = z.object({
 
 export const GetAttendanceSchema = AttendanceSchema.extend({
   created_by: UserSchema.pick({ id: true, firstname: true, lastname: true }),
+  shared_with_users: z.array(UserSchema.pick({ id: true, firstname: true, lastname: true })),
 });
 
 export const GetPaginatedAttendancesSchema = z.object({
