@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, inject, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, input, output, signal, computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -25,9 +25,9 @@ export class ImportAttendeesFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly groupsService = inject(GroupsService);
 
-  @Input() public disabled = false;
-  @Output() public readonly importSubmitted = new EventEmitter<{ group_id: string }>();
-  @Output() public readonly formCancelled = new EventEmitter<void>();
+  public readonly disabled = input<boolean>(false);
+  public readonly importSubmitted = output<{ group_id: string }>();
+  public readonly formCancelled = output<void>();
 
   public readonly groups = signal<GetGroup[]>([]);
   public readonly isLoadingGroups = signal<boolean>(true);

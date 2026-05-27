@@ -12,15 +12,15 @@
             @if (selectedGroup()) {
               <div class="group-option-content" style="padding: 0;">
                 <span class="group-name">{{ selectedGroup()?.name }}</span>
-                <span class="group-badge" style="margin-right: 10px;" [class.empty]="!selectedGroup()?.member_count">{{ selectedGroup()?.member_count || 0 }} Members</span>
+                <span class="group-badge" style="margin-right: 10px;" [class.empty]="!selectedGroup()?.count_members">{{ selectedGroup()?.count_members || 0 }} Members</span>
               </div>
             }
           </mat-select-trigger>
         @for (group of groups(); track group.id) {
-        <mat-option [value]="group.id" [disabled]="group.member_count === 0">
+        <mat-option [value]="group.id" [disabled]="group.count_members === 0">
           <div class="group-option-content">
             <span class="group-name">{{ group.name }}</span>
-            <span class="group-badge" [class.empty]="!group.member_count">{{ group.member_count || 0 }} Members</span>
+            <span class="group-badge" [class.empty]="!group.count_members">{{ group.count_members || 0 }} Members</span>
           </div>
         </mat-option>
         }
@@ -39,11 +39,11 @@
   </div>
 
   <div class="import-attendees-form__actions">
-    <button mat-button type="button" (click)="onCancel()" [disabled]="disabled">
+    <button mat-button type="button" (click)="onCancel()" [disabled]="disabled()">
       Cancel
     </button>
     <button mat-flat-button color="primary" type="submit"
-      [disabled]="form.invalid || disabled || isLoadingGroups() || groups().length === 0">
+      [disabled]="form.invalid || disabled() || isLoadingGroups() || groups().length === 0">
       Import
     </button>
   </div>

@@ -25,6 +25,12 @@ import { AttendanceAttendeeStore } from "@/app/store/attendance-attendee/attenda
 import { AttendanceStore } from "@/app/store/attendance/attendance.store";
 import { AttendanceRecordStore } from "@/app/store/attendance-record/attendance-record.store";
 import { AttendanceRecordEvents } from "@/app/store/attendance-record/attendance-record.events";
+import { AuthStore } from "@/app/store/auth/auth.store";
+import { ShareWithOthersModalComponent } from "./components/share-with-others-modal/share-with-others-modal.component";
+import {
+  StackedAvatarGroupComponent,
+  StackedAvatarUser,
+} from "@/app/components/stacked-avatar-group/stacked-avatar-group.component";
 
 @Component({
   selector: 'app-attendance-details',
@@ -39,7 +45,8 @@ import { AttendanceRecordEvents } from "@/app/store/attendance-record/attendance
     RouterLink,
     RouterLinkActive,
     RouterOutlet,
-    LoadingSectionComponent
+    LoadingSectionComponent,
+    StackedAvatarGroupComponent,
   ]
 })
 export class AttendanceDetailsComponent implements OnInit {
@@ -54,6 +61,7 @@ export class AttendanceDetailsComponent implements OnInit {
   private readonly attendanceAttendeeStore = inject(AttendanceAttendeeStore); // Inject to reflect the attendance attendees state
   private readonly attendanceStore = inject(AttendanceStore); // Inject to reflect the attendance state
   private readonly attendanceRecordStore = inject(AttendanceRecordStore); // Inject to reflect the attendance record state
+  private readonly authStore = inject(AuthStore); // Inject current user for creator actions
 
   private attendanceId = computed(() => this.route.snapshot.paramMap.get('id'));
   
@@ -67,6 +75,53 @@ export class AttendanceDetailsComponent implements OnInit {
   public loading = computed(() => this.attendanceDetailsStore.loading());
 
   public isArchived = computed(() => this.attendanceDetails()?.status === 'archived');
+
+  public readonly sharedParticipants = computed((): StackedAvatarUser[] => {
+    const attendance = this.attendanceDetails();
+    if (!attendance) return [];
+
+    const participants: StackedAvatarUser[] = [];
+    const seen = new Set<string>();
+
+    const createdBy = attendance.created_by;
+    if (createdBy && typeof createdBy === "object" && "id" in createdBy) {
+      const creator = createdBy as { id: string; firstname: string; lastname: string };
+      participants.push({
+        id: creator.id,
+        firstname: creator.firstname,
+        lastname: creator.lastname,
+      });
+      seen.add(creator.id);
+    }
+
+    for (const user of attendance.shared_with_users ?? []) {
+      if (!seen.has(user.id)) {
+        participants.push({
+          id: user.id,
+          firstname: user.firstname,
+          lastname: user.lastname,
+        });
+        seen.add(user.id);
+      }
+    }
+
+    return participants;
+  });
+
+  public readonly isCreator = computed(() => {
+    const userId = this.authStore.user()?.id;
+    if (!userId) return false;
+
+    const createdBy = (this.attendanceDetails()?.created_by ?? null) as unknown;
+    if (!createdBy) return false;
+
+    if (typeof createdBy === "string") return createdBy === userId;
+    if (typeof createdBy === "object" && createdBy && "id" in createdBy) {
+      return (createdBy as { id?: string }).id === userId;
+    }
+
+    return false;
+  });
 
   public readonly tabs = [
     { label: "attendances", route: "attendances" },
@@ -96,6 +151,19 @@ export class AttendanceDetailsComponent implements OnInit {
 
     navigator.clipboard.writeText(attendance.code);
     this.snackBar.open('Code copied to clipboard', 'Close', { duration: 5000 });
+  }
+
+  public openShareAttendance(): void {
+    const attendance = this.attendanceDetails();
+    if (!attendance) return;
+
+    this.dialog.open(ShareWithOthersModalComponent, {
+      maxWidth: "620px",
+      width: "100%",
+      height: "auto",
+      autoFocus: "first-tabbable",
+      data: { attendance },
+    });
   }
 
   public openEditAttendance(): void {
@@ -151,6 +219,22 @@ export class AttendanceDetailsComponent implements OnInit {
 
     if (confirmed) {
       this.dispatcher.dispatch(AttendanceDetailsEvents.deleteAttendanceDetails({ id: attendance.id }));
+    }
+  }
+
+  public async archiveAttendance(): Promise<void> {
+    const attendance = this.attendanceDetails();
+    if (!attendance || attendance.status === 'archived') return;
+
+    const confirmed = await this.confirmationDialogService.confirm({
+      title: 'Archive Attendance',
+      message: `Are you sure you want to archive <strong>${attendance.name}</strong>? This attendance will move to the archived list and will not be visible to the users.`,
+      positiveButtonText: 'Archive',
+      negativeButtonText: 'Cancel'
+    });
+
+    if (confirmed) {
+      this.dispatcher.dispatch(AttendanceDetailsEvents.updateAttendanceDetails({ id: attendance.id, payload: { status: 'archived' } }));
     }
   }
 

@@ -47,10 +47,12 @@ export class UserDetailsComponent implements OnInit {
   private readonly confirmationDialogService = inject(ConfirmationDialogService);
   private readonly workspacesService = inject(WorkspacesService);
 
-  public readonly loading = computed(() => this.userDetailsStore.loading());
-  public readonly user = computed(() => this.userDetailsStore.user());
   public readonly currentWorkspaceName = signal<string | null>(null);
   public readonly workspaceLoading = signal(false);
+  
+  public readonly loading = computed(() => this.userDetailsStore.loading());
+  public readonly user = computed(() => this.userDetailsStore.user());
+  public readonly approveLoading = computed(() => this.userDetailsStore.approveLoading());
 
   readonly #loadWorkspaceName = effect(() => {
     const workspaceId = this.user()?.workspace_id;
@@ -136,6 +138,19 @@ export class UserDetailsComponent implements OnInit {
 
     if (result && this.user()) {
       this.dispatcher.dispatch(UserDetailsEvents.deleteUser({ user: this.user()! }));
+    }
+  }
+
+  public async approveUser(): Promise<void> {
+    const result = await this.confirmationDialogService.confirm({
+      title: 'Approve user',
+      message: `Are you sure you want to approve this user <strong>${this.user()?.firstname} ${this.user()?.lastname}</strong>?`,
+      positiveButtonText: 'Yes, approve',
+      negativeButtonText: 'No, cancel',
+    });
+
+    if (result && this.user()) {
+      this.dispatcher.dispatch(UserDetailsEvents.approveUser({ user: this.user()! }));
     }
   }
 

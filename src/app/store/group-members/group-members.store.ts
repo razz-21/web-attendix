@@ -93,11 +93,10 @@ export const GroupMembersStore = signalStore(
 
     // Create
     on(GroupMembersEvents.createGroupMember, (_, state) => ({ ...state, loadingForm: true, error: null })),
-    on(GroupMembersEvents.createGroupMemberSuccess, (_, state) => ({
-      ...state,
-      loadingForm: false,
-      error: null,
-    })),
+    on(GroupMembersEvents.createGroupMemberSuccess, ({ payload }, state) => [
+      prependEntity(payload, { selectId }),
+      { loadingForm: false, error: null, pagination: { ...state.pagination, total: state.pagination.total + 1 } },
+    ]),
     on(GroupMembersEvents.createGroupMemberFailure, (event, state) => ({ ...state, loadingForm: false, error: event.payload })),
 
     // Update
@@ -111,13 +110,16 @@ export const GroupMembersStore = signalStore(
 
     // Import
     on(GroupMembersEvents.importGroupMembers, (_, state) => ({ ...state, loadingForm: true, error: null })),
-    on(GroupMembersEvents.importGroupMembersSuccess, (_, state) => ({ ...state, loadingForm: false, error: null })),
+    on(GroupMembersEvents.importGroupMembersSuccess, ({ payload }) => [
+      setAllEntities(payload, { selectId }),
+      { loadingForm: false, error: null },
+    ]),
     on(GroupMembersEvents.importGroupMembersFailure, (event, state) => ({ ...state, loadingForm: false, error: event.payload })),
 
     // Delete
-    on(GroupMembersEvents.deleteGroupMember, ({ payload }) => [
+    on(GroupMembersEvents.deleteGroupMember, ({ payload }, state) => [
       removeEntity(payload.member.id),
-      { deleteLoading: true, currentDeleteMember: payload.member, error: null },
+      { deleteLoading: true, currentDeleteMember: payload.member, error: null, pagination: { ...state.pagination, total: state.pagination.total - 1 } },
     ]),
     on(GroupMembersEvents.deleteGroupMemberSuccess, ({ payload }) => [
       removeEntity(payload.member.id),
@@ -255,7 +257,7 @@ export const GroupMembersStore = signalStore(
         exhaustMap(({ payload }) =>
           from(groupMembersService.importGroupMembers(payload.group_id, payload.members)).pipe(
             mapResponse({
-              next: () => GroupMembersEvents.importGroupMembersSuccess(),
+              next: (response) => GroupMembersEvents.importGroupMembersSuccess(response),
               error: (error: unknown) => GroupMembersEvents.importGroupMembersFailure(error instanceof Error ? error.message : "Failed to import group members"),
             })
           )

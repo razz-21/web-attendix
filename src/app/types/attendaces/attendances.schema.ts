@@ -21,6 +21,7 @@ export const AttendanceSchema = z.object({
   late_threshold: z.number(),
   configurations: AttendanceConfigurationsSchema.optional().nullable(),
   status: AttendanceStatusSchema,
+  shared_with: z.array(z.uuidv4()).default([]),
   created_by: z.uuidv4(),
   created_at: z.iso.datetime(),
   updated_at: z.iso.datetime(),
@@ -28,6 +29,7 @@ export const AttendanceSchema = z.object({
 
 export const GetAttendanceSchema = AttendanceSchema.extend({
   created_by: UserSchema.pick({ id: true, firstname: true, lastname: true }),
+  shared_with_users: z.array(UserSchema.pick({ id: true, firstname: true, lastname: true })),
 });
 
 export const GetPaginatedAttendancesSchema = z.object({

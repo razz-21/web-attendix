@@ -38,9 +38,9 @@ export class GroupMembersService {
     );
   }
   
-  public async importGroupMembers(group_id: string, members: PostGroupMember[]): Promise<void> {
+  public async importGroupMembers(group_id: string, members: PostGroupMember[]): Promise<GetGroupMember[]> {
     return lastValueFrom(
-      this.http.post<void>(`${this.groupsApi}/${group_id}/members/import`, members)
+      this.http.post<GetGroupMember[]>(`${this.groupsApi}/${group_id}/members/import`, members)
     );
   }
 

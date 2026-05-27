@@ -14,6 +14,7 @@ type UserDetailsState = {
   loading: boolean;
   updateLoading: boolean;
   deleteLoading: boolean;
+  approveLoading: boolean;
   error: UserErrorResponse | null;
 };
 
@@ -22,6 +23,7 @@ const initialState: UserDetailsState = {
   loading: false,
   updateLoading: false,
   deleteLoading: false,
+  approveLoading: false,
   error: null,
 };
 
@@ -61,6 +63,24 @@ export const UserDetailsStore = signalStore(
     on(UserDetailsEvents.updateUserDetailsFailure, (event, state) => ({
       ...state,
       updateLoading: false,
+      error: event.payload,
+    })),
+
+    // Approve user
+    on(UserDetailsEvents.approveUser, (_, state) => ({
+      ...state,
+      approveLoading: true,
+      error: null,
+    })),
+    on(UserDetailsEvents.approveUserSuccess, ({ payload }, state) => ({
+      ...state,
+      user: payload.user,
+      approveLoading: false,
+      error: null,
+    })),
+    on(UserDetailsEvents.approveUserFailure, (event, state) => ({
+      ...state,
+      approveLoading: false,
       error: event.payload,
     })),
 
@@ -131,6 +151,32 @@ export const UserDetailsStore = signalStore(
         })
       ),
       updateUserDetailsFailure$: events.on(UserDetailsEvents.updateUserDetailsFailure).pipe(
+        map(({ payload }) => {
+          snackBar.open(payload.message, "Close", { duration: 6000 });
+        })
+      ),
+
+      // Approve user
+      approveUser$: events.on(UserDetailsEvents.approveUser).pipe(
+        exhaustMap(({ payload }) => from(userDetailsService.updateUser(payload.user.id, { status: 'active' })).pipe(
+          mapResponse({
+            next: (response) => UserDetailsEvents.approveUserSuccess({ user: response }),
+            error: (error: unknown) => {
+              const errorResponse = error as HttpErrorResponse;
+              return UserDetailsEvents.approveUserFailure({
+                status_code: errorResponse.status,
+                message: errorResponse.error.message,
+              });
+            },
+          })
+        ))
+      ),
+      approveUserSuccess$: events.on(UserDetailsEvents.approveUserSuccess).pipe(
+        tap(() => {
+          snackBar.open(`User approved successfully`, "Close", { duration: 6000 });
+        })
+      ),
+      approveUserFailure$: events.on(UserDetailsEvents.approveUserFailure).pipe(
         map(({ payload }) => {
           snackBar.open(payload.message, "Close", { duration: 6000 });
         })

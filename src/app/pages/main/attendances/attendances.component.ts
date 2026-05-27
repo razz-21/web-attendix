@@ -15,7 +15,7 @@ import { AuthService } from '@/app/services/auth.service';
 import { ConfirmationDialogService } from '@/app/services/confirmation-dialog.service';
 import { AuthStore } from '@/app/store/auth/auth.store';
 import { SCHEDULE_DAY_MAP, sortScheduleDays } from '@/app/constants/schedule-days.constant';
-import { AttendanceScheduleDays, PostAttendance, GetAttendance, AttendanceStatus } from '@/app/types/attendaces/attendances.types';
+import { AttendanceScheduleDays, PostAttendance, GetAttendance, AttendanceStatus, PatchAttendance } from '@/app/types/attendaces/attendances.types';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
@@ -41,14 +41,16 @@ export class AttendancesComponent implements OnInit {
   private readonly attendancesStore = inject(AttendancesStore);
   private readonly authStore = inject(AuthStore);
 
-  public readonly statusFilter = model<AttendanceStatus>('active');
+  public readonly statusFilter = model<AttendanceStatus>(this.attendancesStore.filters().status ?? 'active');
 
   public readonly searchQuery = model<string>('');
 
   private currentUserId: string | null = null;
 
-  public readonly attendances = computed(() =>
-    this.attendancesStore.attendances().map(attendance => ({
+  public readonly attendances = computed(() => {
+    const userId = this.authStore.user()?.id;
+
+    return this.attendancesStore.attendances().map((attendance) => ({
       id: attendance.id,
       name: attendance.name,
       code: attendance.code,
@@ -58,12 +60,20 @@ export class AttendancesComponent implements OnInit {
       lateThreshold: attendance.late_threshold,
       createdAt: attendance.created_at,
       createdBy: attendance.created_by.id,
-    }))
-  );
+      isSharedWithMe:
+        !!userId &&
+        attendance.created_by.id !== userId &&
+        (attendance.shared_with ?? []).includes(userId),
+    }));
+  });
 
   public readonly loading = computed(() => this.attendancesStore.loading());
 
   public ngOnInit(): void {
+    // Sync the local UI filter signal with the persisted store filter state.
+    // This ensures the filter dropdown reflects the correct status when navigating
+    // back from an attendance details view (e.g., after viewing an archived post).
+    this.statusFilter.set(this.attendancesStore.filters().status ?? 'active');
     this.loadUserAndAttendances();
   }
 
@@ -90,7 +100,18 @@ export class AttendancesComponent implements OnInit {
     try {
       const user = await this.authService.getMe();
       this.currentUserId = user.id;
-      this.dispatcher.dispatch(AttendancesEvents.loadAttendances());
+
+      if (this.attendancesStore.hasAttendances()) {
+        // Entities are already cached in the root-scoped store (e.g., returning from
+        // an attendance details view). `loadAttendances` is guarded to skip when
+        // entities exist, so we explicitly re-fetch using the persisted filter to
+        // keep the list in sync with the UI filter state.
+        this.dispatcher.dispatch(
+          AttendancesEvents.filterAttendances({ status: this.attendancesStore.filters().status ?? 'active' })
+        );
+      } else {
+        this.dispatcher.dispatch(AttendancesEvents.loadAttendances());
+      }
     } catch (error) {
       console.error('Failed to load user:', error);
     }
@@ -109,6 +130,53 @@ export class AttendancesComponent implements OnInit {
         this.submitAttendance(data);
       }
     });
+  }
+
+  public onEditAttendance(attendanceData: any): void {
+    const attendanceId = attendanceData.id;
+    const attendance = this.attendancesStore.attendancesMap()[attendanceId];
+    if (!attendance) return;
+
+    const initialData: AttendanceFormModel = {
+      name: attendance.name,
+      code: attendance.code,
+      description: attendance.description || '',
+      lateThreshold: attendance.late_threshold,
+      status: attendance.status === 'archived' ? 'Archived' : 'Active',
+      scheduleDays: this.backendDaysToFrontendDays(attendance.schedule_days) as any
+    };
+
+    const dialogRef = this.dialog.open(AttendanceFormModalComponent, {
+      maxWidth: '620px',
+      width: '100%',
+      height: 'auto',
+      autoFocus: 'first-tabbable',
+      data: { initialData },
+    });
+
+    dialogRef.afterClosed().subscribe((data: AttendanceFormModel | undefined) => {
+      if (data && this.currentUserId) {
+        this.submitEditedAttendance(attendanceId, data);
+      }
+    });
+  }
+
+  private submitEditedAttendance(id: string, formData: AttendanceFormModel): void {
+    if (!this.currentUserId) {
+      console.error('User ID not available');
+      return;
+    }
+
+    const updateData: Partial<PatchAttendance> = {
+      name: formData.name,
+      code: formData.code,
+      schedule_days: formData.scheduleDays.map(day => SCHEDULE_DAY_MAP[day] as AttendanceScheduleDays[number]),
+      description: formData.description,
+      late_threshold: formData.lateThreshold,
+      updated_at: new Date().toISOString(),
+    };
+
+    this.dispatcher.dispatch(AttendancesEvents.updateAttendance({ id, data: updateData }));
   }
 
   private submitAttendance(formData: AttendanceFormModel): void {
@@ -131,6 +199,7 @@ export class AttendancesComponent implements OnInit {
         absent_point: 0,
         excused_point: 0.75,
       },
+      shared_with: [],
       created_by: this.currentUserId,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
