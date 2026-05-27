@@ -2,6 +2,7 @@ import { GetUser } from "@/app/types/users/users.type";
 import { signalStore, withState } from "@ngrx/signals";
 import { Events, on, withEventHandlers, withReducer } from "@ngrx/signals/events";
 import { AuthEvents } from "./auth.events";
+import { UserDetailsEvents } from "@/app/store/user-details/user-details.events";
 import { exhaustMap, filter, from, map, tap } from "rxjs";
 import { inject } from "@angular/core";
 import { mapResponse } from "@ngrx/operators";
@@ -141,6 +142,15 @@ export const AuthStore = signalStore(
       ...state,
       user: payload.user,
     })),
+    on(UserDetailsEvents.updateUserDetailsSuccess, ({ payload }, state) => {
+      if (state.user?.id === payload.user.id) {
+        return {
+          ...state,
+          user: { ...state.user, ...payload.user },
+        };
+      }
+      return state;
+    }),
   ),
 
   withEventHandlers(
