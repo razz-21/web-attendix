@@ -13,7 +13,7 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Name *</mat-label>
+      <mat-label>Name</mat-label>
       <input matInput [formField]="attendeeForm.name" autocomplete="off" type="text" />
       @if (attendeeForm.name().touched() && attendeeForm.name().invalid()) {
         <mat-error>
