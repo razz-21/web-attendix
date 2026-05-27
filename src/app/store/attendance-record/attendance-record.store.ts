@@ -3,7 +3,7 @@ import { patchState, signalStore, withComputed, withMethods, withState } from "@
 import { Events, on, withEventHandlers, withReducer } from "@ngrx/signals/events";
 import { AttendanceRecordEvents } from "./attendance-record.events";
 import { withEntities, setAllEntities, prependEntity, removeAllEntities, setEntity } from "@ngrx/signals/entities";
-import { exhaustMap, from, map } from "rxjs";
+import { exhaustMap, from, map, mergeMap } from "rxjs";
 import { inject } from "@angular/core";
 import { AttendanceRecordService } from "@/app/services/attendance-record.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -134,7 +134,7 @@ export const AttendanceRecordStore = signalStore(
       ),
 
       createAttendanceRecord$: events.on(AttendanceRecordEvents.createAttendanceRecord).pipe(
-        exhaustMap(({ payload }) => from(attendanceRecordService.createAttendanceRecord(payload.attendances_id, payload.payload))),
+        mergeMap(({ payload }) => from(attendanceRecordService.createAttendanceRecord(payload.attendances_id, payload.payload))),
         mapResponse({
           next: (response) => AttendanceRecordEvents.createAttendanceRecordSuccess(response),
           error: (error: unknown) => AttendanceRecordEvents.createAttendanceRecordFailure(error instanceof Error ? error.message : "Failed to create attendance record"),
@@ -145,7 +145,7 @@ export const AttendanceRecordStore = signalStore(
       ),
 
       updateAttendanceRecord$: events.on(AttendanceRecordEvents.updateAttendanceRecord).pipe(
-        exhaustMap(({ payload }) => from(attendanceRecordService.updateAttendanceRecord(payload.attendances_id, payload.id, payload.payload))),
+        mergeMap(({ payload }) => from(attendanceRecordService.updateAttendanceRecord(payload.attendances_id, payload.id, payload.payload))),
         mapResponse({
           next: (response) => AttendanceRecordEvents.updateAttendanceRecordSuccess(response),
           error: (error: unknown) => AttendanceRecordEvents.updateAttendanceRecordFailure(error instanceof Error ? error.message : "Failed to update attendance record"),
