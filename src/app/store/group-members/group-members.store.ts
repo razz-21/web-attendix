@@ -226,7 +226,8 @@ export const GroupMembersStore = signalStore(
       createGroupMemberSuccess$: events.on(GroupMembersEvents.createGroupMemberSuccess).pipe(
         tap(({ payload }) => {
           snackBar.open(`Member ${payload?.name} added successfully`, "Close", { duration: 6000 });
-        })
+        }),
+        map(() => GroupMembersEvents.paginateGroupMembers({ page: store.pagination().page, limit: store.pagination().limit }))
       ),
       createGroupMemberFailure$: events.on(GroupMembersEvents.createGroupMemberFailure).pipe(
         map(({ payload }) => { snackBar.open(payload, "Close", { duration: 6000 }); })
@@ -246,6 +247,7 @@ export const GroupMembersStore = signalStore(
         tap(({ payload }) => {
           snackBar.open(`Member ${payload?.name} updated successfully`, "Close", { duration: 6000 });
         }),
+        map(() => GroupMembersEvents.paginateGroupMembers({ page: store.pagination().page, limit: store.pagination().limit }))
       ),
       updateGroupMemberFailure$: events.on(GroupMembersEvents.updateGroupMemberFailure).pipe(
         map(({ payload }) => { snackBar.open(payload, "Close", { duration: 6000 }); })
@@ -264,7 +266,8 @@ export const GroupMembersStore = signalStore(
       importGroupMembersSuccess$: events.on(GroupMembersEvents.importGroupMembersSuccess).pipe(
         tap(() => {
           snackBar.open(`Members imported successfully`, "Close", { duration: 6000 });
-        })
+        }),
+        map(() => GroupMembersEvents.paginateGroupMembers({ page: store.pagination().page, limit: store.pagination().limit }))
       ),
       importGroupMembersFailure$: events.on(GroupMembersEvents.importGroupMembersFailure).pipe(
         map(({ payload }) => { snackBar.open(payload, "Close", { duration: 6000 }); })
@@ -281,7 +284,8 @@ export const GroupMembersStore = signalStore(
         )
       ),
       deleteGroupMemberSuccess$: events.on(GroupMembersEvents.deleteGroupMemberSuccess).pipe(
-        tap(() => { snackBar.open(`Member deleted successfully`, "Close", { duration: 6000 }); })
+        tap(() => { snackBar.open(`Member deleted successfully`, "Close", { duration: 6000 }); }),
+        map(() => GroupMembersEvents.paginateGroupMembers({ page: store.pagination().page, limit: store.pagination().limit }))
       ),
       deleteGroupMemberFailure$: events.on(GroupMembersEvents.deleteGroupMemberFailure).pipe(
         map(({ payload }) => { snackBar.open(payload.error, "Close", { duration: 6000 }); })
