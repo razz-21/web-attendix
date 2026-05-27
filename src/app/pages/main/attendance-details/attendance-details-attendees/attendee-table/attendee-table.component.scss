@@ -29,6 +29,10 @@
 .attendee-table-wrap {
   width: 100%;
   overflow-x: auto;
+  td{
+    cursor: pointer;
+    
+  }
 }
 
 .attendee-table {
