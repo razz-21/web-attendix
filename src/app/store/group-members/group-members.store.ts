@@ -60,7 +60,7 @@ export const GroupMembersStore = signalStore(
   })),
   withReducer(
     // Load
-    on(GroupMembersEvents.loadGroupMembers, ({ payload }, state) => ({ ...state, loading: true, error: null, currentGroupId: payload.group_id })),
+    on(GroupMembersEvents.loadGroupMembers, ({ payload }, state) => ({ ...state, loading: true, error: null, currentGroupId: payload.group_id, pagination: { ...initialPagination }, filters: { ...initialFilters } })),
     on(GroupMembersEvents.loadGroupMembersSuccess, ({ payload }) => [
       setAllEntities(payload?.data ?? [], { selectId }),
       { pagination: { page: payload?.page ?? 1, limit: payload?.limit ?? 10, total: payload?.total ?? 0 }, loading: false, error: null },
