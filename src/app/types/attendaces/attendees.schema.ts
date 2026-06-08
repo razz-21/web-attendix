@@ -1,15 +1,16 @@
 import { z } from 'zod';
 
 export const AttendeeSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuidv4(),
   rfid: z.string().optional(),
   name: z.string(),
   department: z.string().optional(),
   year_level: z.string().optional(),
   section: z.string().optional(),
-  attendance_id: z.string().uuid(),
-  created_at: z.string(),
-  updated_at: z.string(),
+  attendance_id: z.uuidv4(),
+  attendances_id: z.uuidv4(),
+  created_at: z.iso.datetime(),
+  updated_at: z.iso.datetime(),
 });
 
 export const GetAttendeeSchema = AttendeeSchema;

@@ -11,6 +11,7 @@ import { AttendanceStore } from '@/app/store/attendance/attendance.store';
 import { GetAttendance } from '@/app/types/attendance/attendance.types';
 import { map, pipe, tap } from 'rxjs';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { AttendanceDetailsStore } from '@/app/store/attendance-details/attendance-details.store';
 
 interface AttendanceFormData {
   record?: GetAttendance;
@@ -39,15 +40,17 @@ export interface AttendanceFormModel {
   ],
 })
 export class AttendanceFormModalComponent {
-  
   private readonly dialogRef = inject(MatDialogRef<AttendanceFormModalComponent>);
   private readonly data = inject<AttendanceFormData>(MAT_DIALOG_DATA, { optional: true });
   private readonly dispatcher = inject(Dispatcher);
-  private readonly attendanceStore = inject(AttendanceStore);
   private readonly events = inject(Events);
+  private readonly attendanceStore = inject(AttendanceStore);
+  private readonly attendanceDetailsStore = inject(AttendanceDetailsStore);
 
   public readonly isEditMode = !!this.data?.record;
   public readonly loadingForm = computed(() => this.attendanceStore.loadingForm());
+
+  public readonly attendances_id = computed(() => this.attendanceDetailsStore.attendanceDetails()?.id ?? '');
 
   private formatDate(date: Date): string {
     return date.toISOString().split('T')[0];
@@ -115,6 +118,7 @@ export class AttendanceFormModalComponent {
               start_time: m.start_time.trim(),
               end_time: m.end_time.trim(),
               attendance_id,
+              attendances_id: this.attendances_id(),
               created_at: now,
               updated_at: now,
             },

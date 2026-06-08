@@ -11,6 +11,7 @@ import { AttendanceStore } from '@/app/store/attendance/attendance.store';
 import { GetAttendance } from '@/app/types/attendance/attendance.types';
 import { map, pipe, tap } from 'rxjs';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { AttendanceDetailsStore } from '@/app/store/attendance-details/attendance-details.store';
 
 @Component({
   selector: 'app-edit-attendance-record-modal',
@@ -33,9 +34,13 @@ export class EditAttendanceModalComponent {
   private readonly dispatcher = inject(Dispatcher);
   private readonly attendanceRecordsStore = inject(AttendanceStore);
   private readonly events = inject(Events);
+  private readonly attendanceDetailsStore = inject(AttendanceDetailsStore);
+  
   public readonly maxYear = 9999;
 
   public readonly loadingForm = computed(() => this.attendanceRecordsStore.loadingForm());
+
+  public readonly attendances_id = computed(() => this.attendanceDetailsStore.attendanceDetails()?.id ?? '');
 
   public readonly formData = signal({
     name: this.record.name,

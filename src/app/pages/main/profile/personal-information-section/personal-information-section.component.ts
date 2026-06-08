@@ -42,6 +42,8 @@ export interface PersonalInformationModel {
 export class PersonalInformationSectionComponent implements OnInit {
   private readonly authStore = inject(AuthStore);
   private readonly dispatcher = inject(Dispatcher);
+
+  public readonly fullName = computed(() => this.authStore.user()?.firstname + ' ' + this.authStore.user()?.lastname);
   
   private readonly emptyModel = (): PersonalInformationModel => ({
     firstname: '',

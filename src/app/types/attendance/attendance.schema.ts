@@ -1,14 +1,15 @@
 import { z } from "zod";
 
 export const AttendanceSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuidv4(),
   name: z.string(),
   attendance_date: z.string(),
   start_time: z.string(),
   end_time: z.string(),
-  attendance_id: z.string().uuid(),
-  created_at: z.string(),
-  updated_at: z.string(),
+  attendance_id: z.uuidv4(),
+  attendances_id: z.uuidv4(),
+  created_at: z.iso.datetime(),
+  updated_at: z.iso.datetime(),
 });
 
 export const GetAttendanceSchema = AttendanceSchema;

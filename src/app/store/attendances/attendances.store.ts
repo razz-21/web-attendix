@@ -4,7 +4,7 @@ import { Events, on, withEventHandlers, withReducer } from "@ngrx/signals/events
 import { AttendancesEvents } from "./attendances.events";
 import { computed, inject } from "@angular/core";
 import { AttendancesService } from "@/app/services/attendances.service";
-import { debounceTime, distinctUntilChanged, exhaustMap, filter, from, map, tap } from "rxjs";
+import { debounceTime, distinctUntilChanged, exhaustMap, from, map } from "rxjs";
 import { mapResponse } from "@ngrx/operators";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { AttendanceStatus, GetAttendance } from "@/app/types/attendaces/attendances.types";
@@ -17,6 +17,7 @@ type AttendancesState = {
     status: AttendanceStatus | undefined;
   };
   loading: boolean;
+  attendancesLoaded: boolean;
   createLoading: boolean;
   updateLoading: boolean;
   archiveLoading: boolean;
@@ -34,6 +35,7 @@ const initialState: AttendancesState = {
     status: 'active',
   },
   loading: false,
+  attendancesLoaded: false,
   createLoading: false,
   updateLoading: false,
   archiveLoading: false,
@@ -63,6 +65,7 @@ export const AttendancesStore = signalStore(
       setAllEntities(payload ?? []),
       {
         loading: false,
+        attendancesLoaded: true,
         error: null,
       },
     ]),

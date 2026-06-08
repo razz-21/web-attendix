@@ -59,12 +59,12 @@ export class MainSidebarComponent {
       icon: 'workspace',
       roles: ['admin']
     },
-    {
-      path: MAIN_SETTINGS_PATH,
-      label: 'Settings',
-      icon: 'settings',
-      roles: ['admin']
-    }
+    // {
+    //   path: MAIN_SETTINGS_PATH,
+    //   label: 'Settings',
+    //   icon: 'settings',
+    //   roles: ['admin']
+    // }
   ]
 
    public readonly routes = computed(() => {

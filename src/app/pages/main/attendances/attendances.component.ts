@@ -15,7 +15,7 @@ import { AuthService } from '@/app/services/auth.service';
 import { ConfirmationDialogService } from '@/app/services/confirmation-dialog.service';
 import { AuthStore } from '@/app/store/auth/auth.store';
 import { SCHEDULE_DAY_MAP, sortScheduleDays } from '@/app/constants/schedule-days.constant';
-import { AttendanceScheduleDays, PostAttendance, GetAttendance, AttendanceStatus, PatchAttendance } from '@/app/types/attendaces/attendances.types';
+import { AttendanceScheduleDays, PostAttendance, AttendanceStatus, PatchAttendance } from '@/app/types/attendaces/attendances.types';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
@@ -69,12 +69,13 @@ export class AttendancesComponent implements OnInit {
 
   public readonly loading = computed(() => this.attendancesStore.loading());
 
+  public readonly attendancesLoaded = computed(() => this.attendancesStore.attendancesLoaded());
+
   public ngOnInit(): void {
-    // Sync the local UI filter signal with the persisted store filter state.
-    // This ensures the filter dropdown reflects the correct status when navigating
-    // back from an attendance details view (e.g., after viewing an archived post).
-    this.statusFilter.set(this.attendancesStore.filters().status ?? 'active');
-    this.loadUserAndAttendances();
+    if (!this.attendancesLoaded()) {
+      this.statusFilter.set(this.attendancesStore.filters().status ?? 'active');
+      this.loadUserAndAttendances();
+    }
   }
 
   public searchAttendances(query: string): void {

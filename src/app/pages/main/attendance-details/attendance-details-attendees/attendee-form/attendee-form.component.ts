@@ -12,6 +12,7 @@ import { YEAR_LEVELS } from '@/app/constants/year-levels.constant';
 import type { PostAttendee, GetAttendee, PatchAttendee } from '@/app/types/attendaces/attendees.types';
 import { Dispatcher } from '@ngrx/signals/events';
 import { AttendanceAttendeeEvents } from '@/app/store/attendance-attendee/attendance-attendee.events';
+import { AttendanceDetailsStore } from '@/app/store/attendance-details/attendance-details.store';
 
 export interface AttendeeFormData {
   attendanceId: string;
@@ -36,11 +37,14 @@ const emptyModel = (): AttendeeFormModel => ({ rfid: '', name: '', department: '
   imports: [FormRoot, FormField, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatProgressSpinnerModule],
 })
 export class AttendeeFormComponent implements OnInit {
+  private readonly snackBar = inject(MatSnackBar);
+  private readonly dispatcher = inject(Dispatcher);
+  private readonly attendanceDetailsStore = inject(AttendanceDetailsStore);
+
   public readonly data = input.required<AttendeeFormData>();
+
   public readonly attendeeSaved = output<GetAttendee | undefined>();
   public readonly formCancelled = output<void>();
-  private readonly dispatcher = inject(Dispatcher);
-  private readonly snackBar = inject(MatSnackBar);
 
   public readonly model = signal<AttendeeFormModel>(emptyModel());
 
@@ -48,6 +52,8 @@ export class AttendeeFormComponent implements OnInit {
   public readonly yearLevels = YEAR_LEVELS;
 
   public readonly loadingForm = signal(false);
+
+  public readonly attendances_id = computed(() => this.attendanceDetailsStore.attendanceDetails()?.id ?? '');
 
   public ngOnInit(): void {
     const d = this.data();
@@ -84,6 +90,9 @@ export class AttendeeFormComponent implements OnInit {
             section: m.section?.trim() || undefined,
             year_level: m.year_level?.trim() || undefined,
             attendance_id: d.attendanceId,
+            attendances_id: this.attendances_id(),
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
           } as PostAttendee;
 
           if (d.attendee) {
