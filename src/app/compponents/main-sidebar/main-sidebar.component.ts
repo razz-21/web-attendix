@@ -6,17 +6,19 @@ import { MAIN_ATTENDANCES_PATH, MAIN_DASHBOARD_PATH, MAIN_GROUPS_PATH, MAIN_HOME
 import { Dispatcher } from "@ngrx/signals/events";
 import { AuthEvents } from "@/app/store/auth/auth.events";
 import { AuthStore } from "@/app/store/auth/auth.store";
+import { AvatarComponent } from '@/app/compponents/avatar/avatar.component';
 
 @Component({
   selector: 'app-main-sidebar',
   templateUrl: './main-sidebar.component.html',
   styleUrl: './main-sidebar.component.scss',
-  imports: [MatListModule, MatIconModule, RouterLink, RouterLinkActive]
+  imports: [MatListModule, MatIconModule, RouterLink, RouterLinkActive, AvatarComponent]
 })
 export class MainSidebarComponent {
   private readonly dispatcher = inject(Dispatcher);
   private readonly authStore = inject(AuthStore);
 
+  public readonly user = computed(() => this.authStore.user());
   public readonly allRoutes = [
     // {
     //   path: MAIN_DASHBOARD_PATH,

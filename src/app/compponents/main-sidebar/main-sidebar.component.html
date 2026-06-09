@@ -13,6 +13,12 @@
   </mat-nav-list>
 
   <div class="main-sidebar-footer">
+
+    <div class="main-sidebar-user">
+      <app-avatar size="sm" [avatarName]="user()?.firstname + ' ' + user()?.lastname" />
+      <span>{{ user()?.firstname }} {{ user()?.lastname }}</span>
+    </div>
+
     <mat-nav-list>
       <mat-list-item role="listitem" (click)="logout()">
         <mat-icon matListItemIcon size="small">logout</mat-icon>
