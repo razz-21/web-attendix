@@ -1,4 +1,8 @@
 .attendance-drawer-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--mat-sys-surface-container-lowest);
   display: flex;
   justify-content: space-between;
   align-items: center;

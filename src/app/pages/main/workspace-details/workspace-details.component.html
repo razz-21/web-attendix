@@ -88,7 +88,8 @@
                 <mat-list-item role="listitem">
                   <div class="workspace-details-page-expansion-panel-list-item-content">
                     <div class="workspace-details-page-expansion-panel-list-item-content-left">
-                      <app-avatar size="md" url="https://github.com/ernestorazo.png" />
+                      @let fullname = user.firstname + ' ' + user.lastname;
+                      <app-avatar size="sm" [avatarName]="fullname" />
                       <span>{{ user.firstname }} {{ user.lastname }}</span>
                     </div>
         
