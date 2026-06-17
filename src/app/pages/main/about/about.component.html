@@ -1,0 +1,43 @@
+<div class="about-page">
+  <a class="about-back" routerLink="/">
+    <mat-icon>arrow_back</mat-icon>
+    Back to Login
+  </a>
+
+  <section class="about-head">
+    <h1 class="about-head__title">Attendix</h1>
+    <div class="about-head__badge">v{{ version }}</div>
+    <p class="about-head__description">
+      A modern attendance management platform designed to simplify attendance tracking,
+      attendee management, group organization, reporting, and analytics.
+    </p>
+  </section>
+
+  <section class="about-features-section">
+    <h2 class="about-section-title">Key Features</h2>
+    <div class="about-features-grid">
+      @for (feature of features; track feature) {
+        <div class="about-feature-item">
+          <mat-icon>check_circle</mat-icon>
+          <span>{{ feature }}</span>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="about-team-section">
+    <h2 class="about-section-title">The Team</h2>
+    <p class="about-team-desc">The people behind Attendix.</p>
+    <div class="about-contributors">
+      @for (contributor of contributors; track contributor.name) {
+        <div class="about-contributor-card">
+          <div class="about-contributor-avatar">
+            <app-avatar size="xl" [avatarName]="contributor.name" [url]="contributor.url" />
+          </div>
+          <p class="about-contributor-name">{{ contributor.name }}</p>
+          <p class="about-contributor-role">{{ contributor.role }}</p>
+        </div>
+      }
+    </div>
+  </section>
+</div>
