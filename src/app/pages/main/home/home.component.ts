@@ -6,7 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { DatePipe } from '@angular/common';
+import { DatePipe, TitleCasePipe } from '@angular/common';
 import { AuthStore } from '@/app/store/auth/auth.store';
 import { DashboardService } from '@/app/services/dashboard.service';
 import { GetAttendance } from '@/app/types/attendaces/attendances.types';
@@ -24,6 +24,7 @@ import { GetGroup } from '@/app/types/groups/groups.type';
     MatTableModule,
     MatAutocompleteModule,
     DatePipe,
+    TitleCasePipe
   ],
 })
 export class HomeComponent implements OnInit {
