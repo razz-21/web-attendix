@@ -78,7 +78,9 @@
 .attendance-details-page-header-right-code {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 0.5rem;
+  width: fit-content;
+  align-self: flex-end;
   font-size: 0.875rem;
   padding: 0.5rem;
   border: 1px dashed var(--mat-sys-primary, #6200ea);
