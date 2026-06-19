@@ -1,4 +1,4 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, signal } from '@angular/core';
 import { AttendanceStore } from '@/app/store/attendance/attendance.store';
 import { Dispatcher } from '@ngrx/signals/events';
 import { AttendanceEvents } from '@/app/store/attendance/attendance.events';
@@ -19,6 +19,9 @@ import { DatePipe } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import { ExcusedReasonModalComponent } from './excused-reason-modal/excused-reason-modal.component';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-attendance-drawer',
@@ -33,7 +36,10 @@ import { ExcusedReasonModalComponent } from './excused-reason-modal/excused-reas
     AvatarComponent,
     LoadingSectionComponent,
     EmptySectionComponent,
-    DatePipe
+    DatePipe,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
   ],
 })
 export class AttendanceDrawerComponent {
@@ -55,6 +61,16 @@ export class AttendanceDrawerComponent {
   public attendessRecords = computed(() => this.attendanceRecordStore.attendeesAttendanceRecords(this.attendees() ?? [], this.selectedAttendance()?.id ?? ''));
 
   public loadingRecords = computed(() => this.attendanceRecordStore.loading());
+
+  public searchQuery = signal('');
+
+  public readonly filteredRecords = computed(() => {
+    const q = this.searchQuery().toLowerCase().trim();
+    if (!q) return this.attendessRecords();
+    return this.attendessRecords().filter(r =>
+      r.attendee.name.toLowerCase().includes(q)
+    );
+  });
 
   public updateAttendanceRecord(status: AttendanceRecordStatus, attendeeRecord: { attendee: GetAttendee; attendanceRecord: GetAttendanceRecord | undefined }): void { 
     if (attendeeRecord.attendanceRecord) {

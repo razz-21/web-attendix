@@ -11,17 +11,26 @@
     </div>
   </div>
 
+  <div class="attendance-drawer-search">
+    <mat-form-field appearance="outline" class="attendance-drawer-search__field">
+      <mat-label>Search attendee</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput [(ngModel)]="searchQuery" />
+    </mat-form-field>
+  </div>
+
+
   <div class="attendance-drawer-content">
     @if (loadingRecords()) {
       <app-loading-section label="Loading attendance records" />
-    } @else if (attendessRecords().length === 0) {
+    } @else if (filteredRecords().length === 0) {
       <app-empty-section
         title="No attendees found"
         message="There are no attendees for this attendance yet."
       />
     } @else {
       <mat-list>
-        @for (attendeeRecord of attendessRecords(); track attendeeRecord.attendee.id) {
+        @for (attendeeRecord of filteredRecords(); track attendeeRecord.attendee.id) {
           <mat-list-item role="listitem">
             <div class="attendance-drawer-content-item">
               <div class="attendance-drawer-content-item-left">

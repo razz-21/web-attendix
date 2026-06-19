@@ -87,6 +87,14 @@
   }
 }
 
+.attendance-drawer-search {
+  padding: 0.5rem 1rem 0;
+
+  &__field {
+    width: 100%;
+  }
+}
+
 // Compact mat-button-toggle-group (tokens inherit; label padding needs piercing encapsulation)
 :host ::ng-deep .attendance-record-type-toggle {
   --mat-button-toggle-height: 28px;
