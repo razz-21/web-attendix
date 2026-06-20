@@ -325,13 +325,29 @@ export class AttendanceDetailsRecordsComponent {
       },
     });
   }
+
+  private formatDateForCsv(dateStr: string): string {
+    const date = new Date(dateStr);
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${month}/${day}/${year}`;
+  }
+
+  private escapeCsvValue(value: string | number): string {
+    const stringValue = String(value);
+    if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+      return `"${stringValue.replace(/"/g, '""')}"`;
+    }
+    return stringValue;
+  }
   
   protected exportCsv(): void {
     const isPoints = this.viewMode() === 'points';
 
     const headers = ['Attendee', 'Total', 'Avg'];
     for (const attendance of this.attendances()) {
-      headers.push(attendance.attendance_date);
+      headers.push(this.formatDateForCsv(attendance.attendance_date));
     }
 
     const rows = [];
@@ -351,11 +367,12 @@ export class AttendanceDetailsRecordsComponent {
         }
       }
 
-      rows.push(row.join(','));
+      rows.push(row.map(this.escapeCsvValue).join(','));
     }
 
-    const csv = [headers.join(','), ...rows].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
+    const escapedHeaders = headers.map(this.escapeCsvValue).join(',');
+    const csv = [escapedHeaders, ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = 'attendance-records.csv';
