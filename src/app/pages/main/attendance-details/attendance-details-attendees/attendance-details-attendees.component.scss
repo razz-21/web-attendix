@@ -1,0 +1,39 @@
+.attendees-page {
+  padding: 1.5rem;
+}
+
+.attendees-page-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+}
+
+.attendees-page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.page-title {
+  font-size: var(--mat-sys-headline-medium-size, 1.75rem);
+  color: var(--mat-sys-on-surface);
+}
+
+.page-description {
+  font-size: var(--mat-sys-body-small-size, 0.75rem);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.attendees-page-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: -2.5rem;
+}

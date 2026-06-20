@@ -37,6 +37,9 @@ yarn-error.log
 testem.log
 /typings
 __screenshots__/
+playwright-report/
+test-results/
+blob-report/
 
 # System files
 .DS_Store
@@ -44,3 +47,6 @@ Thumbs.db
 
 # Package
 package-lock.json
+.vercel
+.env*
+.env*.local

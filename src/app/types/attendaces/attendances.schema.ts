@@ -5,6 +5,13 @@ export const AttendanceScheduleDaysSchema = z.array(z.enum(['Mon', 'Tue', 'Wed',
 
 export const AttendanceStatusSchema = z.enum(['active', 'archived'])
 
+export const AttendanceConfigurationsSchema = z.object({
+  present_point: z.number().min(0),
+  late_point: z.number().min(0),
+  absent_point: z.number().min(0),
+  excused_point: z.number().min(0),
+});
+
 export const AttendanceSchema = z.object({
   id: z.uuidv4(),
   name: z.string(),
@@ -12,7 +19,9 @@ export const AttendanceSchema = z.object({
   description: z.string(),
   schedule_days: AttendanceScheduleDaysSchema,
   late_threshold: z.number(),
+  configurations: AttendanceConfigurationsSchema.optional().nullable(),
   status: AttendanceStatusSchema,
+  shared_with: z.array(z.uuidv4()).default([]),
   created_by: z.uuidv4(),
   created_at: z.iso.datetime(),
   updated_at: z.iso.datetime(),
@@ -20,6 +29,7 @@ export const AttendanceSchema = z.object({
 
 export const GetAttendanceSchema = AttendanceSchema.extend({
   created_by: UserSchema.pick({ id: true, firstname: true, lastname: true }),
+  shared_with_users: z.array(UserSchema.pick({ id: true, firstname: true, lastname: true })),
 });
 
 export const GetPaginatedAttendancesSchema = z.object({

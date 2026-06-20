@@ -1,5 +1,5 @@
 // AUTH ROUTES
-export const AUTH_BASE_PATH = '/';
+export const AUTH_BASE_PATH = '';
 export const AUTH_LOGIN_PATH = `${AUTH_BASE_PATH}`;
 export const AUTH_REQUEST_ACCOUNT_PATH = `${AUTH_BASE_PATH}/request-account`;
 export const AUTH_REQUEST_ACCOUNT_SUCCESS_PATH = `${AUTH_BASE_PATH}/request-account/success`;
@@ -7,9 +7,16 @@ export const AUTH_REQUEST_ACCOUNT_SUCCESS_PATH = `${AUTH_BASE_PATH}/request-acco
 // MAIN ROUTES
 export const MAIN_BASE_PATH = '/main';
 export const MAIN_DASHBOARD_PATH = `${MAIN_BASE_PATH}/dashboard`;
+export const MAIN_HOME_PATH = `${MAIN_BASE_PATH}/home`;
 export const MAIN_PROFILE_PATH = `${MAIN_BASE_PATH}/profile`;
 export const MAIN_SETTINGS_PATH = `${MAIN_BASE_PATH}/settings`;
 export const MAIN_ATTENDANCES_PATH = `${MAIN_BASE_PATH}/attendances`;
+export const MAIN_ATTENDANCE_DETAILS_PATH = `${MAIN_ATTENDANCES_PATH}/:id`;
+export const MAIN_ATTENDANCE_DETAILS_ATTENDANCES_PATH = `${MAIN_ATTENDANCE_DETAILS_PATH}/attendances`;
+export const MAIN_ATTENDANCE_DETAILS_ATTENDEES_PATH = `${MAIN_ATTENDANCE_DETAILS_PATH}/attendees`;
+export const MAIN_ATTENDANCE_DETAILS_RECORDS_PATH = `${MAIN_ATTENDANCE_DETAILS_PATH}/records`;
+export const MAIN_ATTENDANCE_DETAILS_ANALYSIS_PATH = `${MAIN_ATTENDANCE_DETAILS_PATH}/analysis`;
+export const MAIN_ATTENDANCE_DETAILS_CONFIGURATIONS_PATH = `${MAIN_ATTENDANCE_DETAILS_PATH}/configurations`;
 export const MAIN_GROUPS_PATH = `${MAIN_BASE_PATH}/groups`;
 export const MAIN_USERS_PATH = `${MAIN_BASE_PATH}/users`;
 export const MAIN_USER_DETAILS_PATH = `${MAIN_BASE_PATH}/users/:id`;

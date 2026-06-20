@@ -22,7 +22,7 @@ export const GroupMembersEvents = eventGroup({
     paginateGroupMembersFailure: type<string>(),
 
     importGroupMembers: type<{ group_id: string; members: PostGroupMember[] }>(),
-    importGroupMembersSuccess: type<void>(),
+    importGroupMembersSuccess: type<GetGroupMember[]>(),
     importGroupMembersFailure: type<string>(),
 
     createGroupMember: type<{ group_id: string; member: PostGroupMember }>(),

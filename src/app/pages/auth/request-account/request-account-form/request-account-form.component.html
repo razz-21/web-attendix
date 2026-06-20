@@ -64,6 +64,26 @@
     </div>
 
     <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email</mat-label>
+      <input matInput [formField]="requestForm.email" autocomplete="email" />
+      @if (requestForm.email().touched() && requestForm.email().invalid()) {
+        <mat-error>
+          @switch (requestForm.email().errors()[0]?.kind) {
+            @case ('required') {
+              Email is required
+            }
+            @case ('email') {
+              Invalid email address
+            }
+            @default {
+              {{ requestForm.email().errors()[0]?.message ?? 'Invalid value' }}
+            }
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
       <mat-label>Department</mat-label>
       <mat-select [formField]="requestForm.department">
         @for (dept of departments; track dept.name) {
@@ -169,5 +189,11 @@
     </mat-form-field>
   </div>
 
-  <button type="submit" matButton="filled" color="primary" class="full-width">Submit request</button>
+  <button type="submit" matButton="filled" color="primary" class="full-width">
+    @if (requestAccountLoading()) {
+      <mat-progress-spinner mode="indeterminate" diameter="20"></mat-progress-spinner>
+    } @else {
+      Submit request
+    }
+  </button>
 </form>

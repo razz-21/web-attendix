@@ -6,6 +6,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { LoadingSectionComponent } from "@/app/compponents/loading-section/loading-section.component";
 import { AttendanceStatus } from '@/app/types/attendaces/attendances.types';
+import { MAIN_ATTENDANCE_DETAILS_PATH } from '@/app/constants/route.constant';
+import { Router } from '@angular/router';
+import { AuthStore } from '@/app/store/auth/auth.store';
 
 export interface Attendance {
   id: string;
@@ -16,6 +19,8 @@ export interface Attendance {
   description: string;
   lateThreshold: number;
   createdAt: string;
+  createdBy: string;
+  isSharedWithMe?: boolean;
 }
 
 @Component({
@@ -33,24 +38,40 @@ export interface Attendance {
   ],
 })
 export class AttendanceTableComponent {
+  private readonly router = inject(Router);
+  private readonly authStore = inject(AuthStore);
+
   public readonly attendances = input<Attendance[]>([]);
   public readonly loading = input<boolean>(false);
 
   public readonly attendanceArchived = output<string>();
   public readonly attendanceSetAsActive = output<string>();
+  public readonly attendanceEdited = output<Attendance>();
 
   public readonly hasAttendances = computed(() => this.attendances().length > 0);
+  public readonly currentUser = computed(() => this.authStore.user());
 
-  public onEditAttendance(attendance: Attendance): void {
+  public canManage(attendance: Attendance): boolean {
+    const userId = this.currentUser()?.id;
+    if (!userId) return false;
+    return attendance.createdBy === userId;
+  }
+
+  public onEditAttendance(attendance: Attendance, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+
     if (attendance.status === 'archived') {
       return;
     }
 
-    console.log('Edit attendance:', attendance);
-    // TODO: Handle edit action
+    this.attendanceEdited.emit(attendance);
   }
 
-  public onArchiveAttendance(attendance: Attendance): void {
+  public onArchiveAttendance(attendance: Attendance, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+
     if (attendance.status === 'archived') {
       return;
     }
@@ -58,11 +79,19 @@ export class AttendanceTableComponent {
     this.attendanceArchived.emit(attendance.id);
   }
 
-  public onSetAttendanceAsActive(attendance: Attendance): void {
+  public onSetAttendanceAsActive(attendance: Attendance, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+
     if (attendance.status === 'active') {
       return;
     }
 
     this.attendanceSetAsActive.emit(attendance.id);
+  }
+
+  public onAttendanceClick(attendance: Attendance): void {
+    const path = MAIN_ATTENDANCE_DETAILS_PATH.replace(':id', attendance.id);
+    this.router.navigate([path]);
   }
 }

@@ -24,22 +24,42 @@
       <mat-expansion-panel-header>
         <div class="workspace-details-page-expansion-panel-header-content">
           <mat-icon>crowdsource</mat-icon>
-          <span>Groups (20) TODO: Add groups</span>
+          <span>Groups ({{ totalGroups() }})</span>
         </div>
       </mat-expansion-panel-header>
       <div class="workspace-details-page-content">
         <mat-list role="list">
-          <mat-list-item role="listitem">
-            <div class="workspace-details-page-expansion-panel-list-item-content">
-              <span>Group 1</span>
-  
-              <div class="workspace-details-page-expansion-panel-list-item-actions">
-                <button mat-icon-button matTooltip="View group" matTooltipPosition="above">
-                  <mat-icon>visibility</mat-icon>
-                </button>
-              </div>
-            </div>
-          </mat-list-item>
+          @if (loadingGroups()) {
+            <app-loading-section label="Loading groups" />
+          } @else {
+            @if (emptyGroups()) {
+              <mat-list-item role="listitem">
+                <div class="workspace-details-page-expansion-panel-list-item-content">
+                  <span>No groups found</span>
+                </div>
+              </mat-list-item>
+            } @else {
+              @for (group of groups(); track group.id) {
+                <mat-list-item role="listitem">
+                  <div class="workspace-details-page-expansion-panel-list-item-content">
+                    <div class="workspace-details-page-expansion-panel-list-item-content-left">
+                      <mat-icon class="workspace-details-group-icon">groups</mat-icon>
+                      <div class="workspace-details-group-info">
+                        <span class="workspace-details-group-name">{{ group.name }}</span>
+                        <span class="workspace-details-group-description">{{ group.description || 'No description provided' }}</span>
+                      </div>
+                    </div>
+        
+                    <div class="workspace-details-page-expansion-panel-list-item-content-right">
+                      <button mat-icon-button matTooltip="View group" matTooltipPosition="above" (click)="viewGroup(group)">
+                        <mat-icon>visibility</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                </mat-list-item>
+              }
+            }
+          }
         </mat-list>
       </div>
     </mat-expansion-panel>
@@ -68,7 +88,8 @@
                 <mat-list-item role="listitem">
                   <div class="workspace-details-page-expansion-panel-list-item-content">
                     <div class="workspace-details-page-expansion-panel-list-item-content-left">
-                      <app-avatar size="md" url="https://github.com/ernestorazo.png" />
+                      @let fullname = user.firstname + ' ' + user.lastname;
+                      <app-avatar size="sm" [avatarName]="fullname" />
                       <span>{{ user.firstname }} {{ user.lastname }}</span>
                     </div>
         

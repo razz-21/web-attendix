@@ -1,0 +1,185 @@
+<div class="records-container">
+  <div class="records-header">
+    <div class="records-header-filters">
+    @for (key of [dateRangeInputKey()]; track key) {
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="records-date-range">
+      <mat-label>Select dates</mat-label>
+      <mat-date-range-input [rangePicker]="dateRangePicker">
+        <input
+          matStartDate
+          placeholder="Start date"
+          [value]="filterStartDate()"
+          (dateChange)="filterStartDate.set($event.value)"
+        />
+        <input
+          matEndDate
+          placeholder="End date"
+          [value]="filterEndDate()"
+          (dateChange)="filterEndDate.set($event.value)"
+        />
+      </mat-date-range-input>
+      @if (hasDateRangeFilter()) {
+        <button
+          mat-icon-button
+          matIconSuffix
+          type="button"
+          class="records-date-range-clear"
+          aria-label="Clear date range"
+          (click)="clearDateRangeFilter()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      } @else {
+        <mat-datepicker-toggle matIconSuffix [for]="dateRangePicker" />
+      }
+      <mat-date-range-picker #dateRangePicker />
+    </mat-form-field>
+    }
+    </div>
+
+    <div class="records-header-actions">
+    <button mat-stroked-button type="button" (click)="exportCsv()">
+      <mat-icon>download</mat-icon>
+      Export CSV
+    </button>
+
+    <mat-button-toggle-group
+      class="records-view-toggle"
+      [value]="viewMode()"
+      (change)="setViewMode($event.value)"
+      aria-label="Records view"
+    >
+      <mat-button-toggle value="status">Status</mat-button-toggle>
+      <mat-button-toggle value="points">Points</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+
+  <div class="records-table-wrap">
+    <table
+      mat-table
+      [dataSource]="loading() ? [null] : attendees()"
+      class="records-table"
+      role="grid"
+    >
+      <ng-container matColumnDef="attendee" sticky>
+        <th mat-header-cell *matHeaderCellDef scope="col">Attendee</th>
+        <td mat-cell *matCellDef="let attendee">{{ attendee.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="total" sticky>
+        <th mat-header-cell *matHeaderCellDef scope="col" class="records-table__summary-header">Total</th>
+        <td mat-cell *matCellDef="let attendee" class="records-table__summary-cell">
+          <span class="records-summary-value records-summary-value--total">
+            {{ formatPoints(getAttendeeTotalPoints(attendee.id)) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="avg" sticky>
+        <th mat-header-cell *matHeaderCellDef scope="col" class="records-table__summary-header">Avg</th>
+        <td mat-cell *matCellDef="let attendee" class="records-table__summary-cell">
+          <span class="records-summary-value">{{ formatAttendancePercent(getAttendeeAverageAttendance(attendee.id)) }}</span>
+        </td>
+      </ng-container>
+  
+      @for (attendance of attendances(); track attendance.id) {
+        <ng-container [matColumnDef]="attendanceColumnId(attendance.id)">
+          <th mat-header-cell *matHeaderCellDef scope="col" class="records-table__attendance-header">
+            <div class="records-table__attendance-header-content">
+              <span class="records-table__attendance-title" [title]="attendance.name">{{ attendance.name }}</span>
+              <span class="records-table__attendance-date">
+                {{ attendance.attendance_date + 'T00:00:00' | date: 'MMM d, y' }}
+              </span>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let attendee" class="records-table__attendance-cell">
+            @if (viewMode() === 'status') {
+              <mat-select
+                class="records-status-select"
+                [ngClass]="statusSelectClass(attendee.id, attendance.id)"
+                panelClass="records-status-select-panel"
+                panelWidth="9rem"
+                hideSingleSelectionIndicator
+                disableOptionCentering
+                [value]="getRecordStatus(attendee.id, attendance.id)"
+                [disabled]="saving() || isArchived()"
+                [aria-label]="'Status for ' + attendee.name + ' on ' + attendance.name"
+                (selectionChange)="onStatusChange($event.value, attendee, attendance)"
+                (click)="$event.stopPropagation()"
+              >
+                <mat-select-trigger>
+                  @if (getRecordStatus(attendee.id, attendance.id); as status) {
+                    {{ statusLabels[status] }}
+                  } @else {
+                    —
+                  }
+                </mat-select-trigger>
+
+                @for (option of statusOptions; track option.value) {
+                  <mat-option [value]="option.value">
+                    <span class="records-status-chip records-status-chip--{{ option.value }}">
+                      {{ option.label }}
+                    </span>
+                  </mat-option>
+                }
+              </mat-select>
+
+              @if (getRecordStatus(attendee.id, attendance.id) === 'excused') {
+                <button
+                  type="button"
+                  class="records-status-reason-btn"
+                  [disabled]="saving() || isArchived()"
+                  aria-label="Edit excused reason for {{ attendee.name }}"
+                  (click)="$event.stopPropagation(); openExcusedModal(getRecord(attendee.id, attendance.id)!)"
+                >
+                  <mat-icon>edit_note</mat-icon>
+                </button>
+              }
+            } @else {
+              <span
+                class="records-points-value"
+                [ngClass]="'records-points-value--' + (getRecordStatus(attendee.id, attendance.id) ?? 'unset')"
+              >
+                {{ formatPoints(getRecordPointsValue(attendee.id, attendance.id)) }}
+              </span>
+            }
+          </td>
+        </ng-container>
+      }
+  
+      <ng-container matColumnDef="loading">
+        <td
+          mat-cell
+          *matCellDef="let _"
+          [attr.colspan]="displayedColumns().length"
+          class="records-table-loading-cell"
+        >
+          <div class="records-table-loading" role="status" aria-live="polite" aria-busy="true">
+            <mat-spinner [diameter]="22" [strokeWidth]="3"></mat-spinner>
+            <span>Loading records...</span>
+          </div>
+        </td>
+      </ng-container>
+  
+      <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
+  
+      <tr mat-row *matRowDef="let row; columns: loadingRowColumns; when: isLoading"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns(); when: isNotLoading"></tr>
+  
+      <tr class="mat-mdc-row records-table-empty-row" *matNoDataRow>
+        <td class="mat-mdc-cell records-table-empty-cell" [attr.colspan]="displayedColumns().length">
+          <div class="records-table-empty-state">
+            <mat-icon aria-hidden="true">table_chart</mat-icon>
+            @if (allAttendances().length === 0) {
+              <span>No attendances yet. Add attendances to see records here.</span>
+            } @else if (attendances().length === 0) {
+              <span>No attendances match the selected date range.</span>
+            } @else {
+              <span>No attendees found</span>
+            }
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

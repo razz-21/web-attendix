@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from "@angular/core";
+import { Component, computed, effect, inject, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { UserRole } from "@/app/types/users/users.type";
 import { disabled, form, FormField, FormRoot, required, validate } from "@angular/forms/signals";
@@ -41,6 +41,15 @@ export class RolesAndPermissionSectionComponent {
   });
 
   public rolesAndPermissionModel = signal<RolesAndPermissionModel>(this.emptyModel());
+
+  readonly #syncRole = effect(() => {
+    const user = this.authStore.user();
+    if (user) {
+      this.rolesAndPermissionModel.set({
+        role: user.role,
+      });
+    }
+  }, { allowSignalWrites: true });
 
   public rolesAndPermissionForm = form(this.rolesAndPermissionModel, (root) => {
     required(root.role);

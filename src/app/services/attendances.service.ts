@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '@/environments/environment';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, shareReplay } from 'rxjs';
 import { GetAttendance, GetAttendancesQuery, GetPaginatedAttendances, PatchAttendance, PostAttendance } from '../types/attendaces/attendances.types';
 
 @Injectable({
@@ -10,6 +10,7 @@ import { GetAttendance, GetAttendancesQuery, GetPaginatedAttendances, PatchAtten
 export class AttendancesService {
   private readonly http = inject(HttpClient);
   private readonly attendancesApi = `${environment.apiBaseUrl}/api/v1/attendances`;
+  private attendancesCache = new Map<string, Promise<GetAttendance[]>>();
 
   public getAttendances(params: GetAttendancesQuery): Promise<GetAttendance[]> {
     const queryParams = new URLSearchParams();
@@ -55,5 +56,17 @@ export class AttendancesService {
         `${this.attendancesApi}/${id}`
       )
     );
+  }
+
+  public clearCache(): void {
+    this.attendancesCache.clear();
+  }
+
+  public clearCacheByKey(q?: string, status?: string): void {
+    const queryParams = new URLSearchParams();
+    if (q) queryParams.set('q', q);
+    if (status) queryParams.set('status', status);
+    const cacheKey = queryParams.toString();
+    this.attendancesCache.delete(cacheKey);
   }
 }

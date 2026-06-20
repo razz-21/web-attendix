@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FormField, FormRoot, form, required, min, validate } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -7,6 +7,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
+import { sortScheduleDays } from '@/app/constants/schedule-days.constant';
 
 const SCHEDULE_DAYS = [
   'Monday',
@@ -54,6 +56,7 @@ const emptyModel = (): AttendanceFormModel => ({
   ],
 })
 export class AttendanceFormComponent {
+  public readonly initialData = input<AttendanceFormModel | null>(null);
   public readonly model = signal<AttendanceFormModel>(emptyModel());
   public readonly loading = signal(false);
 
@@ -74,12 +77,17 @@ export class AttendanceFormComponent {
   });
 
   constructor() {
-    // Auto-fill code when component initializes
+    // Auto-fill code or initialize with data when component initializes
     effect(() => {
-      this.model.update(m => ({
-        ...m,
-        code: this.generatedCode(),
-      }));
+      const initial = this.initialData();
+      if (initial) {
+        this.model.set({ ...initial });
+      } else {
+        this.model.update(m => ({
+          ...m,
+          code: this.generatedCode(),
+        }));
+      }
     }, { allowSignalWrites: true });
   }
 
@@ -116,7 +124,7 @@ export class AttendanceFormComponent {
     const updated = current.includes(day)
       ? current.filter(d => d !== day)
       : [...current, day];
-    this.model.update(m => ({ ...m, scheduleDays: updated }));
+    this.model.update(m => ({ ...m, scheduleDays: sortScheduleDays(updated) }));
   }
 
   public isScheduleDaySelected(day: string): boolean {

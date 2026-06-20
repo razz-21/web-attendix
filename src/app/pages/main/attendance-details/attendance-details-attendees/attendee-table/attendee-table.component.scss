@@ -1,0 +1,90 @@
+.attendee-table-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  .attendee-table-filter__fields {
+    max-width: 820px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  #clear-filters-btn {
+    flex-shrink: 0;
+    margin-bottom: 1rem;
+
+    mat-icon {
+      color: var(--mat-sys-error);
+    }
+  }
+}
+
+.attendee-table-filter__search {
+  flex: 0 0 400px;
+  max-width: 400px;
+}
+
+.attendee-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  td{
+    cursor: pointer;
+    
+  }
+}
+
+.attendee-table {
+  width: 100%;
+}
+
+.attendee-table-paginator-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+
+  .mat-mdc-paginator {
+    background: transparent;
+  }
+}
+
+.attendee-table-loading {
+  min-height: 72px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.attendee-table-loading-cell {
+  text-align: center;
+}
+
+.attendee-table-empty-row {
+  .attendee-table-empty-cell {
+    text-align: center;
+  }
+}
+
+.attendee-table-empty-state {
+  min-height: 72px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.attendee-table__action-btn {
+  --mat-icon-button-state-layer-size: 30px;
+  --mat-icon-button-icon-size: 18px;
+
+  mat-icon {
+    font-size: 18px;
+    line-height: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}

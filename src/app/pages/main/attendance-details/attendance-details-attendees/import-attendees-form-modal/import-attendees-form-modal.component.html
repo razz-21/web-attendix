@@ -1,0 +1,10 @@
+<mat-dialog-content class="import-attendees-form-modal__content">
+  <h2>Import Attendees</h2>
+  <p>Select a group to import its members as attendees. Members that already exist as attendees (by Student ID / RFID) will be skipped.</p>
+  
+  <app-import-attendees-form 
+    [disabled]="store.loadingForm()" 
+    (importSubmitted)="onSubmit($event)" 
+    (formCancelled)="cancel()">
+  </app-import-attendees-form>
+</mat-dialog-content>

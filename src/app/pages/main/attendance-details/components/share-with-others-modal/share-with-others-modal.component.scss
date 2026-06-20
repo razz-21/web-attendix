@@ -1,0 +1,60 @@
+.share-with-others-modal__content {
+  padding: 1.5rem;
+  min-width: min(100%, 580px);
+}
+
+.share-with-others-modal__intro {
+  margin: 0 0 1rem;
+  color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.share-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.share-chip__name {
+  font-size: 0.875rem;
+  line-height: 1.2;
+}
+
+.share-with-others-modal__search-suffix {
+  margin-inline-end: 0.5rem;
+  margin-inline-start: 0.25rem;
+}
+
+.user-option {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  line-height: 1.3;
+}
+
+.user-option__name {
+  font-size: 0.9375rem;
+}
+
+.user-option__email {
+  font-size: 0.75rem;
+  opacity: 0.72;
+}
+
+.share-with-others-modal__empty-option {
+  font-size: 0.875rem;
+  color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
+  justify-content: center;
+}
+
+mat-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  padding: 1rem 0;
+}

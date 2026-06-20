@@ -1,0 +1,45 @@
+<div class="analysis-page">
+  @if (loading()) {
+    <div class="analysis-loading">
+      <p>Loading analytics...</p>
+    </div>
+  } @else if (error()) {
+    <div class="analysis-error">
+      <p>Failed to load analytics. Please try again.</p>
+    </div>
+  } @else {
+    <div class="analysis-kpi-grid">
+      <div class="analysis-kpi-card">
+        <span class="analysis-kpi-label">Total Attendees</span>
+        <span class="analysis-kpi-value">{{ totalAttendees() }}</span>
+      </div>
+
+      <div class="analysis-kpi-card">
+        <span class="analysis-kpi-label">Total Records</span>
+        <span class="analysis-kpi-value">{{ totalRecords() }}</span>
+      </div>
+
+      <div class="analysis-kpi-card">
+        <span class="analysis-kpi-label">Attendance Average</span>
+        <span class="analysis-kpi-value">{{ attendanceAverage() }}</span>
+      </div>
+
+      <div class="analysis-kpi-card">
+        <span class="analysis-kpi-label">Total Attendance</span>
+        <span class="analysis-kpi-value">{{ totalAttendance() }}</span>
+      </div>
+    </div>
+
+    <div class="analysis-chart-card">
+      <h2 class="analysis-chart-title">Attendance Trend</h2>
+
+      @if (totalRecords() === 0) {
+        <p class="analysis-empty">No attendance data available yet.</p>
+      } @else {
+        <div class="analysis-chart-wrap">
+          <canvas #lineChart></canvas>
+        </div>
+      }
+    </div>
+  }
+</div>

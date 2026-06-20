@@ -5,8 +5,14 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:development": "ng build --configuration development",
+    "build:vercel": "node scripts/vercel-build.mjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "e2e:debug": "playwright test --debug",
+    "e2e:report": "playwright show-report",
     "prepare": "husky"
   },
   "prettier": {
@@ -37,6 +43,9 @@
     "@ngrx/operators": "^21.1.0",
     "@ngrx/signals": "^21.1.0",
     "@ngrx/store": "^21.1.0",
+    "chart.js": "^4.5.1",
+    "ng2-charts": "^10.0.0",
+    "qrcode-generator": "^2.0.4",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zod": "^4.3.6"
@@ -47,6 +56,8 @@
     "@angular/compiler-cli": "^21.0.0",
     "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^20.5.0",
+    "@playwright/test": "^1.55.0",
+    "dotenv": "^17.4.2",
     "husky": "^9.1.7",
     "jsdom": "^27.1.0",
     "typescript": "~5.9.2",

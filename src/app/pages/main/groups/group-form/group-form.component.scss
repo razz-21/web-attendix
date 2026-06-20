@@ -19,6 +19,36 @@
   gap: 1rem;
 }
 
+.share-workspace-toggle {
+  display: flex;
+  align-items: flex-start;
+}
+
+.share-workspace-toggle__label-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.share-workspace-toggle__label-text {
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.share-workspace-toggle__hint {
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
+  margin: 0;
+  line-height: 1.4;
+  white-space: normal;
+}
+
+.group-form__checkbox {
+  display: flex;
+  align-items: center;
+  margin-top: -0.5rem;
+}
+
 .group-form__actions {
   display: flex;
   justify-content: flex-end;

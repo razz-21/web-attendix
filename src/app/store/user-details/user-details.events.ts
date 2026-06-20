@@ -13,6 +13,10 @@ export const UserDetailsEvents = eventGroup({
     updateUserDetailsSuccess: type<{ user: GetUser }>(),
     updateUserDetailsFailure: type<UserErrorResponse>(),
 
+    approveUser: type<{ user: GetUser }>(),
+    approveUserSuccess: type<{ user: GetUser }>(),
+    approveUserFailure: type<UserErrorResponse>(),
+
     deleteUser: type<{ user: GetUser }>(),
     deleteUserSuccess: type<boolean>(),
     deleteUserFailure: type<UserErrorResponse>(),

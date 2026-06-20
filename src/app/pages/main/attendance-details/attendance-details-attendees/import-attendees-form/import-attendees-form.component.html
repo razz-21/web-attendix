@@ -1,0 +1,50 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="import-attendees-form">
+  <div class="import-attendees-form__fields">
+    @if (isLoadingGroups()) {
+    <div class="loading-spinner-container">
+      <mat-spinner diameter="30"></mat-spinner>
+    </div>
+    } @else {
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Select Group</mat-label>
+      <mat-select formControlName="group_id" placeholder="Choose a group" (openedChange)="onDropdownOpened($event)">
+          <mat-select-trigger>
+            @if (selectedGroup()) {
+              <div class="group-option-content" style="padding: 0;">
+                <span class="group-name">{{ selectedGroup()?.name }}</span>
+                <span class="group-badge" style="margin-right: 10px;" [class.empty]="!selectedGroup()?.count_members">{{ selectedGroup()?.count_members || 0 }} {{ selectedGroup()?.count_members === 1 ? 'attendee' : 'attendees' }}</span>
+              </div>
+            }
+          </mat-select-trigger>
+        @for (group of groups(); track group.id) {
+        <mat-option [value]="group.id" [disabled]="group.count_members === 0">
+          <div class="group-option-content">
+            <span class="group-name">{{ group.name }}</span>
+            <span class="group-badge" [class.empty]="!group.count_members">{{ group.count_members || 0 }} {{ group.count_members === 1 ? 'attendee' : 'attendees' }}</span>
+          </div>
+        </mat-option>
+        }
+      </mat-select>
+      @if (form.controls.group_id.hasError('required')) {
+      <mat-error>Group is required</mat-error>
+      }
+    </mat-form-field>
+
+    @if (groups().length === 0) {
+    <div class="no-groups-message">
+      <p>No groups available. Please create a group first.</p>
+    </div>
+    }
+    }
+  </div>
+
+  <div class="import-attendees-form__actions">
+    <button mat-button type="button" (click)="onCancel()" [disabled]="disabled()">
+      Cancel
+    </button>
+    <button mat-flat-button color="primary" type="submit"
+      [disabled]="form.invalid || disabled() || isLoadingGroups() || groups().length === 0">
+      Import
+    </button>
+  </div>
+</form>

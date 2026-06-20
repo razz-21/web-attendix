@@ -1,5 +1,14 @@
+// :host {
+//   display: block;
+//   height: 100%;
+// }
+
 .main-sidebar {
+  display: flex;
+  flex-direction: column;
   padding: 1rem;
+  max-height: calc(100dvh - 2rem);
+  height: 100%;
 }
 
 .main-sidebar-brand {
@@ -28,6 +37,10 @@
   }
 }
 
+.main-sidebar-footer {
+  margin-top: auto;
+}
+
 .main-sidebar-item span {
   font-size: 0.875rem;
 }
@@ -37,4 +50,19 @@
   height: 22px;
   font-size: 22px;
   line-height: 22px;
+}
+
+.main-sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+
+  span {
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
 }

@@ -1,0 +1,64 @@
+.import-attendees-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  &__fields {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .loading-spinner-container {
+      display: flex;
+      justify-content: center;
+      padding: 2rem 0;
+    }
+
+    .no-groups-message {
+      padding: 1rem;
+      background-color: var(--md-sys-color-error-container, #fdecea);
+      color: var(--md-sys-color-on-error-container, #c62828);
+      border-radius: 8px;
+      font-size: 0.875rem;
+    }
+
+    mat-form-field {
+      width: 100%;
+    }
+  }
+
+  ::ng-deep .group-option-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 8px;
+
+    .group-name {
+      font-weight: 500;
+    }
+
+    .group-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background-color: var(--md-sys-color-primary-container, #c7e7ff);
+      color: var(--md-sys-color-on-primary-container, #21005d);
+
+      &.empty {
+        background-color: var(--md-sys-color-surface-variant, #e7e0ec);
+        color: var(--md-sys-color-on-surface-variant, #49454f);
+      }
+    }
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+}

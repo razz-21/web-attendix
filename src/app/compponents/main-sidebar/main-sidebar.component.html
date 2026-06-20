@@ -4,11 +4,26 @@
     <span class="mat-title-medium">WebAttendix</span>
   </div>
   <mat-nav-list>
-    @for (route of routes; track route.path) {
+    @for (route of routes(); track route.path) {
       <a mat-list-item class="main-sidebar-item" [routerLink]="route.path" [routerLinkActive]="'main-sidebar-item--active'">
         <mat-icon matListItemIcon size="small">{{ route.icon }}</mat-icon>
         <span matListItemTitle>{{ route.label }}</span>
       </a>
     }
   </mat-nav-list>
+
+  <div class="main-sidebar-footer">
+
+    <div class="main-sidebar-user">
+      <app-avatar size="md" [avatarName]="user()?.firstname + ' ' + user()?.lastname" />
+      <span>{{ user()?.firstname }} {{ user()?.lastname }}</span>
+    </div>
+
+    <mat-nav-list>
+      <mat-list-item role="listitem" (click)="logout()">
+        <mat-icon matListItemIcon size="small">logout</mat-icon>
+        <span matListItemTitle>Logout</span>
+      </mat-list-item>
+    </mat-nav-list>
+  </div>
 </nav>

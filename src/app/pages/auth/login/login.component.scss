@@ -12,3 +12,39 @@
   padding: 1.5rem;
   min-height: 100dvh;
 }
+
+.login-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.footer-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footer-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.footer-sub, .footer-copy {
+  font-size: 0.75rem;
+  color: #888;
+  margin: 0;
+}
+
+.footer-about {
+  font-size: 0.75rem;
+  color: #888;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

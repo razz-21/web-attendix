@@ -19,6 +19,20 @@
       <textarea matInput [formField]="groupForm.description" rows="3" autocomplete="off"></textarea>
     </mat-form-field>
 
+    @if (hasWorkspace()) {
+      <div class="share-workspace-toggle">
+        <mat-checkbox 
+          [checked]="model().share_to_workspace"
+          (change)="toggleShareToWorkspace($event.checked)"
+          color="primary"
+        >
+          <div class="share-workspace-toggle__label-wrapper">
+            <span class="share-workspace-toggle__label-text">Share this to Workspace</span>
+            <span class="share-workspace-toggle__hint">This group will be shared with users in your workspace.</span>
+          </div>
+        </mat-checkbox>
+      </div>
+    }
   </div>
 
   <div class="group-form__actions">

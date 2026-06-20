@@ -1,0 +1,28 @@
+<div class="stacked-avatar-group" role="group" [attr.aria-label]="ariaLabel()">
+  <div class="stacked-avatar-group__list">
+    @for (user of visibleUsers(); track user.id; let index = $index) {
+      <div
+        class="stacked-avatar-group__item"
+        [matTooltip]="displayName(user)"
+        matTooltipPosition="above"
+      >
+        <app-avatar
+          [size]="size()"
+          [avatarName]="displayName(user)"
+          [url]="user.url"
+          [alt]="displayName(user)"
+        />
+      </div>
+    }
+
+    @if (overflowCount() > 0) {
+      <div
+        class="stacked-avatar-group__overflow"
+        [matTooltip]="'+' + overflowCount() + ' more'"
+        matTooltipPosition="above"
+      >
+        +{{ overflowCount() }}
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,97 @@
+<div class="attendee-table-filter">
+  <div class="attendee-table-filter__fields">
+    <mat-form-field appearance="outline" class="attendee-table-filter__search">
+      <mat-label>Search by name or RFID</mat-label>
+      <input matInput type="search" autocomplete="off" [(ngModel)]="filters().q" (ngModelChange)="searchAttendees()" />
+      @if (filters().q) {
+        <button mat-icon-button matSuffix type="button" aria-label="Clear search" (click)="filters().q = ''; searchAttendees()">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+  </div>
+</div>
+
+<div class="attendee-table-wrap">
+  <table mat-table [dataSource]="loading() ? [null] : data()" class="attendee-table" role="grid">
+    <ng-container matColumnDef="rfid">
+      <th mat-header-cell *matHeaderCellDef scope="col">RFID</th>
+      <td mat-cell *matCellDef="let row">{{ row.rfid }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef scope="col">Name</th>
+      <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="department">
+      <th mat-header-cell *matHeaderCellDef scope="col">Department</th>
+      <td mat-cell *matCellDef="let row">{{ row.department }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="year_level">
+      <th mat-header-cell *matHeaderCellDef scope="col">Year level</th>
+      <td mat-cell *matCellDef="let row">{{ row.year_level }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="section">
+      <th mat-header-cell *matHeaderCellDef scope="col">Section</th>
+      <td mat-cell *matCellDef="let row">{{ row.section }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef scope="col" class="app-table-actions-header">Actions</th>
+      <td mat-cell *matCellDef="let row" class="app-table-actions-cell">
+        @if (!isArchived()) {
+          <button
+            matIconButton
+            type="button"
+            class="attendee-table__action-btn"
+            (click)="$event.stopPropagation(); openEdit(row)"
+            aria-label="Edit attendee"
+            matTooltip="Edit attendee"
+            matTooltipPosition="above"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            matIconButton
+            type="button"
+            class="attendee-table__action-btn"
+            (click)="$event.stopPropagation(); deleteAttendee(row)"
+            aria-label="Delete attendee"
+            matTooltip="Delete attendee"
+            matTooltipPosition="above"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        }
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="loading">
+      <td mat-cell *matCellDef="let _" [attr.colspan]="displayedColumns.length" class="attendee-table-loading-cell">
+        <div class="attendee-table-loading" role="status" aria-live="polite" aria-busy="true">
+          <mat-spinner [diameter]="20" [strokeWidth]="2"></mat-spinner>
+          <span>Loading attendees...</span>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    @if (loading()) {
+      <tr mat-row *matRowDef="let row; columns: loadingRowColumns"></tr>
+    } @else {
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="openEdit(row)"></tr>
+    }
+
+    <tr class="mat-mdc-row attendee-table-empty-row" *matNoDataRow>
+      <td class="mat-mdc-cell attendee-table-empty-cell" [attr.colspan]="displayedColumns.length">
+        <div class="attendee-table-empty-state">
+          <mat-icon aria-hidden="true">group_off</mat-icon>
+          <span>No attendees found</span>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>

@@ -92,9 +92,9 @@ export const GroupsStore = signalStore(
 
     // Create group
     on(GroupsEvents.createGroup, (_, state) => ({ ...state, loadingForm: true, error: null })),
-    on(GroupsEvents.createGroupSuccess, ({ payload }) => [
+    on(GroupsEvents.createGroupSuccess, ({ payload }, state) => [
       prependEntity(payload, { selectId }),
-      { loadingForm: false, error: null },
+      { loadingForm: false, error: null, pagination: { ...state.pagination, total: state.pagination.total + 1 } },
     ]),
     on(GroupsEvents.createGroupFailure, (event, state) => ({ ...state, loadingForm: false, error: event.payload })),
 
@@ -104,9 +104,9 @@ export const GroupsStore = signalStore(
     on(GroupsEvents.updateGroupFailure, (event, state) => ({ ...state, loadingForm: false, error: event.payload })),
 
     // Delete group
-    on(GroupsEvents.deleteGroup, ({ payload }) => [
+    on(GroupsEvents.deleteGroup, ({ payload }, state) => [
       removeEntity(payload.group.id),
-      { deleteLoading: true, currentDeleteGroup: payload.group, error: null },
+      { deleteLoading: true, currentDeleteGroup: payload.group, error: null, pagination: { ...state.pagination, total: state.pagination.total - 1 } },
     ]),
     on(GroupsEvents.deleteGroupSuccess, ({ payload }) => [
       removeEntity(payload.group.id),

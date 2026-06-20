@@ -60,7 +60,7 @@ export const GroupMembersStore = signalStore(
   })),
   withReducer(
     // Load
-    on(GroupMembersEvents.loadGroupMembers, ({ payload }, state) => ({ ...state, loading: true, error: null, currentGroupId: payload.group_id })),
+    on(GroupMembersEvents.loadGroupMembers, ({ payload }, state) => ({ ...state, loading: true, error: null, currentGroupId: payload.group_id, pagination: { ...initialPagination }, filters: { ...initialFilters } })),
     on(GroupMembersEvents.loadGroupMembersSuccess, ({ payload }) => [
       setAllEntities(payload?.data ?? [], { selectId }),
       { pagination: { page: payload?.page ?? 1, limit: payload?.limit ?? 10, total: payload?.total ?? 0 }, loading: false, error: null },
@@ -93,9 +93,9 @@ export const GroupMembersStore = signalStore(
 
     // Create
     on(GroupMembersEvents.createGroupMember, (_, state) => ({ ...state, loadingForm: true, error: null })),
-    on(GroupMembersEvents.createGroupMemberSuccess, ({ payload }) => [
+    on(GroupMembersEvents.createGroupMemberSuccess, ({ payload }, state) => [
       prependEntity(payload, { selectId }),
-      { loadingForm: false, error: null },
+      { loadingForm: false, error: null, pagination: { ...state.pagination, total: state.pagination.total + 1 } },
     ]),
     on(GroupMembersEvents.createGroupMemberFailure, (event, state) => ({ ...state, loadingForm: false, error: event.payload })),
 
@@ -110,13 +110,16 @@ export const GroupMembersStore = signalStore(
 
     // Import
     on(GroupMembersEvents.importGroupMembers, (_, state) => ({ ...state, loadingForm: true, error: null })),
-    on(GroupMembersEvents.importGroupMembersSuccess, (_, state) => ({ ...state, loadingForm: false, error: null })),
+    on(GroupMembersEvents.importGroupMembersSuccess, ({ payload }) => [
+      setAllEntities(payload, { selectId }),
+      { loadingForm: false, error: null },
+    ]),
     on(GroupMembersEvents.importGroupMembersFailure, (event, state) => ({ ...state, loadingForm: false, error: event.payload })),
 
     // Delete
-    on(GroupMembersEvents.deleteGroupMember, ({ payload }) => [
+    on(GroupMembersEvents.deleteGroupMember, ({ payload }, state) => [
       removeEntity(payload.member.id),
-      { deleteLoading: true, currentDeleteMember: payload.member, error: null },
+      { deleteLoading: true, currentDeleteMember: payload.member, error: null, pagination: { ...state.pagination, total: state.pagination.total - 1 } },
     ]),
     on(GroupMembersEvents.deleteGroupMemberSuccess, ({ payload }) => [
       removeEntity(payload.member.id),
@@ -223,7 +226,8 @@ export const GroupMembersStore = signalStore(
       createGroupMemberSuccess$: events.on(GroupMembersEvents.createGroupMemberSuccess).pipe(
         tap(({ payload }) => {
           snackBar.open(`Member ${payload?.name} added successfully`, "Close", { duration: 6000 });
-        })
+        }),
+        map(() => GroupMembersEvents.paginateGroupMembers({ page: store.pagination().page, limit: store.pagination().limit }))
       ),
       createGroupMemberFailure$: events.on(GroupMembersEvents.createGroupMemberFailure).pipe(
         map(({ payload }) => { snackBar.open(payload, "Close", { duration: 6000 }); })
@@ -243,6 +247,7 @@ export const GroupMembersStore = signalStore(
         tap(({ payload }) => {
           snackBar.open(`Member ${payload?.name} updated successfully`, "Close", { duration: 6000 });
         }),
+        map(() => GroupMembersEvents.paginateGroupMembers({ page: store.pagination().page, limit: store.pagination().limit }))
       ),
       updateGroupMemberFailure$: events.on(GroupMembersEvents.updateGroupMemberFailure).pipe(
         map(({ payload }) => { snackBar.open(payload, "Close", { duration: 6000 }); })
@@ -252,7 +257,7 @@ export const GroupMembersStore = signalStore(
         exhaustMap(({ payload }) =>
           from(groupMembersService.importGroupMembers(payload.group_id, payload.members)).pipe(
             mapResponse({
-              next: () => GroupMembersEvents.importGroupMembersSuccess(),
+              next: (response) => GroupMembersEvents.importGroupMembersSuccess(response),
               error: (error: unknown) => GroupMembersEvents.importGroupMembersFailure(error instanceof Error ? error.message : "Failed to import group members"),
             })
           )
@@ -261,7 +266,8 @@ export const GroupMembersStore = signalStore(
       importGroupMembersSuccess$: events.on(GroupMembersEvents.importGroupMembersSuccess).pipe(
         tap(() => {
           snackBar.open(`Members imported successfully`, "Close", { duration: 6000 });
-        })
+        }),
+        map(() => GroupMembersEvents.paginateGroupMembers({ page: store.pagination().page, limit: store.pagination().limit }))
       ),
       importGroupMembersFailure$: events.on(GroupMembersEvents.importGroupMembersFailure).pipe(
         map(({ payload }) => { snackBar.open(payload, "Close", { duration: 6000 }); })
@@ -278,7 +284,8 @@ export const GroupMembersStore = signalStore(
         )
       ),
       deleteGroupMemberSuccess$: events.on(GroupMembersEvents.deleteGroupMemberSuccess).pipe(
-        tap(() => { snackBar.open(`Member deleted successfully`, "Close", { duration: 6000 }); })
+        tap(() => { snackBar.open(`Member deleted successfully`, "Close", { duration: 6000 }); }),
+        map(() => GroupMembersEvents.paginateGroupMembers({ page: store.pagination().page, limit: store.pagination().limit }))
       ),
       deleteGroupMemberFailure$: events.on(GroupMembersEvents.deleteGroupMemberFailure).pipe(
         map(({ payload }) => { snackBar.open(payload.error, "Close", { duration: 6000 }); })

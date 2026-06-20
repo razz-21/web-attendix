@@ -5,16 +5,18 @@ import {
 } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, throwError } from 'rxjs';
+import { catchError, from, of, switchMap, throwError } from 'rxjs';
 import { AUTH_LOGIN_PATH, PUBLIC_ROUTES } from '@/app/constants/route.constant';
 import { environment } from '@/environments/environment';
 import { AuthEvents } from '@/app/store/auth/auth.events';
 import { AuthStore } from '@/app/store/auth/auth.store';
 import { Dispatcher } from '@ngrx/signals/events';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthService } from '@/app/services/auth.service';
 
 const api = environment.apiBaseUrl;
 const mePath = `${api}/api/v1/me`;
+const logoutPath = `${api}/api/v1/auth/logout`;
 
 function isUnauthorizedSession(
   req: HttpRequest<unknown>,
@@ -35,6 +37,7 @@ export const unauthorizedInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const dispatcher = inject(Dispatcher);
   const snackBar = inject(MatSnackBar);
+  const authService = inject(AuthService);
 
   return next(req).pipe(
     catchError((error: unknown) => {
@@ -42,7 +45,7 @@ export const unauthorizedInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => error);
       }
 
-      if (PUBLIC_ROUTES.some(route => req.url.startsWith(route))) {
+      if (PUBLIC_ROUTES.some(route => req.url.startsWith(route)) || req.url.startsWith(logoutPath)) {
         return throwError(() => error);
       }
 
@@ -50,11 +53,15 @@ export const unauthorizedInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => error);
       }
 
-      dispatcher.dispatch(AuthEvents.logoutSuccess());
-      snackBar.open('Session expired. Please login again.', 'Close', { duration: 6000 });
-      void router.navigate([AUTH_LOGIN_PATH]);
-
-      return throwError(() => error);
+      return from(authService.logout()).pipe(
+        catchError(() => of(null)),
+        switchMap(() => {
+          dispatcher.dispatch(AuthEvents.logoutSuccess());
+          snackBar.open('Session expired. Please login again.', 'Close', { duration: 6000 });
+          void router.navigate([AUTH_LOGIN_PATH]);
+          return throwError(() => error);
+        }),
+      );
     }),
   );
 };

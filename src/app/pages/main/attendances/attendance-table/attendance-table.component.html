@@ -5,28 +5,41 @@
     @if (hasAttendances()) {
       <div class="attendance-grid">
         @for (attendance of attendances(); track attendance.id) {
-          <mat-card appearance="outlined" class="attendance-card">
+          <mat-card appearance="outlined" class="attendance-card" (click)="onAttendanceClick(attendance)">
             <mat-card-header>
               <div class="attendance-card-header-content">
                 <div class="attendance-header-info">
-                  <mat-card-title class="attendance-card-title">{{ attendance.name }}</mat-card-title>
-                  <mat-card-subtitle>{{ attendance.code }}</mat-card-subtitle>
+                  <mat-card-title class="attendance-card-title" matTooltip="{{ attendance.name }}" matTooltipPosition="above">
+                    <span>
+                      {{ attendance.name }}
+                    </span>
+                  </mat-card-title>
+                  <mat-card-subtitle>
+                    <div class="attendance-code">{{ attendance.code }}</div>
+                    @if (attendance.isSharedWithMe) {
+                      <span class="attendance-shared-badge" matTooltip="Shared with you" matTooltipPosition="above">
+                        Shared
+                      </span>
+                    }
+                  </mat-card-subtitle>
                 </div>
                 <div class="attendance-header-actions">
-                  @if (attendance.status !== 'archived') {
-                    <button mat-icon-button type="button" (click)="onEditAttendance(attendance)" matTooltip="Edit attendance" matTooltipPosition="above">
-                      <mat-icon>edit</mat-icon>
-                    </button>
-                  }
-                  @if (attendance.status === 'archived') {
-                    <button mat-icon-button type="button" (click)="onSetAttendanceAsActive(attendance)" matTooltip="Set attendance as active" matTooltipPosition="above">
-                      <mat-icon>select_check_box</mat-icon>
-                    </button>
-                  }
-                  @if (attendance.status === 'active') {
-                    <button mat-icon-button type="button" (click)="onArchiveAttendance(attendance)" matTooltip="Archieve attendance" matTooltipPosition="above">
-                      <mat-icon>archive</mat-icon>
-                    </button>
+                  @if (canManage(attendance)) {
+                    @if (attendance.status !== 'archived') {
+                      <button mat-icon-button type="button" (click)="onEditAttendance(attendance, $event)" matTooltip="Edit attendance" matTooltipPosition="above">
+                        <mat-icon>edit</mat-icon>
+                      </button>
+                    }
+                    @if (attendance.status === 'archived') {
+                      <button mat-icon-button type="button" (click)="onSetAttendanceAsActive(attendance, $event)" matTooltip="Set attendance as active" matTooltipPosition="above">
+                        <mat-icon>select_check_box</mat-icon>
+                      </button>
+                    }
+                    @if (attendance.status === 'active') {
+                      <button mat-icon-button type="button" (click)="onArchiveAttendance(attendance, $event)" matTooltip="Archieve attendance" matTooltipPosition="above">
+                        <mat-icon>archive</mat-icon>
+                      </button>
+                    }
                   }
                 </div>
               </div>
@@ -40,7 +53,7 @@
                 </div>
                 <div class="detail-item">
                   <span class="detail-label">Late Threshold</span>
-                  <span class="detail-value">{{ attendance.lateThreshold }} minutes</span>
+                  <span class="detail-value">{{ attendance.lateThreshold }} {{ attendance.lateThreshold === 1 ? 'minute' : 'minutes' }}</span>
                 </div>
                 <div class="detail-item">
                   <span class="detail-label">Schedule Days</span>

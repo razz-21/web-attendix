@@ -36,5 +36,7 @@ export const AttendancesEvents = eventGroup({
     deleteAttendance: type<GetAttendance>(),
     deleteAttendanceSuccess: type<GetAttendance>(),
     deleteAttendanceFailure: type<{ error: string, attendance: GetAttendance }>(),
+
+    resetStore: type<void>(),
   },
 });

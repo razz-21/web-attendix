@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '@/environments/environment';
 import { lastValueFrom } from 'rxjs';
-import { EmailLogin, EmailLoginResponse, PatchPassword, PatchProfile } from '../types/auth/auth.types';
+import { EmailLogin, EmailLoginResponse, PatchPassword, PatchProfile, PostRequestAccount } from '../types/auth/auth.types';
 import { GetUser } from '../types/users/users.type';
 
 @Injectable({
@@ -16,7 +16,7 @@ export class AuthService {
   }
 
   public logout(): Promise<boolean> {
-    return lastValueFrom(this.http.post<boolean>(`${environment.apiBaseUrl}/api/v1/auth/logout`, {}));
+    return lastValueFrom(this.http.delete<boolean>(`${environment.apiBaseUrl}/api/v1/auth/logout`, {}));
   }
 
   public async getMe(): Promise<GetUser> {
@@ -29,5 +29,21 @@ export class AuthService {
 
   public async updatePassword(id: string, payload: PatchPassword): Promise<{ success: boolean, messsage: string }> {
     return lastValueFrom(this.http.patch<{ success: boolean, messsage: string }>(`${environment.apiBaseUrl}/api/v1/me/password`, payload));
+  }
+
+  public forgotPassword(email: string): Promise<{ message: string }> {
+    return lastValueFrom(this.http.post<{ message: string }>(`${environment.apiBaseUrl}/api/v1/auth/forgot-password`, { email }));
+  }
+
+  public verifyForgotPasswordToken(token: string): Promise<{ message: string }> {
+    return lastValueFrom(this.http.post<{ message: string }>(`${environment.apiBaseUrl}/api/v1/auth/forgot-password/verify`, { token }));
+  }
+
+  public resetPassword(token: string, password: string): Promise<{ message: string }> {
+    return lastValueFrom(this.http.post<{ message: string }>(`${environment.apiBaseUrl}/api/v1/auth/password`, { token, password }));
+  }
+
+  public requestAccount(payload: PostRequestAccount): Promise<GetUser> {
+    return lastValueFrom(this.http.post<GetUser>(`${environment.apiBaseUrl}/api/v1/auth/request-account`, payload));
   }
 }
