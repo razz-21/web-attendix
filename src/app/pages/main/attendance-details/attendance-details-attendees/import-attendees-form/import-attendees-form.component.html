@@ -12,7 +12,7 @@
             @if (selectedGroup()) {
               <div class="group-option-content" style="padding: 0;">
                 <span class="group-name">{{ selectedGroup()?.name }}</span>
-                <span class="group-badge" style="margin-right: 10px;" [class.empty]="!selectedGroup()?.count_members">{{ selectedGroup()?.count_members || 0 }} Members</span>
+                <span class="group-badge" style="margin-right: 10px;" [class.empty]="!selectedGroup()?.count_members">{{ selectedGroup()?.count_members || 0 }} {{ selectedGroup()?.count_members === 1 ? 'attendee' : 'attendees' }}</span>
               </div>
             }
           </mat-select-trigger>
@@ -20,7 +20,7 @@
         <mat-option [value]="group.id" [disabled]="group.count_members === 0">
           <div class="group-option-content">
             <span class="group-name">{{ group.name }}</span>
-            <span class="group-badge" [class.empty]="!group.count_members">{{ group.count_members || 0 }} Members</span>
+            <span class="group-badge" [class.empty]="!group.count_members">{{ group.count_members || 0 }} {{ group.count_members === 1 ? 'attendee' : 'attendees' }}</span>
           </div>
         </mat-option>
         }
