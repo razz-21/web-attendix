@@ -70,17 +70,34 @@
         align-items: center;
         justify-content: space-between;
         gap: 0.5rem;
+        width: 100%;
+        min-width: 0;
 
         &-left {
           display: flex;
           align-items: center;
           gap: 0.5rem;
+          flex: 1;
+          min-width: 0;
+          overflow: hidden;
+
+          app-avatar {
+            flex-shrink: 0;
+          }
+        }
+
+        &-name {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          min-width: 0;
         }
 
         &-right {
           display: flex;
           align-items: center;
           gap: 0.375rem;
+          flex-shrink: 0;
         }
       }
     }
@@ -93,6 +110,10 @@
   &__field {
     width: 100%;
   }
+}
+
+:host ::ng-deep .attendance-drawer-content mat-list-item .mdc-list-item__content {
+  width: 100%;
 }
 
 // Compact mat-button-toggle-group (tokens inherit; label padding needs piercing encapsulation)
