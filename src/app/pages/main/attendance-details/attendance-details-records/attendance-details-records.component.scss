@@ -25,7 +25,8 @@
   }
 }
 
-.records-points-value {
+.records-points-value,
+.records-status-chip {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -33,34 +34,55 @@
   padding: 0.375rem 0.75rem;
   border-radius: 12px;
   font-size: 0.8125rem;
-  font-weight: 600;
   line-height: 1.25;
+  white-space: nowrap;
+}
 
-  &--present {
-    background-color: #d1fae5;
-    color: #065f46;
-  }
+.records-points-value {
+  font-weight: 600;
+}
 
-  &--late {
-    background-color: #fef3c7;
-    color: #92400e;
-  }
+.records-status-chip {
+  font-weight: 500;
+}
 
-  &--excused {
-    background-color: #dbeafe;
-    color: #1e40af;
-  }
+.records-points-value--present,
+.records-status-chip--present,
+:host ::ng-deep .records-status-select--present .mat-mdc-select-trigger {
+  background-color: #d1fae5;
+  color: #065f46;
+}
 
-  &--absent {
-    background-color: #fee2e2;
-    color: #991b1b;
-  }
+.records-points-value--late,
+.records-status-chip--late,
+:host ::ng-deep .records-status-select--late .mat-mdc-select-trigger {
+  background-color: #fef3c7;
+  color: #92400e;
+}
 
-  &--unset {
-    background-color: var(--mat-sys-surface-container-high);
-    color: var(--mat-sys-on-surface-variant);
-    font-weight: 500;
-  }
+.records-points-value--excused,
+.records-status-chip--excused,
+:host ::ng-deep .records-status-select--excused .mat-mdc-select-trigger {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.records-points-value--absent,
+.records-status-chip--absent,
+:host ::ng-deep .records-status-select--absent .mat-mdc-select-trigger {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.records-points-value--unset,
+.records-status-chip--unset,
+:host ::ng-deep .records-status-select--unset .mat-mdc-select-trigger {
+  background-color: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.records-points-value--unset {
+  font-weight: 500;
 }
 
 :host ::ng-deep .records-view-toggle {
@@ -87,24 +109,23 @@
   border-radius: 4px;
 }
 
-.records-table__summary-header {
-  text-align: center;
-  max-width: 5rem;
-  width: 5rem;
-  border-left: 1px solid var(--mat-sys-outline-variant);
-  vertical-align: bottom;
-  font-weight: 600;
-  overflow: hidden;
-}
-
+.records-table__summary-header,
 .records-table__summary-cell {
   text-align: center;
   max-width: 5rem;
   width: 5rem;
-  vertical-align: middle;
   border-left: 1px solid var(--mat-sys-outline-variant);
-  white-space: nowrap;
   overflow: hidden;
+}
+
+.records-table__summary-header {
+  vertical-align: bottom;
+  font-weight: 600;
+}
+
+.records-table__summary-cell {
+  vertical-align: middle;
+  white-space: nowrap;
 }
 
 .records-summary-value {
@@ -168,44 +189,6 @@
   white-space: nowrap;
 }
 
-.records-status-chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 4.75rem;
-  padding: 0.375rem 0.75rem;
-  border-radius: 12px;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  line-height: 1.25;
-  white-space: nowrap;
-
-  &--present {
-    background-color: #d1fae5;
-    color: #065f46;
-  }
-
-  &--late {
-    background-color: #fef3c7;
-    color: #92400e;
-  }
-
-  &--excused {
-    background-color: #dbeafe;
-    color: #1e40af;
-  }
-
-  &--absent {
-    background-color: #fee2e2;
-    color: #991b1b;
-  }
-
-  &--unset {
-    background-color: var(--mat-sys-surface-container-high);
-    color: var(--mat-sys-on-surface-variant);
-  }
-}
-
 .records-status-reason-btn {
   display: inline-flex;
   align-items: center;
@@ -230,32 +213,26 @@
   }
 }
 
-.records-table-loading {
-  min-height: 72px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  color: var(--mat-sys-on-surface-variant);
-}
-
-.records-table-loading-cell {
-  text-align: center;
-}
-
-.records-table-empty-row {
-  .records-table-empty-cell {
-    text-align: center;
-  }
-}
-
+.records-table-loading,
 .records-table-empty-state {
   min-height: 72px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
   color: var(--mat-sys-on-surface-variant);
+}
+
+.records-table-loading {
+  gap: 0.75rem;
+}
+
+.records-table-empty-state {
+  gap: 0.5rem;
+}
+
+.records-table-loading-cell,
+.records-table-empty-row .records-table-empty-cell {
+  text-align: center;
 }
 
 :host ::ng-deep .records-table {
@@ -265,10 +242,7 @@
     overflow: visible;
   }
 
-  .mat-mdc-header-row {
-    background-color: var(--mat-sys-surface-container-low);
-  }
-
+  .mat-mdc-header-row,
   .mat-mdc-header-cell {
     background-color: var(--mat-sys-surface-container-low);
   }
@@ -309,21 +283,12 @@
 
   .mat-column-total,
   .mat-column-avg {
+    z-index: 2;
     width: 5rem;
     min-width: 5rem;
     max-width: 5rem;
     overflow: hidden;
     vertical-align: middle !important;
-  }
-
-  .mat-column-total {
-    z-index: 2;
-    background-color: var(--mat-sys-surface-container-lowest);
-    box-shadow: 1px 0 0 var(--mat-sys-outline-variant);
-  }
-
-  .mat-column-avg {
-    z-index: 2;
     background-color: var(--mat-sys-surface-container-lowest);
     box-shadow: 1px 0 0 var(--mat-sys-outline-variant);
   }
@@ -378,50 +343,11 @@
     height: 1.125rem;
   }
 
-  &.records-status-select--present .mat-mdc-select-trigger {
-    background-color: #d1fae5;
-    color: #065f46;
-
-    .mat-mdc-select-arrow {
-      color: #065f46;
-    }
-  }
-
-  &.records-status-select--late .mat-mdc-select-trigger {
-    background-color: #fef3c7;
-    color: #92400e;
-
-    .mat-mdc-select-arrow {
-      color: #92400e;
-    }
-  }
-
-  &.records-status-select--excused .mat-mdc-select-trigger {
-    background-color: #dbeafe;
-    color: #1e40af;
-
-    .mat-mdc-select-arrow {
-      color: #1e40af;
-    }
-  }
-
-  &.records-status-select--absent .mat-mdc-select-trigger {
-    background-color: #fee2e2;
-    color: #991b1b;
-
-    .mat-mdc-select-arrow {
-      color: #991b1b;
-    }
-  }
-
-  &.records-status-select--unset .mat-mdc-select-trigger {
-    background-color: var(--mat-sys-surface-container-high);
-    color: var(--mat-sys-on-surface-variant);
-
-    .mat-mdc-select-arrow {
-      color: var(--mat-sys-on-surface-variant);
-    }
-  }
+  &--present .mat-mdc-select-arrow { color: #065f46; }
+  &--late .mat-mdc-select-arrow { color: #92400e; }
+  &--excused .mat-mdc-select-arrow { color: #1e40af; }
+  &--absent .mat-mdc-select-arrow { color: #991b1b; }
+  &--unset .mat-mdc-select-arrow { color: var(--mat-sys-on-surface-variant); }
 }
 
 .records-header-actions {
