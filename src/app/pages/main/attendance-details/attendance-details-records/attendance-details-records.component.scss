@@ -262,6 +262,7 @@
   &.mat-mdc-table {
     border-radius: 4px;
     background-color: var(--mat-sys-surface-container-lowest);
+    overflow: visible;
   }
 
   .mat-mdc-header-row {
@@ -295,33 +296,33 @@
   }
 
   .mat-column-attendee {
-    position: sticky;
-    left: 0;
     z-index: 2;
+    width: 12rem;
     min-width: 12rem;
+    max-width: 12rem;
     background-color: var(--mat-sys-surface-container-lowest);
     box-shadow: 1px 0 0 var(--mat-sys-outline-variant);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .mat-column-total,
   .mat-column-avg {
-    max-width: 5rem;
     width: 5rem;
+    min-width: 5rem;
+    max-width: 5rem;
     overflow: hidden;
-    vertical-align: middle !important; 
+    vertical-align: middle !important;
   }
 
   .mat-column-total {
-    position: sticky;
-    left: 12rem;
     z-index: 2;
     background-color: var(--mat-sys-surface-container-lowest);
     box-shadow: 1px 0 0 var(--mat-sys-outline-variant);
   }
 
   .mat-column-avg {
-    position: sticky;
-    left: 17rem;
     z-index: 2;
     background-color: var(--mat-sys-surface-container-lowest);
     box-shadow: 1px 0 0 var(--mat-sys-outline-variant);
