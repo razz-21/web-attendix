@@ -119,6 +119,7 @@ export class AttendanceFormModalComponent {
               end_time: m.end_time.trim(),
               attendance_id,
               attendances_id: this.attendances_id(),
+              status: 'active',
               created_at: now,
               updated_at: now,
             },

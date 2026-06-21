@@ -38,5 +38,16 @@
   align-items: center;
   gap: 0.5rem;
   opacity: 0.5;
-  
+}
+
+:host ::ng-deep .details-table-status-toggle {
+  --mat-button-toggle-height: 28px;
+  --mat-button-toggle-label-text-size: 0.75rem;
+  --mat-button-toggle-label-text-line-height: 1.2;
+  --mat-button-toggle-shape: 8px;
+
+  .mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+    padding: 0 0.5rem;
+    line-height: 28px;
+  }
 }

@@ -72,10 +72,25 @@ export class AttendanceDrawerComponent {
     );
   });
 
-  public updateAttendanceRecord(status: AttendanceRecordStatus, attendeeRecord: { attendee: GetAttendee; attendanceRecord: GetAttendanceRecord | undefined }): void { 
+  public onStatusClick(status: AttendanceRecordStatus, attendeeRecord: { attendee: GetAttendee; attendanceRecord: GetAttendanceRecord | undefined }): void {
+    if (attendeeRecord.attendanceRecord?.status === status) {
+      return;
+    }
+
+    this.updateAttendanceRecord(status, attendeeRecord);
+  }
+
+  private updateAttendanceRecord(status: AttendanceRecordStatus, attendeeRecord: { attendee: GetAttendee; attendanceRecord: GetAttendanceRecord | undefined }): void {
+    const attendancesId = this.attendances_id();
+    const attendanceId = this.selectedAttendance()?.id ?? '';
+
+    if (!attendancesId || !attendanceId) {
+      return;
+    }
+
     if (attendeeRecord.attendanceRecord) {
       this.dispatcher.dispatch(AttendanceRecordEvents.updateAttendanceRecord({
-        attendances_id: this.selectedAttendance()?.id ?? '',
+        attendances_id: attendancesId,
         id: attendeeRecord.attendanceRecord.id,
         payload: {
           status,
@@ -86,11 +101,11 @@ export class AttendanceDrawerComponent {
     }
 
     this.dispatcher.dispatch(AttendanceRecordEvents.createAttendanceRecord({
-      attendances_id: this.selectedAttendance()?.id ?? '',
+      attendances_id: attendancesId,
       payload: {
         id: crypto.randomUUID(),
-        attendances_id: this.attendances_id(),
-        attendance_id: this.selectedAttendance()?.id ?? '',
+        attendances_id: attendancesId,
+        attendance_id: attendanceId,
         attendee_id: attendeeRecord.attendee.id,
         status,
         reason_type: null,
@@ -107,7 +122,7 @@ export class AttendanceDrawerComponent {
       maxWidth: '500px',
       width: '100%',
       data: {
-        attendances_id: this.selectedAttendance()?.id ?? '',
+        attendances_id: this.attendances_id(),
         record: attendeeRecord.attendanceRecord,
       },
     });

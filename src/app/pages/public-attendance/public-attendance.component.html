@@ -1,0 +1,74 @@
+<div class="public-attendance-page">
+  <section class="public-attendance-card">
+    <div class="public-attendance-brand">
+      <img src="/assets/logo/attendix-logo.svg" alt="Attendix" width="52" height="52" class="logo" />
+      <p class="mat-body-medium public-attendance-instructions">
+        Confirm your attendance for the session below. The code is already filled in for you.
+        Enter your ID to mark yourself present.
+      </p>
+    </div>
+
+    <header class="public-attendance-card__header">
+      <h1 class="mat-headline-small">{{ attendanceName ?? 'Attendance' }}</h1>
+      @if (attendanceDate) {
+        <p class="mat-body-large public-attendance-card__date">
+          {{ attendanceDate + 'T00:00:00' | date: 'MMMM d, y' }}
+        </p>
+      }
+    </header>
+
+    @if (submitSuccess()) {
+      <div class="public-attendance-success">
+        <mat-icon>check_circle</mat-icon>
+        <p class="mat-body-large">Your attendance has been marked successfully.</p>
+      </div>
+    } @else {
+      @if (submitError()) {
+        <div class="public-attendance-error">
+          <mat-icon>error</mat-icon>
+          <p>{{ submitError() }}</p>
+        </div>
+      }
+
+      <form class="public-attendance-form" [formRoot]="attendanceForm">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Code</mat-label>
+          <input matInput [formField]="attendanceForm.code" autocomplete="off" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Your ID</mat-label>
+          <input matInput [formField]="attendanceForm.rfid" autocomplete="off" />
+          <mat-hint>Enter your RFID or student ID number.</mat-hint>
+          @if (attendanceForm.rfid().touched() && attendanceForm.rfid().invalid()) {
+            <mat-error>
+              @switch (attendanceForm.rfid().errors()[0]?.kind) {
+                @case ('required') {
+                  Your ID is required
+                }
+                @default {
+                  {{ attendanceForm.rfid().errors()[0]?.message ?? 'Invalid value' }}
+                }
+              }
+            </mat-error>
+          }
+        </mat-form-field>
+
+        <button
+          type="submit"
+          matButton="filled"
+          color="primary"
+          class="full-width"
+          [disabled]="submitting()"
+          [attr.aria-label]="submitting() ? 'Submitting attendance...' : 'Mark attendance'"
+        >
+          @if (submitting()) {
+            <mat-progress-spinner mode="indeterminate" diameter="20"></mat-progress-spinner>
+          } @else {
+            Mark attendance
+          }
+        </button>
+      </form>
+    }
+  </section>
+</div>

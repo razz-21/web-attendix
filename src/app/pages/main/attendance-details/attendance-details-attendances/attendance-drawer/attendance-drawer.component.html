@@ -43,12 +43,11 @@
                   [name]="'attendance-attendee-record-type-' + attendeeRecord.attendee.id"
                   aria-label="Attendance Attendee Record Type"
                   [value]="attendeeRecord.attendanceRecord?.status ?? ''"
-                  (change)="updateAttendanceRecord($event.value, attendeeRecord)"
                 >
-                  <mat-button-toggle value="present">Present</mat-button-toggle>
-                  <mat-button-toggle value="late">Late</mat-button-toggle>
-                  <mat-button-toggle value="excused">Excused</mat-button-toggle>
-                  <mat-button-toggle value="absent">Absent</mat-button-toggle>
+                  <mat-button-toggle value="present" (click)="onStatusClick('present', attendeeRecord)">Present</mat-button-toggle>
+                  <mat-button-toggle value="late" (click)="onStatusClick('late', attendeeRecord)">Late</mat-button-toggle>
+                  <mat-button-toggle value="excused" (click)="onStatusClick('excused', attendeeRecord)">Excused</mat-button-toggle>
+                  <mat-button-toggle value="absent" (click)="onStatusClick('absent', attendeeRecord)">Absent</mat-button-toggle>
                 </mat-button-toggle-group>
 
                 <button

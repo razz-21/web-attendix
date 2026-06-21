@@ -23,9 +23,15 @@ export const MAIN_USER_DETAILS_PATH = `${MAIN_BASE_PATH}/users/:id`;
 export const MAIN_WORKSPACES_PATH = `${MAIN_BASE_PATH}/workspaces`;
 export const MAIN_WORKSPACE_DETAILS_PATH = `${MAIN_WORKSPACES_PATH}/:id`;
 
+// PUBLIC ROUTES
+export const PUBLIC_BASE_PATH = '';
+export const PUBLIC_ATTENDANCE_PATH = `${PUBLIC_BASE_PATH}/public-attendance/:attendances_id/:attendee_id`;
+
 export const PUBLIC_ROUTES = [
   AUTH_BASE_PATH,
   AUTH_LOGIN_PATH,
   AUTH_REQUEST_ACCOUNT_PATH,
   AUTH_REQUEST_ACCOUNT_SUCCESS_PATH,
+  PUBLIC_BASE_PATH,
+  PUBLIC_ATTENDANCE_PATH,
 ]
