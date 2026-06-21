@@ -7,13 +7,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { AttendanceStore } from '@/app/store/attendance/attendance.store';
 import { AttendanceDetailsStore } from '@/app/store/attendance-details/attendance-details.store';
 import { AttendanceEvents } from '@/app/store/attendance/attendance.events';
 import { Dispatcher } from '@ngrx/signals/events';
-import { GetAttendance } from '@/app/types/attendance/attendance.types';
+import { AttendanceStatus, GetAttendance } from '@/app/types/attendance/attendance.types';
 import { ConfirmationDialogService } from '@/app/services/confirmation-dialog.service';
 import { EditAttendanceModalComponent } from '../edit-attendance-form-modal/edit-attendance-form-modal.component';
 import { AttendanceQrcodeModalComponent } from '../attendance-qrcode-modal/attendance-qrcode-modal.component';
@@ -31,6 +32,7 @@ import { AttendanceQrcodeModalComponent } from '../attendance-qrcode-modal/atten
     MatFormFieldModule,
     MatInputModule,
     MatProgressSpinnerModule,
+    MatButtonToggleModule,
     FormsModule,
   ],
 })
@@ -46,6 +48,7 @@ export class AttendanceTableComponent {
     'attendance_date',
     'start_time',
     'end_time',
+    'status',
     'created_at',
     'actions',
   ];
@@ -68,6 +71,14 @@ export class AttendanceTableComponent {
 
   public selectAttendance(row: GetAttendance): void {
     this.dispatcher.dispatch(AttendanceEvents.selectAttendance({ attendance: row }));
+  }
+
+  public toggleStatus(status: AttendanceStatus, row: GetAttendance): void {
+    this.dispatcher.dispatch(AttendanceEvents.updateAttendance({
+      attendance_id: row.attendance_id,
+      id: row.id,
+      data: { status },
+    }));
   }
 
   public openEditDetails(row: GetAttendance): void {

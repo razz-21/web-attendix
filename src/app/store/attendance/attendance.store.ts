@@ -1,6 +1,6 @@
 import { GetAttendance } from "@/app/types/attendance/attendance.types";
 import { signalStore, withComputed, withState } from "@ngrx/signals";
-import { addEntity, prependEntity, removeAllEntities, removeEntity, SelectEntityId, setAllEntities, withEntities } from "@ngrx/signals/entities";
+import { addEntity, prependEntity, removeAllEntities, removeEntity, SelectEntityId, setAllEntities, setEntity, withEntities } from "@ngrx/signals/entities";
 import { Events, on, withEventHandlers, withReducer } from "@ngrx/signals/events";
 import { AttendanceEvents } from "./attendance.events";
 import { computed, inject } from "@angular/core";
@@ -106,11 +106,14 @@ export const AttendanceStore = signalStore(
       loadingForm: true,
       error: null,
     })),
-    on(AttendanceEvents.updateAttendanceSuccess, (_, state) => ({
-      ...state,
-      loadingForm: false,
-      error: null,
-    })),
+    on(AttendanceEvents.updateAttendanceSuccess, ({ payload }, state) => [
+      setEntity(payload, { selectId }),
+      {
+        loadingForm: false,
+        error: null,
+        selectedAttendance: state.selectedAttendance?.id === payload.id ? payload : state.selectedAttendance,
+      },
+    ]),
     on(AttendanceEvents.updateAttendanceFailure, (event, state) => ({
       ...state,
       loadingForm: false,
@@ -190,7 +193,6 @@ export const AttendanceStore = signalStore(
       ),
       updateAttendanceSuccess$: events.on(AttendanceEvents.updateAttendanceSuccess).pipe(
         tap(() => { snackBar.open('Attendance record updated successfully', 'Close', { duration: 5000 }); }),
-        map(() => AttendanceEvents.loadAttendance({ attendance_id: store.currentAttendanceId()! }))
       ),
       updateAttendanceFailure$: events.on(AttendanceEvents.updateAttendanceFailure).pipe(
         map(({ payload }) => { snackBar.open(payload, "Close", { duration: 6000 }); })

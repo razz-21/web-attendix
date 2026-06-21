@@ -59,7 +59,6 @@ export class EditAttendanceModalComponent {
       action: async () => {
         const m = this.formData();
         const attendance_id = this.attendanceRecordsStore.currentAttendanceId()!;
-        const now = new Date().toISOString();
 
         this.dispatcher.dispatch(AttendanceEvents.updateAttendance({
           attendance_id,
@@ -69,7 +68,6 @@ export class EditAttendanceModalComponent {
             attendance_date: m.attendance_date.trim(),
             start_time: m.start_time.trim(),
             end_time: m.end_time.trim(),
-            updated_at: now,
           },
         }));
         return undefined;

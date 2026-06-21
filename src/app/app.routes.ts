@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { MainGuard } from './guards/main.guard';
 import { SelectWorkspaceComponent } from './pages/main/workspaces/select-workspace/select-workspace.component';
 import { AboutComponent } from './pages/main/about/about.component';
+import { PublicAttendanceComponent } from './pages/public-attendance/public-attendance.component';
 
 export const routes: Routes = [
   { 
@@ -20,5 +21,9 @@ export const routes: Routes = [
   {
     path: 'about',
     component: AboutComponent,
+  },
+  {
+    path: 'public-attendance/:attendances_id/:attendee_id',
+    component: PublicAttendanceComponent,
   }
 ];
