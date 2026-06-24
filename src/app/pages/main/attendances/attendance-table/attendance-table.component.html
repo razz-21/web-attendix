@@ -3,46 +3,11 @@
     <app-loading-section label="Loading attendances" />
   } @else {
     @if (hasAttendances()) {
-      @if (hasManageableAttendances()) {
-        <div class="attendance-table-toolbar">
-          <mat-checkbox
-            [checked]="allSelected()"
-            [indeterminate]="someSelected()"
-            (change)="toggleAllAttendances()"
-            aria-label="Select all attendances"
-          >
-            Select all
-          </mat-checkbox>
-
-          @if (selectedCount() > 0) {
-            <button
-              mat-stroked-button
-              type="button"
-              class="attendance-table-toolbar__delete"
-              [disabled]="bulkDeleteLoading()"
-              (click)="bulkDeleteAttendances()"
-            >
-              <mat-icon>delete</mat-icon>
-              Delete ({{ selectedCount() }})
-            </button>
-          }
-        </div>
-      }
-
       <div class="attendance-grid">
         @for (attendance of attendances(); track attendance.id) {
           <mat-card appearance="outlined" class="attendance-card" (click)="onAttendanceClick(attendance)">
             <mat-card-header>
               <div class="attendance-card-header-content">
-                @if (canManage(attendance)) {
-                  <mat-checkbox
-                    class="attendance-card-select"
-                    [checked]="isAttendanceSelected(attendance.id)"
-                    (change)="toggleAttendanceSelection(attendance)"
-                    (click)="$event.stopPropagation()"
-                    [attr.aria-label]="'Select ' + attendance.name"
-                  />
-                }
                 <div class="attendance-header-info">
                   <mat-card-title class="attendance-card-title" matTooltip="{{ attendance.name }}" matTooltipPosition="above">
                     <span>
