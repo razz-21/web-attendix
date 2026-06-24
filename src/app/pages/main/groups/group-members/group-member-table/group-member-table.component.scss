@@ -30,6 +30,25 @@
   flex: 0 0 220px;
 }
 
+.group-table-filter__bulk-delete {
+  flex-shrink: 0;
+  margin-bottom: 1rem;
+  color: var(--mat-sys-error);
+
+  mat-icon {
+    margin-right: 0.25rem;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.group-table-select-header,
+.group-table-select-cell {
+  width: 48px;
+  padding-right: 0;
+}
+
 .group-table-wrap {
   width: 100%;
   overflow-x: auto;

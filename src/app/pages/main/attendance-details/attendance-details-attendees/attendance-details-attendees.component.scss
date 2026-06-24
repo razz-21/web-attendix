@@ -13,6 +13,18 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.attendees-page-header-actions__bulk-delete {
+  color: var(--mat-sys-error);
+
+  mat-icon {
+    margin-right: 0.25rem;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
 }
 
 .page-header {

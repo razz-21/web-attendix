@@ -34,6 +34,12 @@ export class AttendeesService {
     return lastValueFrom(this.http.delete<void>(`${environment.apiBaseUrl}/api/v1/attendances/${attendanceId}/attendees/${attendeeId}`));
   }
 
+  public bulkDeleteAttendees(attendanceId: string, ids: string[]): Promise<void> {
+    return lastValueFrom(
+      this.http.post<void>(`${environment.apiBaseUrl}/api/v1/attendances/${attendanceId}/attendees/bulk-delete`, { ids })
+    );
+  }
+
   public async existRfid(attendanceId: string, rfid: string): Promise<boolean> {
     return lastValueFrom(this.http.post<boolean>(`${environment.apiBaseUrl}/api/v1/attendances/${attendanceId}/attendees/exist-rfid`, { rfid }));
   }

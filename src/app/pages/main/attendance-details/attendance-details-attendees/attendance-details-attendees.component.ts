@@ -8,7 +8,10 @@ import { AttendeeFormModalComponent } from './attendee-form-modal/attendee-form-
 import { ImportAttendeesFormModalComponent } from './import-attendees-form-modal/import-attendees-form-modal.component';
 import { ActivatedRoute } from '@angular/router';
 import { AttendanceAttendeeEvents } from "@/app/store/attendance-attendee/attendance-attendee.events";
+import { AttendanceAttendeeStore } from "@/app/store/attendance-attendee/attendance-attendee.store";
 import { AttendanceDetailsStore } from "@/app/store/attendance-details/attendance-details.store";
+import { ConfirmationDialogService } from "@/app/services/confirmation-dialog.service";
+import { Dispatcher } from "@ngrx/signals/events";
 import { GetAttendee } from "@/app/types/attendaces/attendees.types";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import { pipe, tap, map } from "rxjs";
@@ -29,7 +32,10 @@ export class AttendanceDetailsAttendeesComponent {
   private readonly dialog = inject(MatDialog);
   private readonly route = inject(ActivatedRoute);
   private readonly events = inject(Events);
+  private readonly dispatcher = inject(Dispatcher);
   private readonly attendanceDetailsStore = inject(AttendanceDetailsStore);
+  private readonly attendanceAttendeeStore = inject(AttendanceAttendeeStore);
+  private readonly confirmationDialogService = inject(ConfirmationDialogService);
   
   private dialogRef = signal<MatDialogRef<AttendeeFormModalComponent> | null>(null);
   private importDialogRef = signal<MatDialogRef<ImportAttendeesFormModalComponent> | null>(null);
@@ -40,6 +46,8 @@ export class AttendanceDetailsAttendeesComponent {
   });
 
   public readonly isArchived = computed(() => this.attendanceDetailsStore.attendanceDetails()?.status === 'archived');
+  public readonly selectedCount = computed(() => this.attendanceAttendeeStore.selectedCount());
+  public readonly bulkDeleteLoading = computed(() => this.attendanceAttendeeStore.bulkDeleteLoading());
 
   public openCreate(): void {
     const ref = this.dialog.open(AttendeeFormModalComponent, { maxWidth: '720px', width: '100%', data: { attendanceId: this.attendanceId() } });
@@ -49,6 +57,28 @@ export class AttendanceDetailsAttendeesComponent {
   public openImport(): void {
     const ref = this.dialog.open(ImportAttendeesFormModalComponent, { maxWidth: '600px', width: '100%', data: { attendanceId: this.attendanceId() } });
     this.importDialogRef.set(ref);
+  }
+
+  public async bulkDeleteAttendees(): Promise<void> {
+    const selectedIds = this.attendanceAttendeeStore.selectedAttendeeIds();
+    if (!selectedIds.length) return;
+
+    const attendees = this.attendanceAttendeeStore.filteredAttendees().filter((attendee) => selectedIds.includes(attendee.id));
+    if (!attendees.length) return;
+
+    const confirmed = await this.confirmationDialogService.confirm({
+      title: 'Delete attendees',
+      message: `Are you sure you want to delete <strong>${attendees.length}</strong> selected attendee(s)?`,
+      positiveButtonText: 'Yes, delete',
+      negativeButtonText: 'No, cancel',
+    });
+
+    if (!confirmed) return;
+
+    this.dispatcher.dispatch(AttendanceAttendeeEvents.bulkDeleteAttendees({
+      attendance_id: this.attendanceId(),
+      attendees,
+    }));
   }
 
   #onCreateAttendeeSuccess = rxMethod<GetAttendee>(

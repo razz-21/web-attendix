@@ -37,6 +37,14 @@ export const GroupMembersEvents = eventGroup({
     deleteGroupMemberSuccess: type<{ member: GetGroupMember }>(),
     deleteGroupMemberFailure: type<{ error: string; member: GetGroupMember }>(),
 
+    toggleMemberSelection: type<{ member_id: string }>(),
+    toggleAllMembersSelection: type<void>(),
+    clearMemberSelection: type<void>(),
+
+    bulkDeleteGroupMembers: type<{ group_id: string; members: GetGroupMember[] }>(),
+    bulkDeleteGroupMembersSuccess: type<{ member_ids: string[] }>(),
+    bulkDeleteGroupMembersFailure: type<{ error: string; members: GetGroupMember[] }>(),
+
     clearFilters: type<void>(),
     resetStore: type<void>(),
   },

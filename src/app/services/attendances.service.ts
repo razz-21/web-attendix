@@ -58,6 +58,12 @@ export class AttendancesService {
     );
   }
 
+  public bulkDeleteAttendances(ids: string[]): Promise<void> {
+    return lastValueFrom(
+      this.http.post<void>(`${this.attendancesApi}/bulk-delete`, { ids })
+    );
+  }
+
   public clearCache(): void {
     this.attendancesCache.clear();
   }

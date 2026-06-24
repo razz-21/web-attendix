@@ -23,6 +23,8 @@ type AttendancesState = {
   archiveLoading: boolean;
   setActiveLoading: boolean;
   deleteLoading: boolean;
+  bulkDeleteLoading: boolean;
+  selectedAttendanceIds: string[];
   currentArchiveAttendance: GetAttendance | null;
   error: string | null;
 };
@@ -41,6 +43,8 @@ const initialState: AttendancesState = {
   archiveLoading: false,
   setActiveLoading: false,
   deleteLoading: false,
+  bulkDeleteLoading: false,
+  selectedAttendanceIds: [],
   currentArchiveAttendance: null,
   error: null,
 };
@@ -49,10 +53,11 @@ export const AttendancesStore = signalStore(
   { providedIn: "root" },
   withEntities<AttendanceEntity>(),
   withState(initialState),
-  withComputed(({ entities, entityMap }) => ({
+  withComputed(({ entities, entityMap, selectedAttendanceIds }) => ({
     attendances: entities,
     attendancesMap: entityMap,
     hasAttendances: computed(() => !!entities().length),
+    selectedCount: computed(() => selectedAttendanceIds().length),
   })),
   withReducer(
     // Load Attendances
@@ -67,6 +72,7 @@ export const AttendancesStore = signalStore(
         loading: false,
         attendancesLoaded: true,
         error: null,
+        selectedAttendanceIds: [],
       },
     ]),
     on(AttendancesEvents.loadAttendancesFailure, (event, state) => ({
@@ -88,6 +94,7 @@ export const AttendancesStore = signalStore(
         loading: false,
         error: null,
         lastLoaded: Date.now(),
+        selectedAttendanceIds: [],
       },
     ]),
     on(AttendancesEvents.searchAttendancesFailure, (event, state) => ({
@@ -109,6 +116,7 @@ export const AttendancesStore = signalStore(
         loading: false,
         error: null,
         lastLoaded: Date.now(),
+        selectedAttendanceIds: [],
       },
     ]),
     on(AttendancesEvents.filterAttendancesFailure, (event, state) => ({
@@ -204,6 +212,44 @@ export const AttendancesStore = signalStore(
     on(AttendancesEvents.deleteAttendanceFailure, (event, state) => ({
       ...state,
       deleteLoading: false,
+      error: event.payload.error,
+    })),
+
+    on(AttendancesEvents.toggleAttendanceSelection, ({ payload }, state) => {
+      const selected = new Set(state.selectedAttendanceIds);
+      if (selected.has(payload.attendance_id)) {
+        selected.delete(payload.attendance_id);
+      } else {
+        selected.add(payload.attendance_id);
+      }
+      return { ...state, selectedAttendanceIds: [...selected] };
+    }),
+    on(AttendancesEvents.toggleAllAttendancesSelection, ({ payload }, state) => {
+      const manageableIds = payload.manageable_ids;
+      const allSelected = manageableIds.length > 0 && manageableIds.every((id) => state.selectedAttendanceIds.includes(id));
+      return {
+        ...state,
+        selectedAttendanceIds: allSelected ? [] : [...manageableIds],
+      };
+    }),
+    on(AttendancesEvents.clearAttendanceSelection, (_, state) => ({ ...state, selectedAttendanceIds: [] })),
+
+    on(AttendancesEvents.bulkDeleteAttendances, (_, state) => ({
+      ...state,
+      bulkDeleteLoading: true,
+      error: null,
+    })),
+    on(AttendancesEvents.bulkDeleteAttendancesSuccess, ({ payload }, state) => [
+      ...payload.attendance_ids.map((id) => removeEntity(id)),
+      {
+        bulkDeleteLoading: false,
+        error: null,
+        selectedAttendanceIds: state.selectedAttendanceIds.filter((id) => !payload.attendance_ids.includes(id)),
+      },
+    ]),
+    on(AttendancesEvents.bulkDeleteAttendancesFailure, (event, state) => ({
+      ...state,
+      bulkDeleteLoading: false,
       error: event.payload.error,
     })),
 
@@ -367,6 +413,30 @@ export const AttendancesStore = signalStore(
         })
       ),
       deleteAttendanceFailure$: events.on(AttendancesEvents.deleteAttendanceFailure).pipe(
+        map(({ payload }) => {
+          snackBar.open(payload.error, "Close", { duration: 6000 });
+        })
+      ),
+
+      bulkDeleteAttendances$: events.on(AttendancesEvents.bulkDeleteAttendances).pipe(
+        exhaustMap(({ payload }) =>
+          from(attendancesService.bulkDeleteAttendances(payload.attendances.map((a) => a.id))).pipe(
+            mapResponse({
+              next: () => AttendancesEvents.bulkDeleteAttendancesSuccess({ attendance_ids: payload.attendances.map((a) => a.id) }),
+              error: (error: unknown) => AttendancesEvents.bulkDeleteAttendancesFailure({
+                error: error instanceof Error ? error.message : "Failed to delete attendances",
+                attendances: payload.attendances,
+              }),
+            })
+          )
+        )
+      ),
+      bulkDeleteAttendancesSuccess$: events.on(AttendancesEvents.bulkDeleteAttendancesSuccess).pipe(
+        map(({ payload }) => {
+          snackBar.open(`${payload.attendance_ids.length} attendance(s) deleted successfully`, 'Close', { duration: 5000 });
+        })
+      ),
+      bulkDeleteAttendancesFailure$: events.on(AttendancesEvents.bulkDeleteAttendancesFailure).pipe(
         map(({ payload }) => {
           snackBar.open(payload.error, "Close", { duration: 6000 });
         })
