@@ -19,7 +19,9 @@ type GroupMembersState = {
   loadingForm: boolean;
   updateMemberLoading: boolean;
   deleteLoading: boolean;
+  bulkDeleteLoading: boolean;
   currentDeleteMember: GetGroupMember | null;
+  selectedMemberIds: string[];
   error: string | null;
 };
 
@@ -42,7 +44,9 @@ const initialState: GroupMembersState = {
   loadingForm: false,
   updateMemberLoading: false,
   deleteLoading: false,
+  bulkDeleteLoading: false,
   currentDeleteMember: null,
+  selectedMemberIds: [],
   error: null,
 };
 
@@ -50,20 +54,30 @@ export const GroupMembersStore = signalStore(
   { providedIn: "root" },
   withEntities<GroupMemberEntity>(),
   withState(initialState),
-  withComputed(({ entities, entityMap, filters }) => ({
+  withComputed(({ entities, entityMap, filters, selectedMemberIds }) => ({
     membersMap: entityMap,
     members: computed(() => [...entities()].sort((a, b) =>
       new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     )),
     hasMembers: computed(() => !!entities().length),
     hasFilters: computed(() => !!filters().q || !!filters().department),
+    selectedCount: computed(() => selectedMemberIds().length),
+    allOnPageSelected: computed(() => {
+      const members = [...entities()];
+      return members.length > 0 && members.every((member) => selectedMemberIds().includes(member.id));
+    }),
+    someOnPageSelected: computed(() => {
+      const members = [...entities()];
+      const selected = selectedMemberIds();
+      return members.some((member) => selected.includes(member.id)) && !members.every((member) => selected.includes(member.id));
+    }),
   })),
   withReducer(
     // Load
-    on(GroupMembersEvents.loadGroupMembers, ({ payload }, state) => ({ ...state, loading: true, error: null, currentGroupId: payload.group_id, pagination: { ...initialPagination }, filters: { ...initialFilters } })),
+    on(GroupMembersEvents.loadGroupMembers, ({ payload }, state) => ({ ...state, loading: true, error: null, currentGroupId: payload.group_id, pagination: { ...initialPagination }, filters: { ...initialFilters }, selectedMemberIds: [] })),
     on(GroupMembersEvents.loadGroupMembersSuccess, ({ payload }) => [
       setAllEntities(payload?.data ?? [], { selectId }),
-      { pagination: { page: payload?.page ?? 1, limit: payload?.limit ?? 10, total: payload?.total ?? 0 }, loading: false, error: null },
+      { pagination: { page: payload?.page ?? 1, limit: payload?.limit ?? 10, total: payload?.total ?? 0 }, loading: false, error: null, selectedMemberIds: [] },
     ]),
     on(GroupMembersEvents.loadGroupMembersFailure, (event, state) => ({ ...state, loading: false, error: event.payload })),
 
@@ -71,7 +85,7 @@ export const GroupMembersStore = signalStore(
     on(GroupMembersEvents.searchGroupMembers, ({ payload }, state) => ({ ...state, filters: { ...state.filters, q: payload.q }, loading: true, error: null })),
     on(GroupMembersEvents.searchGroupMembersSuccess, ({ payload }) => [
       setAllEntities(payload?.data ?? [], { selectId }),
-      { pagination: { page: payload?.page ?? 1, limit: payload?.limit ?? 10, total: payload?.total ?? 0 }, loading: false, error: null },
+      { pagination: { page: payload?.page ?? 1, limit: payload?.limit ?? 10, total: payload?.total ?? 0 }, loading: false, error: null, selectedMemberIds: [] },
     ]),
     on(GroupMembersEvents.searchGroupMembersFailure, (event, state) => ({ ...state, loading: false, error: event.payload })),
 
@@ -79,7 +93,7 @@ export const GroupMembersStore = signalStore(
     on(GroupMembersEvents.filterGroupMembers, ({ payload }, state) => ({ ...state, filters: { ...state.filters, ...payload }, loading: true, error: null })),
     on(GroupMembersEvents.filterGroupMembersSuccess, ({ payload }) => [
       setAllEntities(payload?.data ?? [], { selectId }),
-      { pagination: { page: payload?.page ?? 1, limit: payload?.limit ?? 10, total: payload?.total ?? 0 }, loading: false, error: null },
+      { pagination: { page: payload?.page ?? 1, limit: payload?.limit ?? 10, total: payload?.total ?? 0 }, loading: false, error: null, selectedMemberIds: [] },
     ]),
     on(GroupMembersEvents.filterGroupMembersFailure, (event, state) => ({ ...state, loading: false, error: event.payload })),
 
@@ -87,7 +101,7 @@ export const GroupMembersStore = signalStore(
     on(GroupMembersEvents.paginateGroupMembers, ({ payload }, state) => ({ ...state, pagination: { ...state.pagination, page: payload.page, limit: payload.limit }, loading: true, error: null })),
     on(GroupMembersEvents.paginateGroupMembersSuccess, ({ payload }) => [
       setAllEntities(payload?.data ?? [], { selectId }),
-      { pagination: { page: payload?.page ?? 1, limit: payload?.limit ?? 10, total: payload?.total ?? 0 }, loading: false, error: null },
+      { pagination: { page: payload?.page ?? 1, limit: payload?.limit ?? 10, total: payload?.total ?? 0 }, loading: false, error: null, selectedMemberIds: [] },
     ]),
     on(GroupMembersEvents.paginateGroupMembersFailure, (event, state) => ({ ...state, loading: false, error: event.payload })),
 
@@ -128,6 +142,48 @@ export const GroupMembersStore = signalStore(
     on(GroupMembersEvents.deleteGroupMemberFailure, (event) => [
       addEntity(event.payload.member, { selectId }),
       { deleteLoading: false, error: event.payload.error, currentDeleteMember: null },
+    ]),
+
+    on(GroupMembersEvents.toggleMemberSelection, ({ payload }, state) => {
+      const selected = new Set(state.selectedMemberIds);
+      if (selected.has(payload.member_id)) {
+        selected.delete(payload.member_id);
+      } else {
+        selected.add(payload.member_id);
+      }
+      return { ...state, selectedMemberIds: [...selected] };
+    }),
+    on(GroupMembersEvents.toggleAllMembersSelection, (_, state) => {
+      const pageMemberIds = state.ids as string[];
+      const allSelected = pageMemberIds.length > 0 && pageMemberIds.every((id) => state.selectedMemberIds.includes(id));
+      return {
+        ...state,
+        selectedMemberIds: allSelected ? [] : [...pageMemberIds],
+      };
+    }),
+    on(GroupMembersEvents.clearMemberSelection, (_, state) => ({ ...state, selectedMemberIds: [] })),
+
+    on(GroupMembersEvents.bulkDeleteGroupMembers, ({ payload }, state) => [
+      ...payload.members.map((member) => removeEntity(member.id)),
+      {
+        bulkDeleteLoading: true,
+        error: null,
+        pagination: { ...state.pagination, total: state.pagination.total - payload.members.length },
+      },
+    ]),
+    on(GroupMembersEvents.bulkDeleteGroupMembersSuccess, ({ payload }, state) => ({
+      ...state,
+      bulkDeleteLoading: false,
+      error: null,
+      selectedMemberIds: state.selectedMemberIds.filter((id) => !payload.member_ids.includes(id)),
+    })),
+    on(GroupMembersEvents.bulkDeleteGroupMembersFailure, (event, state) => [
+      ...event.payload.members.map((member) => addEntity(member, { selectId })),
+      {
+        bulkDeleteLoading: false,
+        error: event.payload.error,
+        pagination: { ...state.pagination, total: state.pagination.total + event.payload.members.length },
+      },
     ]),
 
     // Clear filters
@@ -288,6 +344,29 @@ export const GroupMembersStore = signalStore(
         map(() => GroupMembersEvents.paginateGroupMembers({ page: store.pagination().page, limit: store.pagination().limit }))
       ),
       deleteGroupMemberFailure$: events.on(GroupMembersEvents.deleteGroupMemberFailure).pipe(
+        map(({ payload }) => { snackBar.open(payload.error, "Close", { duration: 6000 }); })
+      ),
+
+      bulkDeleteGroupMembers$: events.on(GroupMembersEvents.bulkDeleteGroupMembers).pipe(
+        exhaustMap(({ payload }) =>
+          from(groupMembersService.bulkDeleteGroupMembers(payload.group_id, payload.members.map((m) => m.id))).pipe(
+            mapResponse({
+              next: () => GroupMembersEvents.bulkDeleteGroupMembersSuccess({ member_ids: payload.members.map((m) => m.id) }),
+              error: (error: unknown) => GroupMembersEvents.bulkDeleteGroupMembersFailure({
+                error: error instanceof Error ? error.message : "Failed to delete group members",
+                members: payload.members,
+              }),
+            })
+          )
+        )
+      ),
+      bulkDeleteGroupMembersSuccess$: events.on(GroupMembersEvents.bulkDeleteGroupMembersSuccess).pipe(
+        tap(({ payload }) => {
+          snackBar.open(`${payload.member_ids.length} member(s) deleted successfully`, "Close", { duration: 6000 });
+        }),
+        map(() => GroupMembersEvents.paginateGroupMembers({ page: store.pagination().page, limit: store.pagination().limit }))
+      ),
+      bulkDeleteGroupMembersFailure$: events.on(GroupMembersEvents.bulkDeleteGroupMembersFailure).pipe(
         map(({ payload }) => { snackBar.open(payload.error, "Close", { duration: 6000 }); })
       ),
     })

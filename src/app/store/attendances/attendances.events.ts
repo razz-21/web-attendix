@@ -37,6 +37,14 @@ export const AttendancesEvents = eventGroup({
     deleteAttendanceSuccess: type<GetAttendance>(),
     deleteAttendanceFailure: type<{ error: string, attendance: GetAttendance }>(),
 
+    toggleAttendanceSelection: type<{ attendance_id: string }>(),
+    toggleAllAttendancesSelection: type<{ manageable_ids: string[] }>(),
+    clearAttendanceSelection: type<void>(),
+
+    bulkDeleteAttendances: type<{ attendances: GetAttendance[] }>(),
+    bulkDeleteAttendancesSuccess: type<{ attendance_ids: string[] }>(),
+    bulkDeleteAttendancesFailure: type<{ error: string; attendances: GetAttendance[] }>(),
+
     resetStore: type<void>(),
   },
 });

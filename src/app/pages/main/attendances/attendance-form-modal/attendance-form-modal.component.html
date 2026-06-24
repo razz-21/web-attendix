@@ -3,5 +3,10 @@
   <p>
     {{ dialogData?.initialData ? 'Update the details of the attendance configuration below.' : 'Create a new attendance configuration. Fill the form below to add it to the system.' }}
   </p>
-  <app-attendance-form [initialData]="dialogData?.initialData ?? null" (formSubmitted)="onFormSubmitted($event)" (formCancelled)="onFormCancelled()" />
+  <app-attendance-form
+    [initialData]="dialogData?.initialData ?? null"
+    [submitting]="isSubmitting()"
+    (formSubmitted)="onFormSubmitted($event)"
+    (formCancelled)="onFormCancelled()"
+  />
 </mat-dialog-content>

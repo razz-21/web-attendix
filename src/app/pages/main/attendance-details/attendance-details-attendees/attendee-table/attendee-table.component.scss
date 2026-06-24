@@ -26,6 +26,12 @@
   max-width: 400px;
 }
 
+.attendee-table-select-header,
+.attendee-table-select-cell {
+  width: 48px;
+  padding-right: 0;
+}
+
 .attendee-table-wrap {
   width: 100%;
   overflow-x: auto;

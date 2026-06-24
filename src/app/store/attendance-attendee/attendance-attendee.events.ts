@@ -25,6 +25,14 @@ export const AttendanceAttendeeEvents = eventGroup({
     deleteAttendeeSuccess: type<{ attendee: GetAttendee }>(),
     deleteAttendeeFailure: type<{ error: string; attendee: GetAttendee }>(),
 
+    toggleAttendeeSelection: type<{ attendee_id: string }>(),
+    toggleAllAttendeesSelection: type<{ visible_ids: string[] }>(),
+    clearAttendeeSelection: type<void>(),
+
+    bulkDeleteAttendees: type<{ attendance_id: string; attendees: GetAttendee[] }>(),
+    bulkDeleteAttendeesSuccess: type<{ attendee_ids: string[] }>(),
+    bulkDeleteAttendeesFailure: type<{ error: string; attendees: GetAttendee[] }>(),
+
     paginate: type<{ page: number; limit: number }>(),
 
     importAttendees: type<{ attendance_id: string; group_id: string }>(),

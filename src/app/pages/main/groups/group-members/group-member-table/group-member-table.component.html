@@ -27,10 +27,42 @@
     </mat-form-field>
   </div>
 
+  @if (selectedCount() > 0) {
+    <button
+      mat-stroked-button
+      type="button"
+      class="group-table-filter__bulk-delete"
+      [disabled]="bulkDeleteLoading()"
+      (click)="bulkDeleteMembers()"
+    >
+      <mat-icon>delete</mat-icon>
+      Delete ({{ selectedCount() }})
+    </button>
+  }
 </div>
 
 <div class="group-table-wrap">
   <table mat-table [dataSource]="loading() ? [null] : data()" class="group-table">
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef scope="col" class="group-table-select-header">
+        <mat-checkbox
+          [checked]="allOnPageSelected()"
+          [indeterminate]="someOnPageSelected()"
+          [disabled]="loading() || !data().length"
+          (change)="toggleAllMembersSelection()"
+          aria-label="Select all members on this page"
+        />
+      </th>
+      <td mat-cell *matCellDef="let row" class="group-table-select-cell">
+        <mat-checkbox
+          [checked]="isMemberSelected(row.id)"
+          (change)="toggleMemberSelection(row.id)"
+          (click)="$event.stopPropagation()"
+          [attr.aria-label]="'Select ' + row.name"
+        />
+      </td>
+    </ng-container>
+
     <ng-container matColumnDef="rfid">
       <th mat-header-cell *matHeaderCellDef scope="col">RFID Number</th>
       <td mat-cell *matCellDef="let row">{{ row.rfid }}</td>

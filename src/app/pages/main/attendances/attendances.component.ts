@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal, computed, model } from '@angular/core';
+import { Component, inject, OnInit, computed, model } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -11,11 +11,10 @@ import { AttendanceFormModel } from './attendance-form/attendance-form.component
 import { Dispatcher } from '@ngrx/signals/events';
 import { AttendancesStore } from '@/app/store/attendances/attendances.store';
 import { AttendancesEvents } from '@/app/store/attendances/attendances.events';
-import { AuthService } from '@/app/services/auth.service';
 import { ConfirmationDialogService } from '@/app/services/confirmation-dialog.service';
 import { AuthStore } from '@/app/store/auth/auth.store';
 import { SCHEDULE_DAY_MAP, sortScheduleDays } from '@/app/constants/schedule-days.constant';
-import { AttendanceScheduleDays, PostAttendance, AttendanceStatus, PatchAttendance } from '@/app/types/attendaces/attendances.types';
+import { AttendanceStatus } from '@/app/types/attendaces/attendances.types';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
@@ -36,7 +35,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 export class AttendancesComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly dispatcher = inject(Dispatcher);
-  private readonly authService = inject(AuthService);
   private readonly confirmationDialogService = inject(ConfirmationDialogService);
   private readonly attendancesStore = inject(AttendancesStore);
   private readonly authStore = inject(AuthStore);
@@ -44,8 +42,6 @@ export class AttendancesComponent implements OnInit {
   public readonly statusFilter = model<AttendanceStatus>(this.attendancesStore.filters().status ?? 'active');
 
   public readonly searchQuery = model<string>('');
-
-  private currentUserId: string | null = null;
 
   public readonly attendances = computed(() => {
     const userId = this.authStore.user()?.id;
@@ -97,39 +93,26 @@ export class AttendancesComponent implements OnInit {
     this.dispatcher.dispatch(AttendancesEvents.filterAttendances({ status: this.statusFilter() }));
   }
 
-  private async loadUserAndAttendances(): Promise<void> {
-    try {
-      const user = await this.authService.getMe();
-      this.currentUserId = user.id;
-
-      if (this.attendancesStore.hasAttendances()) {
-        // Entities are already cached in the root-scoped store (e.g., returning from
-        // an attendance details view). `loadAttendances` is guarded to skip when
-        // entities exist, so we explicitly re-fetch using the persisted filter to
-        // keep the list in sync with the UI filter state.
-        this.dispatcher.dispatch(
-          AttendancesEvents.filterAttendances({ status: this.attendancesStore.filters().status ?? 'active' })
-        );
-      } else {
-        this.dispatcher.dispatch(AttendancesEvents.loadAttendances());
-      }
-    } catch (error) {
-      console.error('Failed to load user:', error);
+  private loadUserAndAttendances(): void {
+    if (this.attendancesStore.hasAttendances()) {
+      // Entities are already cached in the root-scoped store (e.g., returning from
+      // an attendance details view). `loadAttendances` is guarded to skip when
+      // entities exist, so we explicitly re-fetch using the persisted filter to
+      // keep the list in sync with the UI filter state.
+      this.dispatcher.dispatch(
+        AttendancesEvents.filterAttendances({ status: this.attendancesStore.filters().status ?? 'active' })
+      );
+    } else {
+      this.dispatcher.dispatch(AttendancesEvents.loadAttendances());
     }
   }
 
   public openAddAttendance(): void {
-    const dialogRef = this.dialog.open(AttendanceFormModalComponent, {
+    this.dialog.open(AttendanceFormModalComponent, {
       maxWidth: '620px',
       width: '100%',
       height: 'auto',
       autoFocus: 'first-tabbable',
-    });
-
-    dialogRef.afterClosed().subscribe((data: AttendanceFormModel | undefined) => {
-      if (data && this.currentUserId) {
-        this.submitAttendance(data);
-      }
     });
   }
 
@@ -147,66 +130,13 @@ export class AttendancesComponent implements OnInit {
       scheduleDays: this.backendDaysToFrontendDays(attendance.schedule_days) as any
     };
 
-    const dialogRef = this.dialog.open(AttendanceFormModalComponent, {
+    this.dialog.open(AttendanceFormModalComponent, {
       maxWidth: '620px',
       width: '100%',
       height: 'auto',
       autoFocus: 'first-tabbable',
-      data: { initialData },
+      data: { initialData, attendanceId },
     });
-
-    dialogRef.afterClosed().subscribe((data: AttendanceFormModel | undefined) => {
-      if (data && this.currentUserId) {
-        this.submitEditedAttendance(attendanceId, data);
-      }
-    });
-  }
-
-  private submitEditedAttendance(id: string, formData: AttendanceFormModel): void {
-    if (!this.currentUserId) {
-      console.error('User ID not available');
-      return;
-    }
-
-    const updateData: Partial<PatchAttendance> = {
-      name: formData.name,
-      code: formData.code,
-      schedule_days: formData.scheduleDays.map(day => SCHEDULE_DAY_MAP[day] as AttendanceScheduleDays[number]),
-      description: formData.description,
-      late_threshold: formData.lateThreshold,
-      updated_at: new Date().toISOString(),
-    };
-
-    this.dispatcher.dispatch(AttendancesEvents.updateAttendance({ id, data: updateData }));
-  }
-
-  private submitAttendance(formData: AttendanceFormModel): void {
-    if (!this.currentUserId) {
-      console.error('User ID not available');
-      return;
-    }
-
-    const backendPayload: PostAttendance = {
-      id: crypto.randomUUID(),
-      name: formData.name,
-      code: formData.code,
-      status: 'active',
-      schedule_days: formData.scheduleDays.map(day => SCHEDULE_DAY_MAP[day] as AttendanceScheduleDays[number]),
-      description: formData.description,
-      late_threshold: formData.lateThreshold,
-      configurations: {
-        present_point: 1,
-        late_point: 0.5,
-        absent_point: 0,
-        excused_point: 0.75,
-      },
-      shared_with: [],
-      created_by: this.currentUserId,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-
-    this.dispatcher.dispatch(AttendancesEvents.createAttendance(backendPayload));
   }
 
   private backendDaysToFrontendDays(days: string[]): string[] {

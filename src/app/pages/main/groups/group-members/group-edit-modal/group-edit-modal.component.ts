@@ -29,10 +29,11 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 })
 export class GroupEditModalComponent {
   private readonly dialogRef = inject(MatDialogRef<GroupEditModalComponent>);
-  private readonly data = inject<{ group: GetGroup }>(MAT_DIALOG_DATA);
+  private readonly data = inject<{ group: GetGroup; groupId: string }>(MAT_DIALOG_DATA);
   private readonly dispatcher = inject(Dispatcher);
   private readonly groupsStore = inject(GroupsStore);
-  private readonly events = inject(Events); 
+  private readonly events = inject(Events);
+  private readonly groupId = this.data.groupId;
 
   public readonly loadingForm = computed(() => this.groupsStore.loadingForm());
 
@@ -60,7 +61,7 @@ export class GroupEditModalComponent {
   public submitForm(): void {
     const m = this.groupFormData();
     this.dispatcher.dispatch(GroupsEvents.updateGroup({
-      id: this.data.group.id,
+      id: this.groupId,
       group: {
         name: m.name.trim(),
         description: m.description.trim() || undefined,

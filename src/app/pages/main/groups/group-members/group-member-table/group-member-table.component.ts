@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
 import { GroupMembersStore } from '@/app/store/group-members/group-members.store';
 import { GroupMembersEvents } from '@/app/store/group-members/group-members.events';
@@ -32,6 +33,7 @@ import { UpdateMemberModalComponent } from './update-member-modal/update-member-
     MatProgressSpinnerModule,
     MatSelectModule,
     MatPaginatorModule,
+    MatCheckboxModule,
     FormsModule,
   ],
 })
@@ -42,6 +44,7 @@ export class GroupMemberTableComponent {
   private readonly dialog = inject(MatDialog);
 
   protected readonly displayedColumns: string[] = [
+    'select',
     'rfid',
     'name',
     'department',
@@ -57,6 +60,12 @@ export class GroupMemberTableComponent {
   public readonly members = computed(() => this.groupMembersStore.members());
   public readonly data = computed(() => [...this.members()]);
   public readonly hasFilters = computed(() => this.groupMembersStore.hasFilters());
+  public readonly selectedMemberIds = computed(() => this.groupMembersStore.selectedMemberIds());
+  public readonly selectedCount = computed(() => this.groupMembersStore.selectedCount());
+  public readonly allOnPageSelected = computed(() => this.groupMembersStore.allOnPageSelected());
+  public readonly someOnPageSelected = computed(() => this.groupMembersStore.someOnPageSelected());
+  public readonly bulkDeleteLoading = computed(() => this.groupMembersStore.bulkDeleteLoading());
+  public readonly currentGroupId = computed(() => this.groupMembersStore.currentGroupId());
 
   public readonly departments = DEPARTMENTS;
   public readonly pageSizeOptions = [10, 25, 50];
@@ -85,6 +94,41 @@ export class GroupMemberTableComponent {
 
   public paginateMembers(event: PageEvent): void {
     this.dispatcher.dispatch(GroupMembersEvents.paginateGroupMembers({ page: event.pageIndex + 1, limit: event.pageSize }));
+  }
+
+  public isMemberSelected(memberId: string): boolean {
+    return this.selectedMemberIds().includes(memberId);
+  }
+
+  public toggleMemberSelection(memberId: string): void {
+    this.dispatcher.dispatch(GroupMembersEvents.toggleMemberSelection({ member_id: memberId }));
+  }
+
+  public toggleAllMembersSelection(): void {
+    this.dispatcher.dispatch(GroupMembersEvents.toggleAllMembersSelection());
+  }
+
+  public async bulkDeleteMembers(): Promise<void> {
+    const selectedIds = this.selectedMemberIds();
+    if (!selectedIds.length) return;
+
+    const members = this.members().filter((member) => selectedIds.includes(member.id));
+    const groupId = this.currentGroupId();
+    if (!groupId) return;
+
+    const result = await this.confirmationDialogService.confirm({
+      title: 'Delete members',
+      message: `Are you sure you want to delete <strong>${selectedIds.length}</strong> selected member(s)?`,
+      positiveButtonText: 'Yes, delete',
+      negativeButtonText: 'No, cancel',
+    });
+
+    if (result) {
+      this.dispatcher.dispatch(GroupMembersEvents.bulkDeleteGroupMembers({
+        group_id: groupId,
+        members,
+      }));
+    }
   }
 
   public async deleteMember(row: GetGroupMember): Promise<void> {

@@ -17,6 +17,8 @@ type AttendanceAttendeeState = {
   loading: boolean;
   loadingForm: boolean;
   deleteLoading: boolean;
+  bulkDeleteLoading: boolean;
+  selectedAttendeeIds: string[];
   error: string | null;
 };
 
@@ -28,6 +30,8 @@ const initialState: AttendanceAttendeeState = {
   loading: false,
   loadingForm: false,
   deleteLoading: false,
+  bulkDeleteLoading: false,
+  selectedAttendeeIds: [],
   error: null,
 };
 
@@ -35,7 +39,7 @@ export const AttendanceAttendeeStore = signalStore(
   { providedIn: 'root' },
   withEntities<AttendeeEntity>(),
   withState(initialState),
-  withComputed(({ entities, entityMap, filters }) => ({
+  withComputed(({ entities, entityMap, filters, selectedAttendeeIds }) => ({
     attendees: computed(() => [...entities()].sort((a, b) => a.name.localeCompare(b.name))),
     filteredAttendees: computed(() => {
       const q = filters().q?.toLowerCase() ?? '';
@@ -48,6 +52,7 @@ export const AttendanceAttendeeStore = signalStore(
     }),
     attendeesMap: entityMap,
     hasAttendees: computed(() => !!entities().length),
+    selectedCount: computed(() => selectedAttendeeIds().length),
   })),
   withReducer(
     // Load
@@ -56,12 +61,14 @@ export const AttendanceAttendeeStore = signalStore(
       loading: true,
       error: null,
       currentAttendanceId: payload.attendance_id,
+      selectedAttendeeIds: [],
     })),
     on(AttendanceAttendeeEvents.loadAttendeesSuccess, ({ payload }) => [
       setAllEntities(payload.data ?? [], { selectId }),
       {
         loading: false,
         error: null,
+        selectedAttendeeIds: [],
       },
     ]),
     on(AttendanceAttendeeEvents.loadAttendeesFailure, (event, state) => ({
@@ -131,6 +138,40 @@ export const AttendanceAttendeeStore = signalStore(
     on(AttendanceAttendeeEvents.deleteAttendeeFailure, (event) => [
       addEntity(event.payload.attendee, { selectId }),
       { deleteLoading: false, error: event.payload.error },
+    ]),
+
+    on(AttendanceAttendeeEvents.toggleAttendeeSelection, ({ payload }, state) => {
+      const selected = new Set(state.selectedAttendeeIds);
+      if (selected.has(payload.attendee_id)) {
+        selected.delete(payload.attendee_id);
+      } else {
+        selected.add(payload.attendee_id);
+      }
+      return { ...state, selectedAttendeeIds: [...selected] };
+    }),
+    on(AttendanceAttendeeEvents.toggleAllAttendeesSelection, ({ payload }, state) => {
+      const visibleIds = payload.visible_ids;
+      const allSelected = visibleIds.length > 0 && visibleIds.every((id) => state.selectedAttendeeIds.includes(id));
+      return {
+        ...state,
+        selectedAttendeeIds: allSelected ? [] : [...visibleIds],
+      };
+    }),
+    on(AttendanceAttendeeEvents.clearAttendeeSelection, (_, state) => ({ ...state, selectedAttendeeIds: [] })),
+
+    on(AttendanceAttendeeEvents.bulkDeleteAttendees, ({ payload }, state) => [
+      ...payload.attendees.map((attendee) => removeEntity(attendee.id)),
+      { bulkDeleteLoading: true, error: null },
+    ]),
+    on(AttendanceAttendeeEvents.bulkDeleteAttendeesSuccess, ({ payload }, state) => ({
+      ...state,
+      bulkDeleteLoading: false,
+      error: null,
+      selectedAttendeeIds: state.selectedAttendeeIds.filter((id) => !payload.attendee_ids.includes(id)),
+    })),
+    on(AttendanceAttendeeEvents.bulkDeleteAttendeesFailure, (event) => [
+      ...event.payload.attendees.map((attendee) => addEntity(attendee, { selectId })),
+      { bulkDeleteLoading: false, error: event.payload.error },
     ]),
 
     // Reset
@@ -233,6 +274,28 @@ export const AttendanceAttendeeStore = signalStore(
         tap(() => { snackBar.open('Attendee deleted successfully', 'Close', { duration: 5000 }); })
       ),
       deleteAttendeeFailure$: events.on(AttendanceAttendeeEvents.deleteAttendeeFailure).pipe(
+        map(({ payload }) => { snackBar.open(payload.error, "Close", { duration: 6000 }); })
+      ),
+
+      bulkDeleteAttendees$: events.on(AttendanceAttendeeEvents.bulkDeleteAttendees).pipe(
+        exhaustMap(({ payload }) =>
+          from(attendeesService.bulkDeleteAttendees(payload.attendance_id, payload.attendees.map((a) => a.id))).pipe(
+            mapResponse({
+              next: () => AttendanceAttendeeEvents.bulkDeleteAttendeesSuccess({ attendee_ids: payload.attendees.map((a) => a.id) }),
+              error: (error: unknown) => AttendanceAttendeeEvents.bulkDeleteAttendeesFailure({
+                error: error instanceof Error ? error.message : "Failed to delete attendees",
+                attendees: payload.attendees,
+              }),
+            })
+          )
+        )
+      ),
+      bulkDeleteAttendeesSuccess$: events.on(AttendanceAttendeeEvents.bulkDeleteAttendeesSuccess).pipe(
+        tap(({ payload }) => {
+          snackBar.open(`${payload.attendee_ids.length} attendee(s) deleted successfully`, 'Close', { duration: 5000 });
+        })
+      ),
+      bulkDeleteAttendeesFailure$: events.on(AttendanceAttendeeEvents.bulkDeleteAttendeesFailure).pipe(
         map(({ payload }) => { snackBar.open(payload.error, "Close", { duration: 6000 }); })
       ),
 

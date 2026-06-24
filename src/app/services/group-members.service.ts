@@ -49,5 +49,11 @@ export class GroupMembersService {
       this.http.delete<void>(`${this.groupsApi}/${group_id}/members/${id}`)
     );
   }
+
+  public async bulkDeleteGroupMembers(group_id: string, ids: string[]): Promise<void> {
+    return lastValueFrom(
+      this.http.post<void>(`${this.groupsApi}/${group_id}/members/bulk-delete`, { ids })
+    );
+  }
   
 }

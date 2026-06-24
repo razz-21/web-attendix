@@ -51,11 +51,12 @@ export class GroupMemberComponent implements OnInit {
 
   public openEditGroup(): void {
     const group = this.currentGroup();
-    if (!group) return;
+    const groupId = this.route.snapshot.paramMap.get('id');
+    if (!group || !groupId) return;
     const dialogRef = this.dialog.open(GroupEditModalComponent, {
       maxWidth: '620px',
       width: '100%',
-      data: { group },
+      data: { group, groupId },
     });
 
     dialogRef.afterClosed().subscribe((updatedGroup: GetGroup | undefined) => {

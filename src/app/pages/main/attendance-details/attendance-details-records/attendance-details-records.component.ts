@@ -163,6 +163,8 @@ export class AttendanceDetailsRecordsComponent {
     ...this.attendances().map((attendance) => this.attendanceColumnId(attendance.id)),
   ]);
 
+  protected readonly tableRenderKey = computed(() => this.displayedColumns().join('|'));
+
   protected readonly loadingRowColumns = ['loading'];
 
   protected readonly isLoading = (_index: number, _row: unknown) => this.loading();

@@ -52,9 +52,11 @@
       <mat-button-toggle value="status">Status</mat-button-toggle>
       <mat-button-toggle value="points">Points</mat-button-toggle>
     </mat-button-toggle-group>
+    </div>
   </div>
 
   <div class="records-table-wrap">
+    @for (key of [tableRenderKey()]; track key) {
     <table
       mat-table
       [dataSource]="loading() ? [null] : attendees()"
@@ -185,5 +187,6 @@
         </td>
       </tr>
     </table>
+    }
   </div>
 </div>

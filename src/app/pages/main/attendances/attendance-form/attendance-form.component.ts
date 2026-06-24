@@ -57,8 +57,8 @@ const emptyModel = (): AttendanceFormModel => ({
 })
 export class AttendanceFormComponent {
   public readonly initialData = input<AttendanceFormModel | null>(null);
+  public readonly submitting = input(false);
   public readonly model = signal<AttendanceFormModel>(emptyModel());
-  public readonly loading = signal(false);
 
   public readonly formCancelled = output<void>();
   public readonly formSubmitted = output<AttendanceFormModel>();
@@ -83,10 +83,10 @@ export class AttendanceFormComponent {
       if (initial) {
         this.model.set({ ...initial });
       } else {
-        this.model.update(m => ({
-          ...m,
+        this.model.set({
+          ...emptyModel(),
           code: this.generatedCode(),
-        }));
+        });
       }
     }, { allowSignalWrites: true });
   }
@@ -102,22 +102,13 @@ export class AttendanceFormComponent {
   }, {
     submission: {
       action: async () => {
-        if (this.attendanceForm().invalid()) {
-          return;
-        }
-
-        try {
-          this.loading.set(true);
-          this.formSubmitted.emit(this.model());
-          // TODO: Handle form submission to store
-        } finally {
-          this.loading.set(false);
-        }
+        this.formSubmitted.emit(this.model());
+        return undefined;
       },
     },
   });
 
-  public readonly isLoadingForm = computed(() => this.loading());
+  public readonly isLoadingForm = computed(() => this.submitting());
 
   public toggleScheduleDay(day: string): void {
     const current = this.model().scheduleDays;

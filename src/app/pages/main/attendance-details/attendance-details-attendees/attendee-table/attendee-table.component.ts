@@ -12,12 +12,11 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
-import { AttendeesService } from '@/app/services/attendees.service';
 import { GetAttendee } from '@/app/types/attendaces/attendees.types';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogService } from '@/app/services/confirmation-dialog.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { DEPARTMENTS } from '@/app/constants/departments.constant';
 import { AttendeeFormModalComponent } from '@/app/pages/main/attendance-details/attendance-details-attendees/attendee-form-modal/attendee-form-modal.component';
 import { AttendanceAttendeeStore } from '@/app/store/attendance-attendee/attendance-attendee.store';
@@ -37,11 +36,11 @@ import { AttendanceAttendeeEvents } from '@/app/store/attendance-attendee/attend
     MatButtonModule,
     MatTooltipModule,
     MatProgressSpinnerModule,
+    MatCheckboxModule,
     FormsModule,
   ],
 })
 export class AttendeeTableComponent {
-  private readonly attendeesService = inject(AttendeesService);
   private readonly dialog = inject(MatDialog);
   private readonly dispatcher = inject(Dispatcher);
   private readonly attendanceAttendeeStore = inject(AttendanceAttendeeStore);
@@ -50,10 +49,24 @@ export class AttendeeTableComponent {
 
   public readonly attendanceId = input.required<string>();
 
-  protected readonly displayedColumns = ['rfid', 'name', 'department', 'year_level', 'section', 'actions'];
+  protected readonly displayedColumns = ['select', 'rfid', 'name', 'department', 'year_level', 'section', 'actions'];
   protected readonly loadingRowColumns = ['loading'];
 
   public readonly loading = computed(() => this.attendanceAttendeeStore.loading());
+  public readonly selectedAttendeeIds = computed(() => this.attendanceAttendeeStore.selectedAttendeeIds());
+
+  public readonly allVisibleSelected = computed(() => {
+    const visibleIds = this.data().map((attendee) => attendee.id);
+    const selected = this.selectedAttendeeIds();
+    return visibleIds.length > 0 && visibleIds.every((id) => selected.includes(id));
+  });
+
+  public readonly someVisibleSelected = computed(() => {
+    const visibleIds = this.data().map((attendee) => attendee.id);
+    const selected = this.selectedAttendeeIds();
+    const selectedVisible = visibleIds.filter((id) => selected.includes(id));
+    return selectedVisible.length > 0 && selectedVisible.length < visibleIds.length;
+  });
 
   public readonly filters = signal<{ q?: string }>({ q: undefined });
 
@@ -61,18 +74,29 @@ export class AttendeeTableComponent {
 
   public readonly isArchived = computed(() => this.attendanceDetailsStore.attendanceDetails()?.status === 'archived');
 
-  public readonly departments = DEPARTMENTS;
+  public readonly tableColumns = computed(() =>
+    this.isArchived()
+      ? ['rfid', 'name', 'department', 'year_level', 'section', 'actions']
+      : this.displayedColumns
+  );
 
-  public openCreate(): void {
-    const ref = this.dialog.open(AttendeeFormModalComponent, {
-      maxWidth: '720px',
-      width: '100%',
-      data: { attendanceId: this.attendanceId() },
-    });
-  }
+  public readonly departments = DEPARTMENTS;
 
   public searchAttendees(): void {
     this.dispatcher.dispatch(AttendanceAttendeeEvents.searchAttendees({ q: this.filters().q ?? '' }));
+  }
+
+  public isAttendeeSelected(attendeeId: string): boolean {
+    return this.selectedAttendeeIds().includes(attendeeId);
+  }
+
+  public toggleAttendeeSelection(attendeeId: string): void {
+    this.dispatcher.dispatch(AttendanceAttendeeEvents.toggleAttendeeSelection({ attendee_id: attendeeId }));
+  }
+
+  public toggleAllAttendees(): void {
+    const visibleIds = this.data().map((attendee) => attendee.id);
+    this.dispatcher.dispatch(AttendanceAttendeeEvents.toggleAllAttendeesSelection({ visible_ids: visibleIds }));
   }
 
   public openEdit(row: GetAttendee): void {

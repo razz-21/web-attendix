@@ -82,7 +82,7 @@
   </div>
 
   <div class="attendance-form__actions">
-    <button type="button" matButton="tonal" color="primary" class="full-width" (click)="cancel()">
+    <button type="button" matButton="tonal" color="primary" class="full-width" [disabled]="isLoadingForm()" (click)="cancel()">
       Cancel
     </button>
     <button type="submit" matButton="filled" color="primary" class="full-width" [disabled]="isLoadingForm() || attendanceForm().invalid()">
