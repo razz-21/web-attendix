@@ -1,7 +1,8 @@
 import { GetUser, UserErrorResponse } from "@/app/types/users/users.type";
 import { signalStore, withState } from "@ngrx/signals";
-import { Events, on, withEventHandlers, withReducer } from "@ngrx/signals/events";
+import { Dispatcher, Events, on, withEventHandlers, withReducer } from "@ngrx/signals/events";
 import { UserDetailsEvents } from "./user-details.events";
+import { UsersEvents } from "../users/users.events";
 import { inject } from "@angular/core";
 import { exhaustMap, from, lastValueFrom, map, pipe, tap } from "rxjs";
 import { UsersService } from "@/app/services/users.service";
@@ -105,6 +106,7 @@ export const UserDetailsStore = signalStore(
     (
       store,
       events = inject(Events),
+      dispatcher = inject(Dispatcher),
       userDetailsService = inject(UsersService),
       snackBar = inject(MatSnackBar),
     ) => ({
@@ -200,6 +202,10 @@ export const UserDetailsStore = signalStore(
       deleteUserSuccess$: events.on(UserDetailsEvents.deleteUserSuccess).pipe(
         tap(() => {
           snackBar.open(`User deleted successfully`, "Close", { duration: 6000 });
+          const deletedUser = store.user();
+          if (deletedUser) {
+            dispatcher.dispatch(UsersEvents.deleteUserSuccess({ user: deletedUser }));
+          }
         })
       ),
       deleteUserFailure$: events.on(UserDetailsEvents.deleteUserFailure).pipe(
