@@ -18,6 +18,7 @@ import { UserDetailsRoleFormComponent } from "./user-details-role-form/user-deta
 import { UserDetailsPasswordFormComponent } from "./user-details-password-form/user-details-password-form.component";
 import { UserDetailsStatusFormComponent } from "./user-details-status-form/user-details-status-form.component";
 import { UserDetailsWorkspaceFormComponent } from "./user-details-workspace-form/user-details-workspace-form.component";
+import { UserDetailsRfidFormComponent } from "./user-details-rfid-form/user-details-rfid-form.component";
 import { ConfirmationDialogService } from "@/app/services/confirmation-dialog.service";
 import { WorkspacesService } from "@/app/services/workspaces.service";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
@@ -76,6 +77,15 @@ export class UserDetailsComponent implements OnInit {
 
   public openNameForm(): void {
     this.dialog.open(UserDetailsNameFormComponent, {
+      width: '100%',
+      maxWidth: '580px',
+      height: 'auto',
+      autoFocus: 'first-tabbable',
+    });
+  }
+
+  public openRfidForm(): void {
+    this.dialog.open(UserDetailsRfidFormComponent, {
       width: '100%',
       maxWidth: '580px',
       height: 'auto',

@@ -1,0 +1,37 @@
+<div class="user-details-rfid-form-container">
+  <h1 class="mat-title-large">Update RFID / ID</h1>
+  <p>Enter the new RFID or student/employee ID below.</p>
+  <form class="user-details-rfid-form" [formRoot]="userDetailsRfidForm">
+    <div class="user-details-rfid-form__fields">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>RFID / ID</mat-label>
+        <input matInput [formField]="userDetailsRfidForm.rfid" autocomplete="off" />
+        @if (userDetailsRfidForm.rfid().touched() && userDetailsRfidForm.rfid().invalid()) {
+          <mat-error>
+            @switch (userDetailsRfidForm.rfid().errors()[0]?.kind) {
+              @case ('required') {
+                RFID / ID is required
+              }
+              @default {
+                {{ userDetailsRfidForm.rfid().errors()[0]?.message ?? 'Invalid value' }}
+              }
+            }
+          </mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="user-details-rfid-form__actions">
+      <button type="button" matButton="tonal" color="primary" class="full-width" (click)="cancel()">
+        Cancel
+      </button>
+      <button type="submit" matButton="filled" color="primary" class="full-width" [disabled]="isValueIsTheSameWithCurrentValue() || updateLoading()">
+        @if (updateLoading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          Save changes
+        }
+      </button>
+    </div>
+  </form>
+</div>
