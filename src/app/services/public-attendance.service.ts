@@ -8,6 +8,7 @@ export interface MarkPublicAttendanceParams {
   attendances_id: string;
   attendance_id: string;
   rfid: string;
+  otc: string;
 }
 
 @Injectable({
@@ -25,6 +26,7 @@ export class PublicAttendanceService {
         params: {
           attendance_id: params.attendance_id,
           rfid: params.rfid,
+          otc: params.otc,
         },
       }),
     );
