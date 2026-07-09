@@ -2,6 +2,7 @@ import { z } from "zod";
 import {
   AttendanceSchema,
   AttendanceStatusSchema,
+  SessionStateSchema,
   GetAttendanceSchema,
   PostAttendanceSchema,
   PatchAttendanceSchema,
@@ -10,6 +11,7 @@ import {
 
 export type Attendance = z.infer<typeof AttendanceSchema>;
 export type AttendanceStatus = z.infer<typeof AttendanceStatusSchema>;
+export type SessionState = z.infer<typeof SessionStateSchema>;
 export type GetAttendance = z.infer<typeof GetAttendanceSchema>;
 export type PostAttendance = z.infer<typeof PostAttendanceSchema>;
 export type PatchAttendance = z.infer<typeof PatchAttendanceSchema>;

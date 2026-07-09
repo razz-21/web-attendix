@@ -27,31 +27,6 @@
     gap: 1.25rem;
   }
 
-  &__info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.625rem;
-  }
-
-  &__info-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  &__info-label {
-    font-size: 0.8125rem;
-    font-weight: 600;
-    color: var(--mat-sys-on-surface-variant);
-    min-width: 130px;
-    flex-shrink: 0;
-  }
-
-  &__info-value {
-    font-size: 0.875rem;
-    color: var(--mat-sys-on-surface);
-  }
-
   &__qr-wrap {
     display: flex;
     justify-content: center;
@@ -88,4 +63,35 @@
     justify-content: flex-end;
     gap: 0.5rem;
   }
+
+  &_otc {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 0.75rem 1.25rem;
+  background: #59a4ee;
+  border-radius: 999px;
+}
+
+&_otc-code {
+  width: 80px;
+  text-align: right;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.3rem;
+  color: #fff;
+}
+
+&_otc-timer {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid rgba(255,255,255,.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
 }
