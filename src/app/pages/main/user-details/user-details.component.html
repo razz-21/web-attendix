@@ -69,6 +69,17 @@
       <div class="user-details-section">
         <div class="title">Personal Information</div>
         <mat-list>
+          <mat-list-item matRipple (click)="openRfidForm()">
+            <div class="user-info-content">
+              <div class="user-info-left-content">
+                <mat-icon>id_card</mat-icon>
+                <span>RFID / ID</span>
+              </div>
+              <div class="user-info-right-content">
+                <span>{{ user()?.rfid ?? '-' }}</span>
+              </div>
+            </div>
+          </mat-list-item>
           <mat-list-item matRipple (click)="openNameForm()">
             <div class="user-info-content">
               <div class="user-info-left-content">

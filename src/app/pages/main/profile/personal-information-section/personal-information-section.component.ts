@@ -21,6 +21,7 @@ export interface PersonalInformationModel {
   lastname: string;
   email: string;
   department: string;
+  rfid: string;
 }
 
 @Component({
@@ -50,6 +51,7 @@ export class PersonalInformationSectionComponent implements OnInit {
     lastname: '',
     email: '',
     department: '',
+    rfid: '',
   });
 
   public personalInformationModel = signal<PersonalInformationModel>(this.emptyModel());
@@ -61,6 +63,7 @@ export class PersonalInformationSectionComponent implements OnInit {
     email(root.email);
     disabled(root.email);
     required(root.department);
+    required(root.rfid);
   }, {
     submission: {
       action: async () => {
@@ -72,6 +75,7 @@ export class PersonalInformationSectionComponent implements OnInit {
           firstname: this.personalInformationModel().firstname,
           lastname: this.personalInformationModel().lastname,
           department: this.personalInformationModel().department,
+          rfid: this.personalInformationModel().rfid,
         } }));
       },
     },
@@ -89,6 +93,7 @@ export class PersonalInformationSectionComponent implements OnInit {
       lastname: this.authStore.user()?.lastname ?? '',
       email: this.authStore.user()?.email ?? '',
       department: this.authStore.user()?.department ?? '',
+      rfid: this.authStore.user()?.rfid ?? '',
     }
 
     return isObjectsTheSame(this.personalInformationModel(), currentUser);
@@ -101,6 +106,7 @@ export class PersonalInformationSectionComponent implements OnInit {
         lastname: this.authStore.user()?.lastname ?? '',
         email: this.authStore.user()?.email ?? '',
         department: this.authStore.user()?.department ?? '',
+        rfid: this.authStore.user()?.rfid ?? '',
       });
     }
   }
