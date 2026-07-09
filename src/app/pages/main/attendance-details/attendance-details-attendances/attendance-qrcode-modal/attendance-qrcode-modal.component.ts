@@ -68,11 +68,17 @@ export class AttendanceQrcodeModalComponent implements OnInit {
 
   public async ngOnInit(): Promise<void> {
     this.generateQrCode();
-    if (this.enableOtc) {
-      await this.fetchOtc();
-
-      this.otcInterval = setInterval(async () => {
+      if (this.enableOtc) {
         await this.fetchOtc();
+
+        this.otcInterval = setInterval(async () => {
+          const now = Math.floor(Date.now() / 1000);
+
+        this.expiresIn.set(15 - (now % 15));
+
+        if (now % 15 === 0) {
+          this.fetchOtc();
+        }
       }, 1000);
     }
   }
@@ -92,6 +98,7 @@ export class AttendanceQrcodeModalComponent implements OnInit {
       this.expiresIn.set(result.expires_in);
     } catch {
       this.otc.set('---');
+      this.expiresIn.set(0);
     }
   }
 
