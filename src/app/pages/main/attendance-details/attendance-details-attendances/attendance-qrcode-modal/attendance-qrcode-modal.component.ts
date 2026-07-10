@@ -10,6 +10,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '@/environments/environment';
 import { lastValueFrom } from 'rxjs';
 import qrcode from 'qrcode-generator';
+import { QrCodeOtcStateService } from '@/app/services/qr-code-otc.service';
 
 interface PublicAttendanceLinkParams {
   attendances_id: string;
@@ -54,6 +55,7 @@ export class AttendanceQrcodeModalComponent implements OnInit {
   private readonly sanitizer = inject(DomSanitizer);
   private readonly document = inject(DOCUMENT);
   private readonly http = inject(HttpClient);
+  private readonly otcStateService = inject(QrCodeOtcStateService);
 
   public readonly attendanceName = computed(() => this.attendanceDetailsStore.attendanceDetails()?.name ?? '');
 
@@ -62,29 +64,48 @@ export class AttendanceQrcodeModalComponent implements OnInit {
   public readonly qrCodeSvg = signal<SafeHtml>('');
   public readonly qrError = signal<string | null>(null);
   public readonly otc = signal<string>('---');
-  public readonly expiresIn = signal<number>(30);
+  public readonly expiresIn = signal<number>(15);
 
   private otcInterval: ReturnType<typeof setInterval> | null = null;
 
   public async ngOnInit(): Promise<void> {
     this.generateQrCode();
-      if (this.enableOtc) {
-        await this.fetchOtc();
 
-        this.otcInterval = setInterval(async () => {
-          const now = Math.floor(Date.now() / 1000);
-
-        this.expiresIn.set(15 - (now % 15));
-
-        if (now % 15 === 0) {
-          this.fetchOtc();
-        }
-      }, 1000);
+    if (!this.enableOtc) {
+      return;
     }
+
+    await this.fetchOtc();
+
+    const savedTime = this.otcStateService.getPausedState(this.record.id);
+
+    if (savedTime !== undefined) {
+      this.expiresIn.set(savedTime);
+      this.otcStateService.clearPausedState(this.record.id);
+    }
+
+    this.otcInterval = setInterval(async () => {
+      const newTime = this.expiresIn() - 1;
+
+      if (newTime <= 0) {
+        await this.fetchOtc();
+        this.expiresIn.set(15);
+      } else {
+        this.expiresIn.set(newTime);
+      }
+    }, 1000);
   }
 
   public ngOnDestroy(): void {
-    if (this.otcInterval) clearInterval(this.otcInterval);
+    if (this.otcInterval) {
+      clearInterval(this.otcInterval);
+      this.otcInterval = null;
+    }
+
+    if (this.enableOtc) {
+      this.otcStateService.setPausedState(this.record.id, this.expiresIn());
+    }
+
   }
 
   private async fetchOtc(): Promise<void> {
