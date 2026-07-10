@@ -1,11 +1,11 @@
 import { Component, computed, input, inject, output } from '@angular/core';
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { LoadingSectionComponent } from "@/app/compponents/loading-section/loading-section.component";
 import { AttendanceStatus } from '@/app/types/attendaces/attendances.types';
 import { MAIN_ATTENDANCE_DETAILS_PATH } from '@/app/constants/route.constant';
 import { Router } from '@angular/router';
@@ -33,14 +33,14 @@ export interface Attendance {
   templateUrl: './attendance-table.component.html',
   styleUrl: './attendance-table.component.scss',
   imports: [
-    MatCardModule,
+    MatTableModule,
     MatButtonModule,
     MatCheckboxModule,
     MatIconModule,
+    MatProgressSpinnerModule,
     MatTooltipModule,
     DatePipe,
-    LoadingSectionComponent,
-    TitleCasePipe
+    TitleCasePipe,
   ],
 })
 export class AttendanceTableComponent {
@@ -56,6 +56,9 @@ export class AttendanceTableComponent {
   public readonly attendanceArchived = output<string>();
   public readonly attendanceSetAsActive = output<string>();
   public readonly attendanceEdited = output<Attendance>();
+
+  public readonly displayedColumns = ['select', 'name', 'code', 'scheduleDays', 'lateThreshold', 'status', 'createdAt', 'actions'];
+  public readonly loadingRowColumns = ['loading'];
 
   public readonly hasAttendances = computed(() => this.attendances().length > 0);
   public readonly currentUser = computed(() => this.authStore.user());

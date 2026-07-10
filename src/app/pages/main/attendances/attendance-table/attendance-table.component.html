@@ -1,86 +1,179 @@
 <div class="attendance-table-wrap">
-  @if (loading()) {
-    <app-loading-section label="Loading attendances" />
-  } @else {
-    @if (hasAttendances()) {
-      <div class="attendance-grid">
-        @for (attendance of attendances(); track attendance.id) {
-          <mat-card appearance="outlined" class="attendance-card" (click)="onAttendanceClick(attendance)">
-            <mat-card-header>
-              <div class="attendance-card-header-content">
-                <div class="attendance-header-info">
-                  <mat-card-title class="attendance-card-title" matTooltip="{{ attendance.name }}" matTooltipPosition="above">
-                    <span>
-                      {{ attendance.name }}
-                    </span>
-                  </mat-card-title>
-                  <mat-card-subtitle>
-                    <div class="attendance-code">{{ attendance.code }}</div>
-                    @if (attendance.isSharedWithMe) {
-                      <span class="attendance-shared-badge" matTooltip="Shared with you" matTooltipPosition="above">
-                        Shared
-                      </span>
-                    }
-                  </mat-card-subtitle>
-                </div>
-                <div class="attendance-header-actions">
-                  @if (canManage(attendance)) {
-                    @if (attendance.status !== 'archived') {
-                      <button mat-icon-button type="button" (click)="onEditAttendance(attendance, $event)" matTooltip="Edit attendance" matTooltipPosition="above">
-                        <mat-icon>edit</mat-icon>
-                      </button>
-                    }
-                    @if (attendance.status === 'archived') {
-                      <button mat-icon-button type="button" (click)="onSetAttendanceAsActive(attendance, $event)" matTooltip="Set attendance as active" matTooltipPosition="above">
-                        <mat-icon>select_check_box</mat-icon>
-                      </button>
-                    }
-                    @if (attendance.status === 'active') {
-                      <button mat-icon-button type="button" (click)="onArchiveAttendance(attendance, $event)" matTooltip="Archieve attendance" matTooltipPosition="above">
-                        <mat-icon>archive</mat-icon>
-                      </button>
-                    }
-                  }
-                </div>
-              </div>
-            </mat-card-header>
-  
-            <mat-card-content>
-              <div class="attendance-details">
-                <div class="detail-item">
-                  <span class="detail-label">Description</span>
-                  <span class="detail-value">{{ attendance.description }}</span>
-                </div>
-                <div class="detail-item">
-                  <span class="detail-label">Late Threshold</span>
-                  <span class="detail-value">{{ attendance.lateThreshold }} {{ attendance.lateThreshold === 1 ? 'minute' : 'minutes' }}</span>
-                </div>
-                <div class="detail-item">
-                  <span class="detail-label">Schedule Days</span>
-                  <div class="schedule-days">
-                    @for (day of attendance.scheduleDays; track day) {
-                      <span class="schedule-day-badge">{{ day }}</span>
-                    }
-                  </div>
-                </div>
-                <div class="detail-item">
-                  <span class="detail-label">Status</span>
-                  <span class="detail-value">{{ attendance.status | titlecase }}</span>
-                </div>
-                <div class="detail-item">
-                  <span class="detail-label">Created</span>
-                  <span class="detail-value">{{ attendance.createdAt | date: 'MMM d, y h:mm a' }}</span>
-                </div>
-              </div>
-            </mat-card-content>
-          </mat-card>
-        }
-      </div>
-    } @else {
-      <div class="attendance-empty-state">
-        <mat-icon aria-hidden="true">calendar_today</mat-icon>
-        <span>No attendance configurations found</span>
-      </div>
-    }
+  @if (selectedCount() > 0) {
+    <div class="attendance-table-toolbar">
+      <span class="attendance-table-toolbar__count">{{ selectedCount() }} selected</span>
+      <button
+        matButton
+        type="button"
+        class="attendance-table-toolbar__delete"
+        [disabled]="bulkDeleteLoading()"
+        (click)="bulkDeleteAttendances()"
+      >
+        <mat-icon>delete</mat-icon>
+        Delete selected
+      </button>
+    </div>
   }
+
+  <div class="attendance-table-container">
+    <table mat-table [dataSource]="loading() ? [null] : attendances()" class="attendance-table">
+
+      <!-- Checkbox column -->
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef scope="col" class="attendance-table__select-col">
+          @if (hasManageableAttendances()) {
+            <mat-checkbox
+              [checked]="allSelected()"
+              [indeterminate]="someSelected()"
+              (change)="toggleAllAttendances()"
+              aria-label="Select all attendances"
+            />
+          }
+        </th>
+        <td mat-cell *matCellDef="let row" class="attendance-table__select-col">
+          @if (canManage(row)) {
+            <mat-checkbox
+              [checked]="isAttendanceSelected(row.id)"
+              (change)="toggleAttendanceSelection(row)"
+              (click)="$event.stopPropagation()"
+              aria-label="Select attendance"
+            />
+          }
+        </td>
+      </ng-container>
+
+      <!-- Name column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef scope="col">Name</th>
+        <td mat-cell *matCellDef="let row">
+          <div class="attendance-table__name-cell">
+            <span class="attendance-table__name">{{ row.name }}</span>
+            @if (row.isSharedWithMe) {
+              <span class="attendance-shared-badge" matTooltip="Shared with you" matTooltipPosition="above">
+                Shared
+              </span>
+            }
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Code column -->
+      <ng-container matColumnDef="code">
+        <th mat-header-cell *matHeaderCellDef scope="col">Code</th>
+        <td mat-cell *matCellDef="let row">
+          <code class="attendance-table__code">{{ row.code }}</code>
+        </td>
+      </ng-container>
+
+      <!-- Schedule Days column -->
+      <ng-container matColumnDef="scheduleDays">
+        <th mat-header-cell *matHeaderCellDef scope="col">Schedule Days</th>
+        <td mat-cell *matCellDef="let row">
+          <div class="schedule-days">
+            @for (day of row.scheduleDays; track day) {
+              <span class="schedule-day-badge">{{ day }}</span>
+            }
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Late Threshold column -->
+      <ng-container matColumnDef="lateThreshold">
+        <th mat-header-cell *matHeaderCellDef scope="col">Late Threshold</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.lateThreshold }} {{ row.lateThreshold === 1 ? 'min' : 'mins' }}
+        </td>
+      </ng-container>
+
+      <!-- Status column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef scope="col">Status</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="attendance-status-pill" [class.attendance-status-pill--archived]="row.status === 'archived'">
+            {{ row.status | titlecase }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Created column -->
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef scope="col">Created</th>
+        <td mat-cell *matCellDef="let row">{{ row.createdAt | date: 'MMM d, y' }}</td>
+      </ng-container>
+
+      <!-- Actions column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef scope="col" class="app-table-actions-header">Actions</th>
+        <td mat-cell *matCellDef="let row" class="app-table-actions-cell">
+          @if (canManage(row)) {
+            @if (row.status !== 'archived') {
+              <button
+                mat-icon-button
+                type="button"
+                class="attendance-table__action-btn"
+                (click)="onEditAttendance(row, $event)"
+                matTooltip="Edit attendance"
+                matTooltipPosition="above"
+                aria-label="Edit attendance"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+            }
+            @if (row.status === 'archived') {
+              <button
+                mat-icon-button
+                type="button"
+                class="attendance-table__action-btn"
+                (click)="onSetAttendanceAsActive(row, $event)"
+                matTooltip="Set as active"
+                matTooltipPosition="above"
+                aria-label="Set attendance as active"
+              >
+                <mat-icon>select_check_box</mat-icon>
+              </button>
+            }
+            @if (row.status === 'active') {
+              <button
+                mat-icon-button
+                type="button"
+                class="attendance-table__action-btn"
+                (click)="onArchiveAttendance(row, $event)"
+                matTooltip="Archive attendance"
+                matTooltipPosition="above"
+                aria-label="Archive attendance"
+              >
+                <mat-icon>archive</mat-icon>
+              </button>
+            }
+          }
+        </td>
+      </ng-container>
+
+      <!-- Loading column -->
+      <ng-container matColumnDef="loading">
+        <td mat-cell *matCellDef="let _" [attr.colspan]="displayedColumns.length" class="attendance-table-loading-cell">
+          <div class="attendance-table-loading" role="status" aria-live="polite" aria-busy="true">
+            <mat-spinner [diameter]="22" [strokeWidth]="3"></mat-spinner>
+            <span>Loading attendances...</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      @if (loading()) {
+        <tr mat-row *matRowDef="let row; columns: loadingRowColumns"></tr>
+      } @else {
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="onAttendanceClick(row)" class="attendance-table__row"></tr>
+      }
+
+      <tr class="mat-mdc-row attendance-table-empty-row" *matNoDataRow>
+        <td class="mat-mdc-cell attendance-table-empty-cell" [attr.colspan]="displayedColumns.length">
+          <div class="attendance-empty-state">
+            <mat-icon aria-hidden="true">calendar_today</mat-icon>
+            <span>No attendance configurations found</span>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
 </div>
