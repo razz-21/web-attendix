@@ -19,6 +19,12 @@
     </mat-form-field>
   </div>
 
+  @if (isSessionInactive()) {
+    <div class="attendance-drawer-inactive-notice">
+      <mat-icon>info</mat-icon>
+      <span>This attendance session is inactive. You cannot record attendance while it is inactive.</span>
+    </div>
+  }
 
   <div class="attendance-drawer-content">
     @if (loadingRecords()) {
@@ -43,6 +49,7 @@
                   [name]="'attendance-attendee-record-type-' + attendeeRecord.attendee.id"
                   aria-label="Attendance Attendee Record Type"
                   [value]="attendeeRecord.attendanceRecord?.status ?? ''"
+                  [disabled]="isSessionInactive()"
                 >
                   <mat-button-toggle value="present" (click)="onStatusClick('present', attendeeRecord)">Present</mat-button-toggle>
                   <mat-button-toggle value="late" (click)="onStatusClick('late', attendeeRecord)">Late</mat-button-toggle>
@@ -54,7 +61,7 @@
                   mat-icon-button
                   color="primary"
                   type="button"
-                  [disabled]="attendeeRecord.attendanceRecord?.status !== 'excused'"
+                  [disabled]="isSessionInactive() || attendeeRecord.attendanceRecord?.status !== 'excused'"
                   matTooltip="Enter reason for excused"
                   matTooltipPosition="above"
                   (click)="openExcusedModal(attendeeRecord)"
