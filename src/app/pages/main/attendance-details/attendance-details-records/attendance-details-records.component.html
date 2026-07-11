@@ -108,8 +108,10 @@
                 hideSingleSelectionIndicator
                 disableOptionCentering
                 [value]="getRecordStatus(attendee.id, attendance.id)"
-                [disabled]="saving() || isArchived()"
+                [disabled]="saving() || isArchived() || isAttendanceInactive(attendance)"
                 [aria-label]="'Status for ' + attendee.name + ' on ' + attendance.name"
+                [matTooltip]="isAttendanceInactive(attendance) ? 'This session is inactive. You cannot update attendance.' : ''"
+                matTooltipPosition="above"
                 (selectionChange)="onStatusChange($event.value, attendee, attendance)"
                 (click)="$event.stopPropagation()"
               >
@@ -134,7 +136,7 @@
                 <button
                   type="button"
                   class="records-status-reason-btn"
-                  [disabled]="saving() || isArchived()"
+                  [disabled]="saving() || isArchived() || isAttendanceInactive(attendance)"
                   aria-label="Edit excused reason for {{ attendee.name }}"
                   (click)="$event.stopPropagation(); openExcusedModal(getRecord(attendee.id, attendance.id)!)"
                 >

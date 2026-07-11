@@ -23,6 +23,7 @@ import { GetAttendee } from '@/app/types/attendaces/attendees.types';
 import { GetAttendance } from '@/app/types/attendance/attendance.types';
 import { ExcusedReasonModalComponent } from '../attendance-details-attendances/attendance-drawer/excused-reason-modal/excused-reason-modal.component';
 import { AttendancesService } from '@/app/services/attendances.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 const STATUS_LABELS: Record<AttendanceRecordStatus, string> = {
   present: 'Present',
@@ -73,6 +74,7 @@ const STATUS_POINT_KEYS: Record<
     MatDatepickerModule,
     MatButtonModule,
     MatButtonToggleModule,
+    MatTooltipModule,
   ],
 })
 export class AttendanceDetailsRecordsComponent {
@@ -141,6 +143,10 @@ export class AttendanceDetailsRecordsComponent {
   protected readonly isArchived = computed(
     () => this.attendanceDetailsStore.attendanceDetails()?.status === 'archived',
   );
+
+  protected isAttendanceInactive(attendance: GetAttendance): boolean {
+    return attendance.status === 'inactive';
+  }
 
   protected readonly saving = computed(
     () =>
