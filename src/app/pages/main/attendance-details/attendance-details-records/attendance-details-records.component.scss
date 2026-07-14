@@ -146,9 +146,9 @@
 
 .records-table__attendance-header {
   text-align: center;
-  width: 8rem;
-  min-width: 8rem;
-  max-width: 8rem;
+  width: 10rem;
+  min-width: 10rem;
+  max-width: 10rem;
   border-left: 1px solid var(--mat-sys-outline-variant);
   vertical-align: bottom;
   overflow: hidden;
@@ -263,9 +263,9 @@
 
   [class*='mat-column-attendance_'].mat-mdc-header-cell,
   [class*='mat-column-attendance_'].mat-mdc-cell {
-    width: 8rem;
-    min-width: 8rem;
-    max-width: 8rem;
+    width: 10rem;
+    min-width: 10rem;
+    max-width: 10rem;
     overflow: hidden;
   }
 
