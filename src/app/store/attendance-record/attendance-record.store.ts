@@ -144,6 +144,12 @@ export const AttendanceRecordStore = signalStore(
       ];
     }),
 
+    // Real-time upsert from the server. Keyed by id, so it is idempotent and
+    // safely no-ops the echo of a change this client just made itself.
+    on(AttendanceRecordEvents.attendanceRecordReceived, ({ payload }) => [
+      setEntity(payload, { selectId }),
+    ]),
+
     on(AttendanceRecordEvents.resetStore, () => [removeAllEntities(), initialState]),
   ),
   withEventHandlers(

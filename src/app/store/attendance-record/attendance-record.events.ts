@@ -17,6 +17,9 @@ export const AttendanceRecordEvents = eventGroup({
     updateAttendanceRecordSuccess: type<GetAttendanceRecord>(),
     updateAttendanceRecordFailure: type<{ error: string; id: string }>(),
 
+    // Real-time record pushed from the server over WebSocket (create or update).
+    attendanceRecordReceived: type<GetAttendanceRecord>(),
+
     resetStore: type<void>(),
   },
 });
