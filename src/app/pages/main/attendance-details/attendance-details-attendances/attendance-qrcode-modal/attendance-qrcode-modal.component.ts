@@ -129,8 +129,6 @@ export class AttendanceQrcodeModalComponent implements OnInit {
         enable_otc: this.record.enable_otc === 'on',
       });
 
-      console.log('qrData', qrData);
-
       const qr = qrcode(0, 'M');
       qr.addData(qrData);
       qr.make();

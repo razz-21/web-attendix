@@ -52,9 +52,9 @@
 
           @if (enableOtc) {
             <div class="otc-container">
-              <input #d1 class="otc-box" maxlength="1" (input)="moveNext($event, d2)" (keydown)="movePrev($event)" />
-              <input #d2 class="otc-box" maxlength="1" (input)="moveNext($event, d3)" (keydown)="movePrev($event, d1)" />
-              <input #d3 class="otc-box" maxlength="1" (input)="moveNext($event)" (keydown)="movePrev($event, d2)" />
+              <input #d1 class="otc-box" type="number" maxlength="1" (input)="moveNext($event, d2)" (keydown)="movePrev($event)" />
+              <input #d2 class="otc-box" type="number" maxlength="1" (input)="moveNext($event, d3)" (keydown)="movePrev($event, d1)" />
+              <input #d3 class="otc-box" type="number" maxlength="1" (input)="moveNext($event)" (keydown)="movePrev($event, d2)" />
             </div>
           }
 
