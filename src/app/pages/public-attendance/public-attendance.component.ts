@@ -143,6 +143,21 @@ export class PublicAttendanceComponent {
   }
 }
 
+  movePrev(event: KeyboardEvent, prevInput?: HTMLInputElement) {
+  if (event.key !== 'Backspace') {
+    return;
+  }
+
+  const input = event.target as HTMLInputElement;
+
+  if (!input.value && prevInput) {
+    event.preventDefault();
+    prevInput.value = '';
+    this.updateOtc();
+    prevInput.focus();
+  }
+}
+
   updateOtc() {
     const inputs = document.querySelectorAll('.otc-box') as NodeListOf<HTMLInputElement>;
     let code = '';
