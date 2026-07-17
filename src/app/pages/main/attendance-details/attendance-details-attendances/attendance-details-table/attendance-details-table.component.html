@@ -45,14 +45,14 @@
       </td>
     </ng-container>
 
-    <ng-container matColumnDef="session_state">
+    <ng-container matColumnDef="enable_otc">
       <th mat-header-cell *matHeaderCellDef scope="col">Enable OTC</th>
       <td mat-cell *matCellDef="let row" (click)="$event.stopPropagation()">
         <mat-button-toggle-group
           class="details-table-status-toggle"
           [name]="'session-state-' + row.id"
           aria-label="Session on/off state"
-          [value]="row.session_state ?? null"
+          [value]="row.enable_otc ?? null"
           [disabled]="isArchived()"
           (change)="toggleSessionState($event.value, row)"
         >

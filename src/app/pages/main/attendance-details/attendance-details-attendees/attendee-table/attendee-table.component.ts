@@ -15,14 +15,16 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
 import { GetAttendee } from '@/app/types/attendaces/attendees.types';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmationDialogService } from '@/app/services/confirmation-dialog.service';
 import { DEPARTMENTS } from '@/app/constants/departments.constant';
 import { AttendeeFormModalComponent } from '@/app/pages/main/attendance-details/attendance-details-attendees/attendee-form-modal/attendee-form-modal.component';
 import { AttendanceAttendeeStore } from '@/app/store/attendance-attendee/attendance-attendee.store';
 import { AttendanceDetailsStore } from '@/app/store/attendance-details/attendance-details.store';
-import { Dispatcher } from '@ngrx/signals/events';
+import { Dispatcher, Events } from '@ngrx/signals/events';
 import { AttendanceAttendeeEvents } from '@/app/store/attendance-attendee/attendance-attendee.events';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { pipe, tap, map } from 'rxjs';
 
 @Component({
   selector: 'app-attendee-table',
@@ -42,6 +44,7 @@ import { AttendanceAttendeeEvents } from '@/app/store/attendance-attendee/attend
 })
 export class AttendeeTableComponent {
   private readonly dialog = inject(MatDialog);
+  private readonly events = inject(Events);
   private readonly dispatcher = inject(Dispatcher);
   private readonly attendanceAttendeeStore = inject(AttendanceAttendeeStore);
   private readonly attendanceDetailsStore = inject(AttendanceDetailsStore);
@@ -99,13 +102,22 @@ export class AttendeeTableComponent {
     this.dispatcher.dispatch(AttendanceAttendeeEvents.toggleAllAttendeesSelection({ visible_ids: visibleIds }));
   }
 
+  private editDialogRef = signal<MatDialogRef<AttendeeFormModalComponent> | null>(null);
+
   public openEdit(row: GetAttendee): void {
-    this.dialog.open(AttendeeFormModalComponent, {
+    const ref = this.dialog.open(AttendeeFormModalComponent, {
       maxWidth: '720px',
       width: '100%',
       data: { attendanceId: this.attendanceId(), attendee: row },
     });
+    this.editDialogRef.set(ref);
   }
+
+  #onUpdateAttendeeSuccess = rxMethod<GetAttendee>(
+    pipe(tap(() => this.editDialogRef()?.close()))
+  )(this.events.on(AttendanceAttendeeEvents.updateAttendeeSuccess).pipe(
+    map(({ payload }) => payload)
+  ));
 
   public async deleteAttendee(row: GetAttendee): Promise<void> {
     const confirmed = await this.confirmationDialogService.confirm({

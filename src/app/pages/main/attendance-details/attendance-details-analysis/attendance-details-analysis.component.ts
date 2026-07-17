@@ -1,4 +1,4 @@
-import { Component, computed, inject, ElementRef, ViewChild, AfterViewInit, OnDestroy } from "@angular/core";
+import { Component, computed, inject, ElementRef, viewChild, effect, OnDestroy } from "@angular/core";
 import { AttendanceRecordStore } from '@/app/store/attendance-record/attendance-record.store';
 import { AttendanceAttendeeStore } from '@/app/store/attendance-attendee/attendance-attendee.store';
 import { AttendanceStore } from '@/app/store/attendance/attendance.store';
@@ -11,8 +11,8 @@ Chart.register(...registerables);
   templateUrl: './attendance-details-analysis.component.html',
   styleUrls: ['./attendance-details-analysis.component.scss'],
 })
-export class AttendanceDetailsAnalysisComponent implements AfterViewInit, OnDestroy {
-  @ViewChild('lineChart') lineChartRef!: ElementRef<HTMLCanvasElement>;
+export class AttendanceDetailsAnalysisComponent implements OnDestroy {
+  private readonly lineChartRef = viewChild<ElementRef<HTMLCanvasElement>>('lineChart');
 
   private readonly recordStore = inject(AttendanceRecordStore);
   private readonly attendeeStore = inject(AttendanceAttendeeStore);
@@ -44,18 +44,30 @@ export class AttendanceDetailsAnalysisComponent implements AfterViewInit, OnDest
     return `${Math.round(((this.totalPresent() + this.totalLate()) / total) * 100)}%`;
   });
 
-  ngAfterViewInit(): void {
-    this.initChart();
+  constructor() {
+    // Rebuild the chart whenever the canvas becomes available or the underlying
+    // records change. The canvas is behind @if blocks, so it may not exist on
+    // first render (while loading or when there are no records yet).
+    effect(() => {
+      const canvasRef = this.lineChartRef();
+      const hasData = this.totalRecords() > 0;
+      if (!canvasRef || !hasData) {
+        this.chart?.destroy();
+        this.chart = null;
+        return;
+      }
+      this.initChart(canvasRef.nativeElement);
+    });
   }
 
   ngOnDestroy(): void {
     this.chart?.destroy();
   }
 
-  private initChart(): void {
+  private initChart(canvas: HTMLCanvasElement): void {
     this.chart?.destroy();
     const records = this.records;
-    const sessions = this.attendanceStore.records(); 
+    const sessions = this.attendanceStore.records();
     const attendanceIds = [...new Set(records.map(r => r.attendance_id))];
 
     attendanceIds.sort((a, b) => {
@@ -73,77 +85,74 @@ export class AttendanceDetailsAnalysisComponent implements AfterViewInit, OnDest
       return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
     });
 
-    const data = attendanceIds.map(id =>
-      records.filter(r => r.attendance_id === id && r.status === 'present').length
-    );
+    const seriesFor = (status: string) =>
+      attendanceIds.map(id => records.filter(r => r.attendance_id === id && r.status === status).length);
 
-    this.chart = new Chart(this.lineChartRef.nativeElement, {
+    // Soft, smooth area layers — same status colors as before but much lighter,
+    // no visible points and minimal axes to match the reference aesthetic.
+    const makeDataset = (label: string, status: string, rgb: string) => ({
+      label,
+      data: seriesFor(status),
+      borderColor: `rgba(${rgb}, 0.45)`,
+      backgroundColor: this.buildAreaGradient(canvas, rgb),
+      borderWidth: 2,
+      tension: 0.45,
+      cubicInterpolationMode: 'monotone' as const,
+      fill: true,
+      pointRadius: 0,
+      pointHoverRadius: 4,
+      pointHoverBackgroundColor: '#fff',
+      pointHoverBorderWidth: 2,
+      pointHoverBorderColor: `rgba(${rgb}, 0.9)`,
+    });
+
+    this.chart = new Chart(canvas, {
       type: 'line',
       data: {
         labels,
         datasets: [
-          {
-            label: 'Present',
-            data: attendanceIds.map(id => records.filter(r => r.attendance_id === id && r.status === 'present').length),
-            borderColor: 'rgb(76, 175, 80)',
-            backgroundColor: 'rgba(76, 175, 80, 0.05)',
-            tension: 0.4,
-            fill: true,
-            pointRadius: 6,
-            pointBackgroundColor: '#fff',
-            pointBorderWidth: 2,
-            pointBorderColor: 'rgb(76, 175, 80)',
-          },
-          {
-            label: 'Late',
-            data: attendanceIds.map(id => records.filter(r => r.attendance_id === id && r.status === 'late').length),
-            borderColor: 'rgb(255, 152, 0)',
-            backgroundColor: 'rgba(255, 152, 0, 0.05)',
-            tension: 0.4,
-            fill: true,
-            pointRadius: 6,
-            pointBackgroundColor: '#fff',
-            pointBorderWidth: 2,
-            pointBorderColor: 'rgb(255, 152, 0)',
-          },
-          {
-            label: 'Excused',
-            data: attendanceIds.map(id => records.filter(r => r.attendance_id === id && r.status === 'excused').length),
-            borderColor: 'rgb(33, 150, 243)',
-            backgroundColor: 'rgba(33, 150, 243, 0.05)',
-            tension: 0.4,
-            fill: true,
-            pointRadius: 6,
-            pointBackgroundColor: '#fff',
-            pointBorderWidth: 2,
-            pointBorderColor: 'rgb(33, 150, 243)',
-          },
-          {
-            label: 'Absent',
-            data: attendanceIds.map(id => records.filter(r => r.attendance_id === id && r.status === 'absent').length),
-            borderColor: 'rgb(244, 67, 54)',
-            backgroundColor: 'rgba(244, 67, 54, 0.05)',
-            tension: 0.4,
-            fill: true,
-            pointRadius: 6,
-            pointBackgroundColor: '#fff',
-            pointBorderWidth: 2,
-            pointBorderColor: 'rgb(244, 67, 54)',
-          },
+          makeDataset('Present', 'present', '76, 175, 80'),
+          makeDataset('Late', 'late', '255, 152, 0'),
+          makeDataset('Excused', 'excused', '33, 150, 243'),
+          makeDataset('Absent', 'absent', '244, 67, 54'),
         ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
         plugins: {
-          legend: { display: true, position: 'top' },
+          legend: {
+            display: true,
+            position: 'top',
+            labels: { usePointStyle: true, boxWidth: 8, boxHeight: 8, padding: 16 },
+          },
           tooltip: { mode: 'index', intersect: false },
         },
         scales: {
-          y: { beginAtZero: true, ticks: { stepSize: 1 } },
-          x: { grid: { display: false } },
+          y: {
+            beginAtZero: true,
+            border: { display: false },
+            ticks: { stepSize: 1, color: 'rgba(0, 0, 0, 0.35)' },
+            grid: { color: 'rgba(0, 0, 0, 0.04)' },
+          },
+          x: {
+            border: { display: false },
+            ticks: { color: 'rgba(0, 0, 0, 0.35)', maxRotation: 0, autoSkip: true },
+            grid: { display: false },
+          },
         },
       },
     });
+  }
+
+  /** Vertical gradient fill: a light tint at the top fading to transparent at the bottom. */
+  private buildAreaGradient(canvas: HTMLCanvasElement, rgb: string): CanvasGradient | string {
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return `rgba(${rgb}, 0.08)`;
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, `rgba(${rgb}, 0.18)`);
+    gradient.addColorStop(1, `rgba(${rgb}, 0.01)`);
+    return gradient;
   }
 }

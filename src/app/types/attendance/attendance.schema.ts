@@ -12,7 +12,7 @@ export const AttendanceSchema = z.object({
   attendance_id: z.uuidv4(),
   attendances_id: z.uuidv4(),
   status: AttendanceStatusSchema.default('active'),
-  session_state: SessionStateSchema.default('off'),
+  enable_otc: SessionStateSchema.default('off'),
   created_at: z.iso.datetime(),
   updated_at: z.iso.datetime(),
 });

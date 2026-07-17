@@ -49,7 +49,7 @@ export class AttendanceTableComponent {
     'start_time',
     'end_time',
     'status',
-    'session_state',
+    'enable_otc',
     'actions',
   ];
   protected readonly loadingRowColumns: string[] = ['loading'];
@@ -73,11 +73,11 @@ export class AttendanceTableComponent {
     this.dispatcher.dispatch(AttendanceEvents.selectAttendance({ attendance: row }));
   }
 
-  public toggleSessionState(session_state: SessionState, row: GetAttendance): void {
+  public toggleSessionState(enable_otc: SessionState, row: GetAttendance): void {
     this.dispatcher.dispatch(AttendanceEvents.updateAttendance({
       attendance_id: row.attendance_id,
       id: row.id,
-      data: { session_state },
+      data: { enable_otc },
     }));
   }
   

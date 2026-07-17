@@ -10,7 +10,6 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '@/environments/environment';
 import { lastValueFrom } from 'rxjs';
 import qrcode from 'qrcode-generator';
-import { QrCodeOtcStateService } from '@/app/services/qr-code-otc.service';
 
 interface PublicAttendanceLinkParams {
   attendances_id: string;
@@ -54,11 +53,10 @@ export class AttendanceQrcodeModalComponent implements OnInit {
   private readonly sanitizer = inject(DomSanitizer);
   private readonly document = inject(DOCUMENT);
   private readonly http = inject(HttpClient);
-  private readonly otcStateService = inject(QrCodeOtcStateService);
 
   public readonly attendanceName = computed(() => this.attendanceDetailsStore.attendanceDetails()?.name ?? '');
 
-  public readonly enableOtc = this.record.session_state === 'on';
+  public readonly enableOtc = this.record.enable_otc === 'on';
 
   public readonly qrCodeSvg = signal<SafeHtml>('');
   public readonly qrError = signal<string | null>(null);
@@ -76,19 +74,11 @@ export class AttendanceQrcodeModalComponent implements OnInit {
 
     await this.fetchOtc();
 
-    const savedTime = this.otcStateService.getPausedState(this.record.id);
-
-    if (savedTime !== undefined) {
-      this.expiresIn.set(savedTime);
-      this.otcStateService.clearPausedState(this.record.id);
-    }
-
     this.otcInterval = setInterval(async () => {
       const newTime = this.expiresIn() - 1;
 
       if (newTime <= 0) {
         await this.fetchOtc();
-        this.expiresIn.set(15);
       } else {
         this.expiresIn.set(newTime);
       }
@@ -100,11 +90,6 @@ export class AttendanceQrcodeModalComponent implements OnInit {
       clearInterval(this.otcInterval);
       this.otcInterval = null;
     }
-
-    if (this.enableOtc) {
-      this.otcStateService.setPausedState(this.record.id, this.expiresIn());
-    }
-
   }
 
   private async fetchOtc(): Promise<void> {
@@ -141,7 +126,7 @@ export class AttendanceQrcodeModalComponent implements OnInit {
         attendance_name: this.record.name,
         attendance_date: this.record.attendance_date,
         code,
-        enable_otc: this.record.session_state === 'on',
+        enable_otc: this.record.enable_otc === 'on',
       });
 
       const qr = qrcode(0, 'M');
