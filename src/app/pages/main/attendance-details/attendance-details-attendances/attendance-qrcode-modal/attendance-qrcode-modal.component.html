@@ -5,28 +5,13 @@
   </section>
 
   <section class="qrcode-modal__body">
-    <div class="qrcode-modal__info">
-      <div class="qrcode-modal__info-row">
-        <span class="qrcode-modal__info-label">Attendance Name</span>
-        <span class="qrcode-modal__info-value">{{ attendanceName() || '—' }}</span>
+
+    @if (enableOtc) {
+      <div class="qrcode-modal_otc">
+        <span class="qrcode-modal_otc-code">{{ otc() }}</span>
+        <span class="qrcode-modal_otc-timer">{{ expiresIn() }}s</span>
       </div>
-      <div class="qrcode-modal__info-row">
-        <span class="qrcode-modal__info-label">Record Name</span>
-        <span class="qrcode-modal__info-value">{{ record.name || '—' }}</span>
-      </div>
-      <div class="qrcode-modal__info-row">
-        <span class="qrcode-modal__info-label">Start Time</span>
-        <span class="qrcode-modal__info-value">{{ record.start_time ? ('1970-01-01T' + record.start_time | date: 'hh:mm a') : '—' }}</span>
-      </div>
-      <div class="qrcode-modal__info-row">
-        <span class="qrcode-modal__info-label">End Time</span>
-        <span class="qrcode-modal__info-value">{{ record.end_time ? ('1970-01-01T' + record.end_time | date: 'hh:mm a') : '—' }}</span>
-      </div>
-      <div class="qrcode-modal__info-row">
-        <span class="qrcode-modal__info-label">Created At</span>
-        <span class="qrcode-modal__info-value">{{ record.created_at ? (record.created_at | date: 'MMM dd, yyyy hh:mm a') : '—' }}</span>
-      </div>
-    </div>
+    }
 
     @if (qrError()) {
       <div class="qrcode-modal__error">

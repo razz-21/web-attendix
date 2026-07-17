@@ -56,6 +56,8 @@ export class AttendanceDrawerComponent {
 
   public selectedAttendance = computed(() => this.attendanceStore.selectedAttendance());
 
+  public isSessionInactive = computed(() => this.selectedAttendance()?.status === 'inactive');
+
   public attendees = computed(() => this.attendanceAttendeesStore.attendees());
 
   public attendessRecords = computed(() => this.attendanceRecordStore.attendeesAttendanceRecords(this.attendees() ?? [], this.selectedAttendance()?.id ?? ''));

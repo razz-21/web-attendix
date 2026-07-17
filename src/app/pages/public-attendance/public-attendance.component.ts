@@ -8,6 +8,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '@/environments/environment';
+import { lastValueFrom } from 'rxjs';
 import {
   MarkPublicAttendanceParams,
   PublicAttendanceService,
@@ -16,6 +19,7 @@ import {
 export interface PublicAttendanceModel {
   code: string;
   rfid: string;
+  otc: string;
 }
 
 @Component({
@@ -37,12 +41,17 @@ export interface PublicAttendanceModel {
 export class PublicAttendanceComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly publicAttendanceService = inject(PublicAttendanceService);
+  private readonly http = inject(HttpClient);
 
   public readonly attendancesId = this.route.snapshot.paramMap.get('attendances_id');
   public readonly attendanceId = this.route.snapshot.paramMap.get('attendee_id');
   public readonly attendanceName = this.route.snapshot.queryParamMap.get('attendance_name');
   public readonly attendanceDate = this.route.snapshot.queryParamMap.get('attendance_date');
 
+  public readonly enableOtc =
+  this.route.snapshot.queryParamMap.get('enable_otc') === 'true';
+
+  public readonly isStrict = signal(false);
   public readonly linkError = signal<string | null>(null);
   public readonly submitParams = signal<MarkPublicAttendanceParams | undefined>(undefined);
 
@@ -72,11 +81,15 @@ export class PublicAttendanceComponent {
   public readonly model = signal<PublicAttendanceModel>({
     code: this.route.snapshot.queryParamMap.get('code') ?? '',
     rfid: '',
+    otc: '',
   });
 
   public readonly attendanceForm = form(this.model, (root) => {
     disabled(root.code);
     required(root.rfid);
+    if (this.enableOtc) {
+      required(root.otc);
+    }
   }, {
     submission: {
       action: async () => {
@@ -90,11 +103,70 @@ export class PublicAttendanceComponent {
           attendances_id: this.attendancesId,
           attendance_id: this.attendanceId,
           rfid: this.attendanceForm.rfid().value().trim(),
+          otc: this.attendanceForm.otc().value().trim(),
         });
       },
     },
   });
 
+  public async ngOnInit(): Promise<void> {
+  if (this.attendancesId) {
+    try {
+      const result = await lastValueFrom(
+        this.http.get<{ is_strict: boolean }>(
+          `${environment.apiBaseUrl}/api/v1/attendances/${this.attendancesId}/strict`
+        )
+      );
+
+      this.isStrict.set(result.is_strict);
+    } catch {
+      this.isStrict.set(false);
+      
+    }
+  }
+}
+
+  moveNext(event: Event, nextInput?: HTMLInputElement) {
+  const input = event.target as HTMLInputElement;
+
+
+  input.value = input.value.replace(/[^0-9]/g, '');
+
+  if (input.value.length > 1) {
+    input.value = input.value.substring(0, 1);
+  }
+
+  this.updateOtc();
+
+  if (input.value && nextInput) {
+    nextInput.focus();
+  }
+}
+
+  movePrev(event: KeyboardEvent, prevInput?: HTMLInputElement) {
+  if (event.key !== 'Backspace') {
+    return;
+  }
+
+  const input = event.target as HTMLInputElement;
+
+  if (!input.value && prevInput) {
+    event.preventDefault();
+    prevInput.value = '';
+    this.updateOtc();
+    prevInput.focus();
+  }
+}
+
+  updateOtc() {
+    const inputs = document.querySelectorAll('.otc-box') as NodeListOf<HTMLInputElement>;
+    let code = '';
+    inputs.forEach(input => {
+      code += input.value;
+    });
+    this.model.update(model => ({ ...model, otc: code }));
+  }
+  
   #getErrorMessage(error: unknown): string {
     if (error instanceof HttpErrorResponse) {
       const body = error.error;

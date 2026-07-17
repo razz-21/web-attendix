@@ -1,11 +1,14 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
-import { DatePipe, DOCUMENT } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, OnDestroy, signal } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { GetAttendance } from '@/app/types/attendance/attendance.types';
 import { AttendanceDetailsStore } from '@/app/store/attendance-details/attendance-details.store';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '@/environments/environment';
+import { lastValueFrom } from 'rxjs';
 import qrcode from 'qrcode-generator';
 
 interface PublicAttendanceLinkParams {
@@ -15,6 +18,7 @@ interface PublicAttendanceLinkParams {
   attendance_name: string;
   attendance_date: string;
   code: string;
+  enable_otc: boolean;
 }
 
 function buildPublicAttendancePath(params: PublicAttendanceLinkParams): string {
@@ -22,6 +26,7 @@ function buildPublicAttendancePath(params: PublicAttendanceLinkParams): string {
     attendance_name: params.attendance_name,
     attendance_date: params.attendance_date,
     code: params.code,
+    enable_otc: String(params.enable_otc),
   });
   return `/public-attendance/${params.attendances_id}/${params.attendance_id}?${query.toString()}`;
 }
@@ -36,7 +41,6 @@ function buildPublicAttendanceUrl(origin: string, params: PublicAttendanceLinkPa
   styleUrl: './attendance-qrcode-modal.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    DatePipe,
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
@@ -48,14 +52,59 @@ export class AttendanceQrcodeModalComponent implements OnInit {
   private readonly attendanceDetailsStore = inject(AttendanceDetailsStore);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly document = inject(DOCUMENT);
+  private readonly http = inject(HttpClient);
 
   public readonly attendanceName = computed(() => this.attendanceDetailsStore.attendanceDetails()?.name ?? '');
 
+  public readonly enableOtc = this.record.enable_otc === 'on';
+
   public readonly qrCodeSvg = signal<SafeHtml>('');
   public readonly qrError = signal<string | null>(null);
+  public readonly otc = signal<string>('---');
+  public readonly expiresIn = signal<number>(15);
 
-  public ngOnInit(): void {
+  private otcInterval: ReturnType<typeof setInterval> | null = null;
+
+  public async ngOnInit(): Promise<void> {
     this.generateQrCode();
+
+    if (!this.enableOtc) {
+      return;
+    }
+
+    await this.fetchOtc();
+
+    this.otcInterval = setInterval(async () => {
+      const newTime = this.expiresIn() - 1;
+
+      if (newTime <= 0) {
+        await this.fetchOtc();
+      } else {
+        this.expiresIn.set(newTime);
+      }
+    }, 1000);
+  }
+
+  public ngOnDestroy(): void {
+    if (this.otcInterval) {
+      clearInterval(this.otcInterval);
+      this.otcInterval = null;
+    }
+  }
+
+  private async fetchOtc(): Promise<void> {
+    try {
+      const result = await lastValueFrom(
+        this.http.get<{ otc: string; expires_in: number }>(
+          `${environment.apiBaseUrl}/api/v1/attendances/${this.record.id}/otc`
+        )
+      );
+      this.otc.set(result.otc);
+      this.expiresIn.set(result.expires_in);
+    } catch {
+      this.otc.set('---');
+      this.expiresIn.set(0);
+    }
   }
 
   private generateQrCode(): void {
@@ -77,6 +126,7 @@ export class AttendanceQrcodeModalComponent implements OnInit {
         attendance_name: this.record.name,
         attendance_date: this.record.attendance_date,
         code,
+        enable_otc: this.record.enable_otc === 'on',
       });
 
       const qr = qrcode(0, 'M');

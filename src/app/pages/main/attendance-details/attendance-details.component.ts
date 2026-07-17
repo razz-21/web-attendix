@@ -1,6 +1,7 @@
 import { MAIN_ATTENDANCES_PATH } from "@/app/constants/route.constant";
 import { TitleCasePipe } from "@angular/common";
-import { Component, inject, OnInit } from "@angular/core";
+import { Component, DestroyRef, inject, OnDestroy, OnInit } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { MatButtonModule } from "@angular/material/button";
 import { MatBadgeModule } from "@angular/material/badge";
 import { MatIconModule } from "@angular/material/icon";
@@ -18,13 +19,14 @@ import { AttendanceDetailsEvents } from "@/app/store/attendance-details/attendan
 import { LoadingSectionComponent } from "@/app/compponents/loading-section/loading-section.component";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
-import { pipe, tap, map } from "rxjs";
+import { pipe, tap, map, distinctUntilChanged, filter } from "rxjs";
 import { AttendanceAttendeeEvents } from "@/app/store/attendance-attendee/attendance-attendee.events";
 import { AttendanceEvents } from "@/app/store/attendance/attendance.events";
 import { AttendanceAttendeeStore } from "@/app/store/attendance-attendee/attendance-attendee.store";
 import { AttendanceStore } from "@/app/store/attendance/attendance.store";
 import { AttendanceRecordStore } from "@/app/store/attendance-record/attendance-record.store";
 import { AttendanceRecordEvents } from "@/app/store/attendance-record/attendance-record.events";
+import { AttendanceRecordRealtimeService } from "@/app/services/attendance-record-realtime.service";
 import { AuthStore } from "@/app/store/auth/auth.store";
 import { ShareWithOthersModalComponent } from "./components/share-with-others-modal/share-with-others-modal.component";
 import {
@@ -49,7 +51,7 @@ import {
     StackedAvatarGroupComponent,
   ]
 })
-export class AttendanceDetailsComponent implements OnInit {
+export class AttendanceDetailsComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly dialog = inject(MatDialog);
@@ -62,9 +64,9 @@ export class AttendanceDetailsComponent implements OnInit {
   private readonly attendanceStore = inject(AttendanceStore); // Inject to reflect the attendance state
   private readonly attendanceRecordStore = inject(AttendanceRecordStore); // Inject to reflect the attendance record state
   private readonly authStore = inject(AuthStore); // Inject current user for creator actions
+  private readonly realtime = inject(AttendanceRecordRealtimeService); // Live attendance record updates
+  private readonly destroyRef = inject(DestroyRef);
 
-  private attendanceId = computed(() => this.route.snapshot.paramMap.get('id'));
-  
   public attendanceDetails = computed(() => this.attendanceDetailsStore.attendanceDetails());
 
   public sortedScheduleDays = computed(() => {
@@ -132,13 +134,27 @@ export class AttendanceDetailsComponent implements OnInit {
   ] as const;
 
   public ngOnInit(): void {
-    const id = this.attendanceId();
-    if (id) {
-      this.dispatcher.dispatch(AttendanceDetailsEvents.loadAttendanceDetails({ id }));
-      this.dispatcher.dispatch(AttendanceEvents.loadAttendance({ attendance_id: id }));
-      this.dispatcher.dispatch(AttendanceAttendeeEvents.loadAttendees({ attendance_id: id }));
-      this.dispatcher.dispatch(AttendanceRecordEvents.loadAttendanceRecords({ attendances_id: id }));
-    }
+    // React to the route id rather than a one-time snapshot: Angular reuses this
+    // component when navigating between `attendances/:id` pages, so the socket
+    // room and loaded data must re-target the new event on every param change.
+    this.route.paramMap
+      .pipe(
+        map((params) => params.get('id')),
+        filter((id): id is string => !!id),
+        distinctUntilChanged(),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((id) => {
+        this.dispatcher.dispatch(AttendanceDetailsEvents.loadAttendanceDetails({ id }));
+        this.dispatcher.dispatch(AttendanceEvents.loadAttendance({ attendance_id: id }));
+        this.dispatcher.dispatch(AttendanceAttendeeEvents.loadAttendees({ attendance_id: id }));
+        this.dispatcher.dispatch(AttendanceRecordEvents.loadAttendanceRecords({ attendances_id: id }));
+        this.realtime.connect(id);
+      });
+  }
+
+  public ngOnDestroy(): void {
+    this.realtime.disconnect();
   }
 
   public navigateBack(): void {

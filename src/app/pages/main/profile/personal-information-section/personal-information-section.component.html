@@ -15,6 +15,21 @@
 
 <form class="personal-information-form" [formRoot]="personalInformationForm">
   <mat-form-field class="full-width">
+    <mat-label>RFID / ID</mat-label>
+    <input matInput [formField]="personalInformationForm.rfid" />
+    <mat-hint>RFID identifier associated with your account.</mat-hint>
+    @if (personalInformationForm.rfid().touched() && personalInformationForm.rfid().invalid()) {
+      <mat-error>
+        @switch (personalInformationForm.rfid().errors()[0]?.kind) {
+          @case ('required') {
+            RFID / ID is required
+          }
+        }
+      </mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field class="full-width">
     <mat-label>First name</mat-label>
     <input matInput [formField]="personalInformationForm.firstname" />
     <mat-hint>Update your first name as it should appear on your profile.</mat-hint>

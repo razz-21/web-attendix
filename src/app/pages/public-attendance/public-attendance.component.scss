@@ -47,8 +47,12 @@
 .public-attendance-card__header {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.5rem;
   text-align: center;
+
+  h1 {
+    margin: 0;
+  }
 }
 
 .public-attendance-card__date {
@@ -71,6 +75,11 @@
   padding: 0.75rem;
   border-radius: 0.25rem;
 
+  mat-icon {
+    flex-shrink: 0;
+    overflow: visible;
+  }
+
   p {
     margin: 0;
   }
@@ -90,4 +99,28 @@
 
 .full-width {
   width: 100%;
+}
+
+.otc-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.otc-box {
+  width: 56px;
+  height: 56px;
+  border: 1px solid #3f51b5;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 600;
+  outline: none;
+}
+
+.otc-box:focus {
+  border-color: #1976d2;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
 }

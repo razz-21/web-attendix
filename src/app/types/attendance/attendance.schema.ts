@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const AttendanceStatusSchema = z.enum(['active', 'inactive']);
+export const SessionStateSchema = z.enum(['on', 'off']);
 
 export const AttendanceSchema = z.object({
   id: z.uuidv4(),
@@ -11,6 +12,7 @@ export const AttendanceSchema = z.object({
   attendance_id: z.uuidv4(),
   attendances_id: z.uuidv4(),
   status: AttendanceStatusSchema.default('active'),
+  enable_otc: SessionStateSchema.default('off'),
   created_at: z.iso.datetime(),
   updated_at: z.iso.datetime(),
 });

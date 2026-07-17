@@ -31,10 +31,6 @@
       }
 
       <form class="public-attendance-form" [formRoot]="attendanceForm">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Code</mat-label>
-          <input matInput [formField]="attendanceForm.code" autocomplete="off" />
-        </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Your ID</mat-label>
@@ -54,6 +50,14 @@
           }
         </mat-form-field>
 
+          @if (enableOtc) {
+            <div class="otc-container">
+              <input #d1 class="otc-box" type="number" maxlength="1" (input)="moveNext($event, d2)" (keydown)="movePrev($event)" />
+              <input #d2 class="otc-box" type="number" maxlength="1" (input)="moveNext($event, d3)" (keydown)="movePrev($event, d1)" />
+              <input #d3 class="otc-box" type="number" maxlength="1" (input)="moveNext($event)" (keydown)="movePrev($event, d2)" />
+            </div>
+          }
+
         <button
           type="submit"
           matButton="filled"
@@ -70,5 +74,6 @@
         </button>
       </form>
     }
+    
   </section>
 </div>

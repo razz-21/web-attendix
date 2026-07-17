@@ -120,6 +120,7 @@ export class AttendanceFormModalComponent {
               attendance_id,
               attendances_id: this.attendances_id(),
               status: 'active',
+              enable_otc: 'off',
               created_at: now,
               updated_at: now,
             },

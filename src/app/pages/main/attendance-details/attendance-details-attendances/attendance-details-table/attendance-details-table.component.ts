@@ -14,7 +14,7 @@ import { AttendanceStore } from '@/app/store/attendance/attendance.store';
 import { AttendanceDetailsStore } from '@/app/store/attendance-details/attendance-details.store';
 import { AttendanceEvents } from '@/app/store/attendance/attendance.events';
 import { Dispatcher } from '@ngrx/signals/events';
-import { AttendanceStatus, GetAttendance } from '@/app/types/attendance/attendance.types';
+import { AttendanceStatus, GetAttendance, SessionState  } from '@/app/types/attendance/attendance.types';
 import { ConfirmationDialogService } from '@/app/services/confirmation-dialog.service';
 import { EditAttendanceModalComponent } from '../edit-attendance-form-modal/edit-attendance-form-modal.component';
 import { AttendanceQrcodeModalComponent } from '../attendance-qrcode-modal/attendance-qrcode-modal.component';
@@ -49,7 +49,7 @@ export class AttendanceTableComponent {
     'start_time',
     'end_time',
     'status',
-    'created_at',
+    'enable_otc',
     'actions',
   ];
   protected readonly loadingRowColumns: string[] = ['loading'];
@@ -72,6 +72,15 @@ export class AttendanceTableComponent {
   public selectAttendance(row: GetAttendance): void {
     this.dispatcher.dispatch(AttendanceEvents.selectAttendance({ attendance: row }));
   }
+
+  public toggleSessionState(enable_otc: SessionState, row: GetAttendance): void {
+    this.dispatcher.dispatch(AttendanceEvents.updateAttendance({
+      attendance_id: row.attendance_id,
+      id: row.id,
+      data: { enable_otc },
+    }));
+  }
+  
 
   public toggleStatus(status: AttendanceStatus, row: GetAttendance): void {
     this.dispatcher.dispatch(AttendanceEvents.updateAttendance({
