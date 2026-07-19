@@ -1,46 +1,6 @@
 <div class="attendance-table-wrap">
-  @if (selectedCount() > 0) {
-    <div class="attendance-table-toolbar">
-      <span class="attendance-table-toolbar__count">{{ selectedCount() }} selected</span>
-      <button
-        matButton
-        type="button"
-        class="attendance-table-toolbar__delete"
-        [disabled]="bulkDeleteLoading()"
-        (click)="bulkDeleteAttendances()"
-      >
-        <mat-icon>delete</mat-icon>
-        Delete selected
-      </button>
-    </div>
-  }
-
   <div class="attendance-table-container">
     <table mat-table [dataSource]="loading() ? [null] : attendances()" class="attendance-table">
-
-      <!-- Checkbox column -->
-      <ng-container matColumnDef="select">
-        <th mat-header-cell *matHeaderCellDef scope="col" class="attendance-table__select-col">
-          @if (hasManageableAttendances()) {
-            <mat-checkbox
-              [checked]="allSelected()"
-              [indeterminate]="someSelected()"
-              (change)="toggleAllAttendances()"
-              aria-label="Select all attendances"
-            />
-          }
-        </th>
-        <td mat-cell *matCellDef="let row" class="attendance-table__select-col">
-          @if (canManage(row)) {
-            <mat-checkbox
-              [checked]="isAttendanceSelected(row.id)"
-              (change)="toggleAttendanceSelection(row)"
-              (click)="$event.stopPropagation()"
-              aria-label="Select attendance"
-            />
-          }
-        </td>
-      </ng-container>
 
       <!-- Name column -->
       <ng-container matColumnDef="name">
