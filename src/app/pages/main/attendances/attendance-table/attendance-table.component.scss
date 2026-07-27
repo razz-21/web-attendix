@@ -79,15 +79,29 @@
 }
 
 // ── Code chip ───────────────────────────────────────────────────────────────
-.attendance-table__code {
-  display: inline-block;
-  padding: 0.125rem 0.5rem;
-  border-radius: 4px;
-  font-family: 'Roboto Mono', 'Courier New', monospace;
-  font-size: 0.8125rem;
-  background: var(--mat-sys-surface-variant);
-  color: var(--mat-sys-on-surface-variant);
-  letter-spacing: 0.02em;
+.attendance-table__code-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: fit-content;
+  font-size: 0.875rem;
+  padding: 0.5rem;
+  border: 1px dashed var(--mat-sys-primary, #6200ea);
+  border-radius: 8px;
+  background: var(--mat-sys-surface-container-low, rgba(0, 0, 0, 0.02));
+  cursor: pointer;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--mat-sys-primary, #6200ea);
+    }
+  }
 }
 
 // ── Schedule day chips ───────────────────────────────────────────────────────
