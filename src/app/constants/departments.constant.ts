@@ -47,4 +47,16 @@ export const DEPARTMENTS = [
     name: 'College of Radiologic Technology',
     abbv: 'CRT',
   },
+  {
+    name: 'Junior High School',
+    abbv: 'JHS',
+  },
+  {
+    name: 'Senior High School',
+    abbv: 'SHS',
+  },
+  {
+    name: 'Elementary School',
+    abbv: 'ES',
+  },
 ];
