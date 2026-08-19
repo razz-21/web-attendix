@@ -61,7 +61,10 @@
       <ng-container matColumnDef="code">
         <th mat-header-cell *matHeaderCellDef scope="col">Code</th>
         <td mat-cell *matCellDef="let row">
-          <code class="attendance-table__code">{{ row.code }}</code>
+          <div class="attendance-table__code-cell" (click)="copyCode(row.code, $event)" matTooltip="Copy code" matTooltipPosition="above">
+            <span>Code: <strong>{{ row.code }}</strong></span>
+            <mat-icon>content_copy</mat-icon>
+          </div>
         </td>
       </ng-container>
 

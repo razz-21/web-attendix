@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AttendanceStatus } from '@/app/types/attendaces/attendances.types';
@@ -49,6 +50,7 @@ export class AttendanceTableComponent {
   private readonly attendancesStore = inject(AttendancesStore);
   private readonly dispatcher = inject(Dispatcher);
   private readonly confirmationDialogService = inject(ConfirmationDialogService);
+  private readonly snackBar = inject(MatSnackBar);
 
   public readonly attendances = input<Attendance[]>([]);
   public readonly loading = input<boolean>(false);
@@ -162,5 +164,12 @@ export class AttendanceTableComponent {
   public onAttendanceClick(attendance: Attendance): void {
     const path = MAIN_ATTENDANCE_DETAILS_PATH.replace(':id', attendance.id);
     this.router.navigate([path]);
+  }
+
+  public copyCode(code: string, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    navigator.clipboard.writeText(code);
+    this.snackBar.open('Code copied to clipboard', 'Close', { duration: 5000 });
   }
 }
